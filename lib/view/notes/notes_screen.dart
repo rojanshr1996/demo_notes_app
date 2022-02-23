@@ -2,6 +2,8 @@ import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
+import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
+import 'package:demo_app_bloc/services/cloud/firebase_cloud_storage.dart';
 import 'package:demo_app_bloc/services/crud/notes_service.dart';
 import 'package:demo_app_bloc/view/notes/notes_list_view.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
@@ -16,15 +18,15 @@ class NotesScreen extends StatefulWidget {
 }
 
 class _NotesScreenState extends State<NotesScreen> {
-  late final NotesService _notesService;
+  late final FirebaseCloudStorage _notesService;
   final AuthServices _auth = AuthServices();
 
-  String get userEmail => _auth.currentUser!.email;
+  String get userId => _auth.currentUser!.id;
 
   @override
   void initState() {
-    debugPrint(userEmail);
-    _notesService = NotesService();
+    debugPrint(userId);
+    _notesService = FirebaseCloudStorage();
     super.initState();
   }
 
@@ -32,7 +34,7 @@ class _NotesScreenState extends State<NotesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Notes"),
+        title: const Text("My Notes"),
         actions: [
           IconButton(
             onPressed: () {
@@ -48,42 +50,114 @@ class _NotesScreenState extends State<NotesScreen> {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: _notesService.getOrCreateuser(email: userEmail),
-        builder: ((context, snapshot) {
+      body: StreamBuilder(
+        stream: _notesService.allNotes(ownerUserId: userId),
+        builder: (context, snapshot) {
           switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              return StreamBuilder(
-                stream: _notesService.allNotes,
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                    case ConnectionState.active:
-                      if (snapshot.hasData) {
-                        final allNotes = snapshot.data as List<DatabaseNote>;
-                        return NotesListView(
-                            notes: allNotes,
-                            onDeleteNote: (note) async {
-                              await _notesService.deleteNote(id: note.id);
-                            },
-                            onTap: (note) {
-                              // Utilities.openNamedActivity(context, Routes.createUpdateNote, )
-                              Navigator.pushNamed(context, Routes.createUpdateNote, arguments: note);
-                            });
-                      } else {
-                        return const Center(child: CircularProgressIndicator());
-                      }
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              if (snapshot.hasData) {
+                final allNotes = snapshot.data as Iterable<CloudNote>;
+                return NotesListView(
+                    notes: allNotes,
+                    onDeleteNote: (note) async {
+                      await _notesService.deleteNote(documentId: note.documentId);
+                    },
+                    onTap: (note) {
+                      // Utilities.openNamedActivity(context, Routes.createUpdateNote, )
+                      Navigator.pushNamed(context, Routes.createUpdateNote, arguments: note);
+                    });
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                    default:
-                      return const Center(child: CircularProgressIndicator());
-                  }
-                },
-              );
             default:
               return const Center(child: CircularProgressIndicator());
           }
-        }),
+        },
       ),
     );
   }
 }
+
+
+// SQFLITE USAGE
+// class NotesScreen extends StatefulWidget {
+//   const NotesScreen({Key? key}) : super(key: key);
+
+//   @override
+//   State<NotesScreen> createState() => _NotesScreenState();
+// }
+
+// class _NotesScreenState extends State<NotesScreen> {
+//   late final NotesService _notesService;
+//   final AuthServices _auth = AuthServices();
+
+//   String get userEmail => _auth.currentUser!.email;
+
+//   @override
+//   void initState() {
+//     debugPrint(userEmail);
+//     _notesService = NotesService();
+//     super.initState();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text("Notes"),
+//         actions: [
+//           IconButton(
+//             onPressed: () {
+//               Utilities.openNamedActivity(context, Routes.createUpdateNote);
+//             },
+//             icon: const Icon(Icons.add),
+//           ),
+//           IconButton(
+//             onPressed: () {
+//               BlocProvider.of<AuthBloc>(context).add(SignOutRequested());
+//             },
+//             icon: const Icon(Icons.logout),
+//           ),
+//         ],
+//       ),
+//       body: FutureBuilder(
+//         future: _notesService.getOrCreateuser(email: userEmail),
+//         builder: ((context, snapshot) {
+//           switch (snapshot.connectionState) {
+//             case ConnectionState.done:
+//               return StreamBuilder(
+//                 stream: _notesService.allNotes,
+//                 builder: (context, snapshot) {
+//                   switch (snapshot.connectionState) {
+//                     case ConnectionState.waiting:
+//                     case ConnectionState.active:
+//                       if (snapshot.hasData) {
+//                         final allNotes = snapshot.data as List<DatabaseNote>;
+//                         return NotesListView(
+//                             notes: allNotes,
+//                             onDeleteNote: (note) async {
+//                               await _notesService.deleteNote(id: note.id);
+//                             },
+//                             onTap: (note) {
+//                               // Utilities.openNamedActivity(context, Routes.createUpdateNote, )
+//                               Navigator.pushNamed(context, Routes.createUpdateNote, arguments: note);
+//                             });
+//                       } else {
+//                         return const Center(child: CircularProgressIndicator());
+//                       }
+
+//                     default:
+//                       return const Center(child: CircularProgressIndicator());
+//                   }
+//                 },
+//               );
+//             default:
+//               return const Center(child: CircularProgressIndicator());
+//           }
+//         }),
+//       ),
+//     );
+//   }
+// }

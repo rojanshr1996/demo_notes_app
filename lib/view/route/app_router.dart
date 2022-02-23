@@ -1,4 +1,5 @@
 import 'package:demo_app_bloc/model/model.dart';
+import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/services/crud/notes_service.dart';
 import 'package:demo_app_bloc/view/another_page.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
@@ -33,7 +34,7 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const NotesScreen());
 
       case Routes.createUpdateNote:
-        if (args is DatabaseNote) {
+        if (args is CloudNote) {
           return MaterialPageRoute(builder: (_) => CreateUpdateNotesScreen(note: args));
         } else {
           return MaterialPageRoute(builder: (_) => const CreateUpdateNotesScreen());
