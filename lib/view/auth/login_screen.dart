@@ -2,14 +2,16 @@ import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
+import 'package:demo_app_bloc/helpers/loading/loading_screen.dart';
+import 'package:demo_app_bloc/services/auth_exceptions.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/utils/dialogs/error_dialog.dart';
+import 'package:demo_app_bloc/utils/dialogs/loading_dialog.dart';
 import 'package:demo_app_bloc/utils/utils.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:demo_app_bloc/widgets/custom_text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+  // CloseDialog? _closeDialogHandle;
   void toggle() {
     // Add your super logic here!
     _obscureText.value = !_obscureText.value;
@@ -56,28 +58,34 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<AuthBloc>().add(const AuthEventInitialize());
     return RemoveFocus(
       child: Scaffold(
         body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) async {
-            if (state is Authenticated) {
+            if (state.isLoading) {
+              LoadingScreen().show(context: context, text: state.loadingText ?? "Please wait a moment");
+            } else {
+              LoadingScreen().hide();
+            }
+            if (state is AuthStateLoggedIn) {
               // Navigating to the post screen if the user is authenticated
-              debugPrint("LOGGED IN USER: ${FirebaseAuth.instance.currentUser}");
+              debugPrint("LOGGED IN USER: ${state.user}");
               Utilities.replaceNamedActivity(context, Routes.index);
             }
-            if (state is AuthError) {
-              // Displaying the error message if the user is not authenticated
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
-              await showErrorDialog(context, state.error);
+
+            if (state is AuthStateLoggedOut) {
+              if (state.exception is UserNotFoundException) {
+                await showErrorDialog(context, "User not found");
+              } else if (state.exception is WrongPasswordAuthException) {
+                await showErrorDialog(context, "Wrong credentials");
+              } else if (state.exception is GenericAuthException) {
+                await showErrorDialog(context, "Authentication Error");
+              }
             }
           },
           builder: (context, state) {
-            if (state is Loading) {
-              // Displaying the loading indicator while the user is signing up
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (state is UnAuthenticated) {
+            if (state is AuthStateLoggedOut) {
               // Showing the sign in form if the user is not authenticated
               return Center(
                 child: SizedBox(
@@ -225,7 +233,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       // If email is valid adding new Event [SignInRequested].
       BlocProvider.of<AuthBloc>(context).add(
-        SignInRequested(_emailController.text, _passwordController.text),
+        AuthEventLogin(_emailController.text, _passwordController.text),
       );
     }
   }

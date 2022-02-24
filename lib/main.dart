@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
 import 'package:demo_app_bloc/bloc/postBloc/post_bloc.dart';
 import 'package:demo_app_bloc/bloc/postBloc/post_event.dart';
 import 'package:demo_app_bloc/cubit/post_cubit.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/services/post_service.dart';
+import 'package:demo_app_bloc/view/auth/login_screen.dart';
 import 'package:demo_app_bloc/view/route/app_router.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:device_preview/device_preview.dart';
@@ -54,7 +53,8 @@ class _MyAppState extends State<MyApp> {
             onGenerateRoute: AppRouter.onGenerateRoute,
             theme: ThemeData(primarySwatch: Colors.blue),
             // initialRoute: Routes.post,
-            initialRoute: _auth.currentUser != null ? Routes.index : Routes.login,
+            home: const LoginScreen(),
+            // initialRoute: _auth.currentUser != null ? Routes.index : Routes.login,
           ),
         ),
       ),

@@ -34,7 +34,7 @@ class _PostsBlocScreenState extends State<PostsBlocScreen> {
           ),
           IconButton(
             onPressed: () {
-              BlocProvider.of<AuthBloc>(context).add(SignOutRequested());
+              BlocProvider.of<AuthBloc>(context).add(const AuthEventLogout());
             },
             icon: const Icon(Icons.logout),
           ),
@@ -42,7 +42,7 @@ class _PostsBlocScreenState extends State<PostsBlocScreen> {
         body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             debugPrint("State has changed");
-            if (state is UnAuthenticated) {
+            if (state is AuthStateLoggedOut) {
               Utilities.removeStackActivity(context, const LoginScreen());
             }
           },

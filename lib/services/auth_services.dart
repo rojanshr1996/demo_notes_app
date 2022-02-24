@@ -32,6 +32,7 @@ class AuthServices {
   Future<AuthUser?> signIn({required String email, required String password}) async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+
       final user = currentUser;
 
       if (user != null) {
@@ -45,7 +46,7 @@ class AuthServices {
       } else if (e.code == 'wrong-password') {
         throw WrongPasswordAuthException();
       }
-    } catch (e) {
+    } catch (_) {
       throw GenericAuthException();
     }
     return null;

@@ -2,6 +2,8 @@ import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
+import 'package:demo_app_bloc/helpers/loading/loading_screen.dart';
+import 'package:demo_app_bloc/services/auth_exceptions.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/utils/dialogs/error_dialog.dart';
@@ -51,22 +53,42 @@ class _SingupScreenState extends State<SingupScreen> {
       child: Scaffold(
         body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) async {
-            if (state is Authenticated) {
-              // _sendEmailVerification(context);
+            if (state.isLoading) {
+              LoadingScreen().show(context: context, text: state.loadingText ?? "Please wait a moment");
+            } else {
+              LoadingScreen().hide();
+            }
+            if (state is AuthStateRegistering) {
+              if (state.exception is EmailInUseAuthException) {
+                await showErrorDialog(context, "Email is already in use");
+              } else if (state.exception is WrongPasswordAuthException) {
+                await showErrorDialog(context, "Wrong password");
+              } else if (state.exception is GenericAuthException) {
+                await showErrorDialog(context, "Failed to register");
+              }
+            }
+
+            if (state is AuthStateLoggedIn) {
               Utilities.replaceNamedActivity(context, Routes.index);
             }
-            if (state is AuthError) {
-              // Displaying the error message if the user is not authenticated
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
-              await showErrorDialog(context, state.error);
-            }
+
+            // if (state is AuthStateLoggedOut) {
+            //   if (state.exception is EmailInUseAuthException) {
+            //     await showErrorDialog(context, "Email already in use");
+            //   } else if (state.exception is WrongPasswordAuthException) {
+            //     await showErrorDialog(context, "Wrong credentials");
+            //   } else if (state.exception is GenericAuthException) {
+            //     await showErrorDialog(context, "Authentication Error");
+            //   }
+            // }
+            // if (state is AuthStateLoginFailure) {
+            //   // Displaying the error message if the user is not authenticated
+            //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${state.exception}")));
+            //   await showErrorDialog(context, "${state.exception}");
+            // }
           },
           builder: (context, state) {
-            if (state is Loading) {
-              // Displaying the loading indicator while the user is signing up
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (state is UnAuthenticated) {
+            if (state is AuthStateLoggedOut) {
               // Displaying the sign up form if the user is not authenticated
 
               return SizedBox(
@@ -186,6 +208,7 @@ class _SingupScreenState extends State<SingupScreen> {
                             child: TextButton(
                               onPressed: () {
                                 Utilities.closeActivity(context);
+                                context.read<AuthBloc>().add(const AuthEventLogout());
                               },
                               child: Text("Go Back", style: CustomTextStyle.bodyText.copyWith(color: AppColors.cBlue)),
                             ),
@@ -208,12 +231,12 @@ class _SingupScreenState extends State<SingupScreen> {
     if (_formKey.currentState!.validate()) {
       // If email is valid adding new event [SignUpRequested].
       BlocProvider.of<AuthBloc>(context).add(
-        SignUpRequested(_emailController.text, _passwordController.text),
+        AuthEventSignUp(_emailController.text, _passwordController.text),
       );
     }
   }
 
   void _sendEmailVerification(context) {
-    BlocProvider.of<AuthBloc>(context).add(EmailVerificationRequested());
+    BlocProvider.of<AuthBloc>(context).add(AuthEventSendEmailVerification());
   }
 }

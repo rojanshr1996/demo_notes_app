@@ -13,26 +13,37 @@ class NotesListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: notes.length,
-        itemBuilder: (context, index) {
-          final note = notes.elementAt(index);
-          return ListTile(
+    return GridView.builder(
+      padding: const EdgeInsets.all(12),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 200, childAspectRatio: 5 / 4, crossAxisSpacing: 8, mainAxisSpacing: 8),
+      itemCount: notes.length,
+      itemBuilder: (BuildContext ctx, index) {
+        final note = notes.elementAt(index);
+        return Card(
+          child: InkWell(
             onTap: () {
               onTap!(note);
             },
-            title: Text(note.text, maxLines: 1, softWrap: true, overflow: TextOverflow.ellipsis),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete, color: AppColors.cRed),
-              onPressed: () async {
-                final shouldDelete = await showDeleteDialog(context);
-                if (shouldDelete) {
-                  onDeleteNote!(note);
-                }
-              },
+            child: GridTile(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(note.text, maxLines: 4, softWrap: true, overflow: TextOverflow.ellipsis),
+              ),
+              footer: IconButton(
+                icon: const Icon(Icons.delete, color: AppColors.cRed, size: 22),
+                onPressed: () async {
+                  final shouldDelete = await showDeleteDialog(context);
+                  if (shouldDelete) {
+                    onDeleteNote!(note);
+                  }
+                },
+              ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 }
 

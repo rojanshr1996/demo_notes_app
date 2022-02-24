@@ -5,6 +5,7 @@ import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
+import 'package:demo_app_bloc/helpers/loading/loading_screen.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
@@ -22,32 +23,35 @@ class IndexScreen extends StatelessWidget {
       appBar: AppBar(title: const Text("Index"), actions: [
         IconButton(
           onPressed: () {
-            BlocProvider.of<AuthBloc>(context).add(SignOutRequested());
+            BlocProvider.of<AuthBloc>(context).add(const AuthEventLogout());
+          },
+          icon: const Icon(Icons.restart_alt),
+        ),
+        IconButton(
+          onPressed: () {
+            BlocProvider.of<AuthBloc>(context).add(const AuthEventLogout());
           },
           icon: const Icon(Icons.logout),
         ),
       ]),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is EmailVerified) {
+          if (state.isLoading) {
+            LoadingScreen().show(context: context, text: state.loadingText ?? "Please wait a moment");
+          } else {
+            LoadingScreen().hide();
+          }
+          if (state is AuthStateEmailVerified) {
             // Navigating to the post screen if the user is authenticated
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Email verified successfully")));
           }
-          if (state is AuthError) {
-            // Displaying the error message if the user is not authenticated
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
-          }
-          if (state is UnAuthenticated) {
+
+          if (state is AuthStateLoggedOut) {
             Utilities.removeStackActivity(context, const LoginScreen());
           }
         },
         builder: (context, state) {
-          if (state is Loading) {
-            // Displaying the loading indicator while the user is signing up
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state is EmailVerified) {
+          if (state is AuthStateEmailVerified) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -148,6 +152,6 @@ class IndexScreen extends StatelessWidget {
   }
 
   void _sendEmailVerification(context) {
-    BlocProvider.of<AuthBloc>(context).add(EmailVerificationRequested());
+    BlocProvider.of<AuthBloc>(context).add(const AuthEventSendEmailVerification());
   }
 }

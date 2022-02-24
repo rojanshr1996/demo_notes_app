@@ -1,41 +1,80 @@
+import 'package:demo_app_bloc/model/auth_user.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart' show immutable;
 
+@immutable
 abstract class AuthState extends Equatable {
-  const AuthState();
+  final bool isLoading;
+  final String? loadingText;
+  const AuthState({required this.isLoading, this.loadingText});
 
   @override
   List<Object?> get props => [];
 }
 
 // When the user presses the signin or signup button the state is changed to loading first and then to Authenticated.
-class Loading extends AuthState {
+class AuthStateLoading extends AuthState {
+  const AuthStateLoading({required bool isLoading}) : super(isLoading: isLoading);
+  @override
+  List<Object?> get props => [];
+}
+
+class AuthStateUninitialized extends AuthState {
+  const AuthStateUninitialized({required bool isLoading}) : super(isLoading: isLoading);
   @override
   List<Object?> get props => [];
 }
 
 // When the user is authenticated the state is changed to Authenticated.
-class Authenticated extends AuthState {
+class AuthStateLoggedIn extends AuthState {
+  final AuthUser user;
+  const AuthStateLoggedIn({required bool isLoading, required this.user}) : super(isLoading: isLoading);
+
   @override
   List<Object?> get props => [];
 }
 
 // This is the initial state of the bloc. When the user is not authenticated the state is changed to Unauthenticated.
-class UnAuthenticated extends AuthState {
+
+// If any error occurs the state is changed to AuthError.
+// class AuthStateLoginFailure extends AuthState {
+//   final Exception exception;
+
+//   const AuthStateLoginFailure(this.exception);
+//   @override
+//   List<Object?> get props => [exception];
+// }
+
+// If any error occurs the state is changed to AuthError.
+class AuthStateEmailVerified extends AuthState {
+  const AuthStateEmailVerified({required bool isLoading}) : super(isLoading: isLoading);
+
   @override
   List<Object?> get props => [];
 }
 
-// If any error occurs the state is changed to AuthError.
-class AuthError extends AuthState {
-  final String error;
+class AuthStateLoggedOut extends AuthState with EquatableMixin {
+  final Exception? exception;
 
-  const AuthError(this.error);
+  const AuthStateLoggedOut({required this.exception, required bool isLoading, String? loadingText})
+      : super(isLoading: isLoading, loadingText: loadingText);
+
   @override
-  List<Object?> get props => [error];
+  List<Object?> get props => [exception, isLoading];
 }
 
-// If any error occurs the state is changed to AuthError.
-class EmailVerified extends AuthState {
+class AuthStateRegistering extends AuthState {
+  final Exception exception;
+
+  const AuthStateRegistering({required bool isLoading, required this.exception}) : super(isLoading: isLoading);
   @override
   List<Object?> get props => [];
 }
+
+// class AuthStateLogoutFailure extends AuthState {
+//   final Exception exception;
+
+//   const AuthStateLogoutFailure(this.exception);
+//   @override
+//   List<Object?> get props => [exception];
+// }

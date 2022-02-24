@@ -44,7 +44,7 @@ class _NotesScreenState extends State<NotesScreen> {
           ),
           IconButton(
             onPressed: () {
-              BlocProvider.of<AuthBloc>(context).add(SignOutRequested());
+              BlocProvider.of<AuthBloc>(context).add(const AuthEventLogout());
             },
             icon: const Icon(Icons.logout),
           ),
