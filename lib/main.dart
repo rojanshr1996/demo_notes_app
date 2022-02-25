@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(create: (context) => AuthBloc(authServices: RepositoryProvider.of<AuthServices>(context)))
         ],
         child: ScreenUtilInit(
-          designSize: const Size(411.42857142857144, 820.5714285714286),
+          designSize: const Size(411.428, 820.5),
           builder: () => MaterialApp(
             useInheritedMediaQuery: true,
             debugShowCheckedModeBanner: false,
@@ -52,9 +52,7 @@ class _MyAppState extends State<MyApp> {
             title: 'Bloc Demo',
             onGenerateRoute: AppRouter.onGenerateRoute,
             theme: ThemeData(primarySwatch: Colors.blue),
-            // initialRoute: Routes.post,
-            home: const LoginScreen(),
-            // initialRoute: _auth.currentUser != null ? Routes.index : Routes.login,
+            initialRoute: Routes.login,
           ),
         ),
       ),

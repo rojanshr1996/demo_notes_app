@@ -9,24 +9,24 @@
             "request": "launch",
             "type": "dart"
         },
-        {
-            "name": "Android SDK built for x86",
-            "request": "launch",
-            "type": "dart",
-            "deviceId": "emulator-5554"
-        },
-        {
-            "name": "sdk gphone x86 (mobile)",
-            "request": "launch",
-            "type": "dart",
-            "deviceId": "emulator-5556"
-        },
+        // {
+        //     "name": "Android SDK built for x86",
+        //     "request": "launch",
+        //     "type": "dart",
+        //     "deviceId": "emulator-5554"
+        // },
+        // {
+        //     "name": "sdk gphone x86 (mobile)",
+        //     "request": "launch",
+        //     "type": "dart",
+        //     "deviceId": "emulator-5556"
+        // },
         
     ],
-    "compounds": [
-        {
-          "name": "All Devices",
-          "configurations": ["sdk gphone x86 (mobile)", "Android SDK built for x86"]
-        }
-    ]
+    // "compounds": [
+    //     {
+    //       "name": "All Devices",
+    //       "configurations": ["sdk gphone x86 (mobile)", "Android SDK built for x86"]
+    //     }
+    // ]
 }
