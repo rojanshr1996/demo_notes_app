@@ -29,8 +29,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final AuthServices _auth = AuthServices();
-
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
