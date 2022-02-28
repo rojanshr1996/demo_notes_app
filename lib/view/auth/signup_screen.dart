@@ -51,6 +51,7 @@ class _SingupScreenState extends State<SingupScreen> {
   Widget build(BuildContext context) {
     return RemoveFocus(
       child: Scaffold(
+        backgroundColor: AppColors.cDarkBlue,
         body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) async {
             if (state.isLoading) {
@@ -101,7 +102,7 @@ class _SingupScreenState extends State<SingupScreen> {
                       children: [
                         const Padding(
                           padding: EdgeInsets.fromLTRB(10, 40, 10, 70),
-                          child: Text("CREATE NEW ACCOUNT", style: CustomTextStyle.title),
+                          child: Text("CREATE NEW ACCOUNT", style: CustomTextStyle.titleLight),
                         ),
                         Form(
                           key: _formKey,
@@ -114,28 +115,31 @@ class _SingupScreenState extends State<SingupScreen> {
                                     Container(
                                       height: 48,
                                       decoration: BoxDecoration(
-                                        color: AppColors.cWhite,
+                                        color: AppColors.cBlueShade,
                                         boxShadow: [
                                           BoxShadow(
-                                              color: AppColors.cBlackShadow, blurRadius: 8, offset: const Offset(0, 3)),
+                                              color: AppColors.cDarkBlueAccent.withAlpha(200),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 3)),
                                         ],
                                         borderRadius: BorderRadius.circular(5.0),
                                       ),
                                     ),
                                     CustomTextField(
                                       textEditingController: _emailController,
-                                      label: const Text("Email Address"),
+                                      label: const Text("Email Addresss", style: CustomTextStyle.hintTextLight),
                                       textInputType: TextInputType.emailAddress,
-                                      hintStyle: CustomTextStyle.hintText,
+                                      hintStyle: CustomTextStyle.hintTextLight,
+                                      style: CustomTextStyle.bodyTextLight,
                                       validator: (value) => validateEmail(context: context, value: value!),
                                       focusedBorder:
-                                          const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cDarkBlue)),
+                                          const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cBlueShade)),
                                       enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
                                       disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
                                       focusedErrorBorder:
-                                          const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRed)),
+                                          const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRedAccent)),
                                       errorBorder:
-                                          const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRed)),
+                                          const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRedAccent)),
                                     ),
                                   ],
                                 ),
@@ -148,10 +152,12 @@ class _SingupScreenState extends State<SingupScreen> {
                                     Container(
                                       height: 48,
                                       decoration: BoxDecoration(
-                                        color: AppColors.cWhite,
+                                        color: AppColors.cBlueShade,
                                         boxShadow: [
                                           BoxShadow(
-                                              color: AppColors.cBlackShadow, blurRadius: 8, offset: const Offset(0, 3)),
+                                              color: AppColors.cDarkBlueAccent.withAlpha(200),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 3)),
                                         ],
                                         borderRadius: BorderRadius.circular(5.0),
                                       ),
@@ -160,10 +166,11 @@ class _SingupScreenState extends State<SingupScreen> {
                                       valueListenable: _obscureText,
                                       builder: (context, value, child) => CustomTextField(
                                         textEditingController: _passwordController,
-                                        label: const Text("Password"),
+                                        label: const Text("Password", style: CustomTextStyle.hintTextLight),
+                                        style: CustomTextStyle.bodyTextLight,
                                         textInputType: TextInputType.visiblePassword,
                                         obscureText: _obscureText.value,
-                                        hintStyle: CustomTextStyle.hintText,
+                                        hintStyle: CustomTextStyle.hintTextLight,
                                         validator: (value) => validatePassword(context: context, value: value!),
                                         suffixIcon: _passwordController.text.isEmpty
                                             ? const SizedBox()
@@ -174,7 +181,7 @@ class _SingupScreenState extends State<SingupScreen> {
                                                     : const Icon(Icons.visibility_off, color: AppColors.cDarkBlue),
                                               ),
                                         focusedBorder: const OutlineInputBorder(
-                                            borderSide: BorderSide(color: AppColors.cDarkBlue)),
+                                            borderSide: BorderSide(color: AppColors.cBlueShade)),
                                         enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
                                         disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
                                         focusedErrorBorder:
@@ -196,8 +203,8 @@ class _SingupScreenState extends State<SingupScreen> {
                             title: "SIGN UP",
                             borderRadius: BorderRadius.circular(5),
                             splashBorderRadius: BorderRadius.circular(5),
-                            buttonColor: AppColors.cBlue,
-                            shadowColor: AppColors.cBlueShadow,
+                            buttonColor: AppColors.cDarkBlueAccent,
+                            shadowColor: AppColors.cDarkBlueAccent,
                             onPressed: () => _createAccountWithEmailAndPassword(context),
                           ),
                         ),
@@ -210,7 +217,8 @@ class _SingupScreenState extends State<SingupScreen> {
                                 Utilities.closeActivity(context);
                                 context.read<AuthBloc>().add(const AuthEventLogout());
                               },
-                              child: Text("Go Back", style: CustomTextStyle.bodyText.copyWith(color: AppColors.cBlue)),
+                              child: Text("Go Back",
+                                  style: CustomTextStyle.bodyText.copyWith(color: AppColors.cBlueShade)),
                             ),
                           ),
                         ),

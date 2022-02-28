@@ -4,6 +4,7 @@ import 'package:demo_app_bloc/bloc/postBloc/post_event.dart';
 import 'package:demo_app_bloc/cubit/post_cubit.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/services/post_service.dart';
+import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
 import 'package:demo_app_bloc/view/route/app_router.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
@@ -47,9 +48,17 @@ class _MyAppState extends State<MyApp> {
             useInheritedMediaQuery: true,
             debugShowCheckedModeBanner: false,
             builder: DevicePreview.appBuilder,
-            title: 'Bloc Demo',
+            title: 'Notes App',
             onGenerateRoute: AppRouter.onGenerateRoute,
-            theme: ThemeData(primarySwatch: Colors.blue),
+            theme: ThemeData(
+                primaryColor: AppColors.cDarkBlue,
+                fontFamily: 'euclid',
+                highlightColor: AppColors.transparent,
+                splashColor: AppColors.cBlueShade.withAlpha(40),
+                buttonTheme: const ButtonThemeData(
+                    buttonColor: AppColors.cDarkBlueAccent,
+                    highlightColor: AppColors.transparent,
+                    splashColor: AppColors.cDarkBlue)),
             initialRoute: Routes.login,
           ),
         ),

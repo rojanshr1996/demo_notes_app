@@ -78,6 +78,7 @@ class CustomTextStyle {
 
   static const hintLargeText = TextStyle(fontSize: 24, color: AppColors.cGrey, fontWeight: bold);
   static const hintText = TextStyle(fontSize: 16, color: AppColors.cGrey);
+  static const hintTextLight = TextStyle(fontSize: 16, color: AppColors.cDarkBlueLight);
   static const hintTextBold = TextStyle(fontSize: 16, color: AppColors.cGrey, fontWeight: bold);
   static const hintbodyText = TextStyle(color: AppColors.cGrey);
   static const hintbodyTextBold = TextStyle(color: AppColors.cGrey, fontWeight: bold);

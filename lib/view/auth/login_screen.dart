@@ -61,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
     context.read<AuthBloc>().add(const AuthEventInitialize());
     return RemoveFocus(
       child: Scaffold(
+        backgroundColor: AppColors.cDarkBlue,
         body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) async {
             if (state.isLoading) {
@@ -98,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           const Padding(
                             padding: EdgeInsets.fromLTRB(10, 40, 10, 70),
-                            child: Text("LOGIN", style: CustomTextStyle.title),
+                            child: Text("LOGIN", style: CustomTextStyle.titleLight),
                           ),
                           Form(
                             key: _formKey,
@@ -111,10 +112,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       Container(
                                         height: 48,
                                         decoration: BoxDecoration(
-                                          color: AppColors.cWhite,
+                                          color: AppColors.cBlueShade,
                                           boxShadow: [
                                             BoxShadow(
-                                                color: AppColors.cBlackShadow,
+                                                color: AppColors.cDarkBlueAccent.withAlpha(200),
                                                 blurRadius: 8,
                                                 offset: const Offset(0, 3)),
                                           ],
@@ -123,23 +124,24 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                       CustomTextField(
                                         textEditingController: _emailController,
-                                        label: const Text("Email Address"),
+                                        label: const Text("Email Addresss", style: CustomTextStyle.hintTextLight),
                                         textInputType: TextInputType.emailAddress,
-                                        hintStyle: CustomTextStyle.hintText,
+                                        style: CustomTextStyle.bodyTextLight,
+                                        hintStyle: CustomTextStyle.hintTextLight,
                                         validator: (value) => validateEmail(context: context, value: value!),
                                         focusedBorder: const OutlineInputBorder(
-                                            borderSide: BorderSide(color: AppColors.cDarkBlue)),
+                                            borderSide: BorderSide(color: AppColors.cBlueShade)),
                                         enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
                                         disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
-                                        focusedErrorBorder:
-                                            const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRed)),
-                                        errorBorder:
-                                            const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRed)),
+                                        focusedErrorBorder: const OutlineInputBorder(
+                                            borderSide: BorderSide(color: AppColors.cRedAccent)),
+                                        errorBorder: const OutlineInputBorder(
+                                            borderSide: BorderSide(color: AppColors.cRedAccent)),
                                       ),
                                     ],
                                   ),
                                 ),
-                                const SizedBox(height: 12),
+                                const SizedBox(height: 15),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 24, right: 24),
                                   child: Stack(
@@ -147,10 +149,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       Container(
                                         height: 48,
                                         decoration: BoxDecoration(
-                                          color: AppColors.cWhite,
+                                          color: AppColors.cBlueShade,
                                           boxShadow: [
                                             BoxShadow(
-                                                color: AppColors.cBlackShadow,
+                                                color: AppColors.cDarkBlueAccent.withAlpha(200),
                                                 blurRadius: 8,
                                                 offset: const Offset(0, 3)),
                                           ],
@@ -161,10 +163,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                         valueListenable: _obscureText,
                                         builder: (context, value, child) => CustomTextField(
                                           textEditingController: _passwordController,
-                                          label: const Text("Password"),
+                                          label: const Text("Password", style: CustomTextStyle.hintTextLight),
+                                          style: CustomTextStyle.bodyTextLight,
                                           textInputType: TextInputType.visiblePassword,
                                           obscureText: _obscureText.value,
-                                          hintStyle: CustomTextStyle.hintText,
+                                          hintStyle: CustomTextStyle.hintTextLight,
                                           validator: (value) => validatePassword(context: context, value: value!),
                                           suffixIcon: _passwordController.text.isEmpty
                                               ? const SizedBox()
@@ -175,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                       : const Icon(Icons.visibility_off, color: AppColors.cDarkBlue),
                                                 ),
                                           focusedBorder: const OutlineInputBorder(
-                                              borderSide: BorderSide(color: AppColors.cDarkBlue)),
+                                              borderSide: BorderSide(color: AppColors.cBlueShade)),
                                           enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
                                           disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
                                           focusedErrorBorder:
@@ -197,8 +200,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               title: "SIGN IN",
                               borderRadius: BorderRadius.circular(5),
                               splashBorderRadius: BorderRadius.circular(5),
-                              buttonColor: AppColors.cBlue,
-                              shadowColor: AppColors.cBlueShadow,
+                              buttonColor: AppColors.cDarkBlueAccent,
+                              shadowColor: AppColors.cDarkBlueAccent,
                               onPressed: () => _authenticateWithEmailAndPassword(context),
                             ),
                           ),
@@ -210,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () => Utilities.openNamedActivity(context, Routes.register),
                                 child: Text(
                                   "SIGN UP",
-                                  style: CustomTextStyle.bodyText.copyWith(color: AppColors.cBlue),
+                                  style: CustomTextStyle.bodyText.copyWith(color: AppColors.cBlueShade),
                                 ),
                               ),
                             ),
