@@ -113,9 +113,9 @@ class _SingupScreenState extends State<SingupScreen> {
                                 child: Stack(
                                   children: [
                                     Container(
-                                      height: 48,
+                                      height: 50,
                                       decoration: BoxDecoration(
-                                        color: AppColors.cBlueShade,
+                                        color: AppColors.cDarkBlueAccent,
                                         boxShadow: [
                                           BoxShadow(
                                               color: AppColors.cDarkBlueAccent.withAlpha(200),
@@ -150,9 +150,9 @@ class _SingupScreenState extends State<SingupScreen> {
                                 child: Stack(
                                   children: [
                                     Container(
-                                      height: 48,
+                                      height: 50,
                                       decoration: BoxDecoration(
-                                        color: AppColors.cBlueShade,
+                                        color: AppColors.cDarkBlueAccent,
                                         boxShadow: [
                                           BoxShadow(
                                               color: AppColors.cDarkBlueAccent.withAlpha(200),
@@ -203,8 +203,8 @@ class _SingupScreenState extends State<SingupScreen> {
                             title: "SIGN UP",
                             borderRadius: BorderRadius.circular(5),
                             splashBorderRadius: BorderRadius.circular(5),
-                            buttonColor: AppColors.cDarkBlueAccent,
-                            shadowColor: AppColors.cDarkBlueAccent,
+                            buttonColor: AppColors.cBlueShade,
+                            shadowColor: AppColors.cBlueShade,
                             onPressed: () => _createAccountWithEmailAndPassword(context),
                           ),
                         ),
@@ -218,7 +218,7 @@ class _SingupScreenState extends State<SingupScreen> {
                                 context.read<AuthBloc>().add(const AuthEventLogout());
                               },
                               child: Text("Go Back",
-                                  style: CustomTextStyle.bodyText.copyWith(color: AppColors.cBlueShade)),
+                                  style: CustomTextStyle.bodyText.copyWith(color: AppColors.cDarkBlueLight)),
                             ),
                           ),
                         ),

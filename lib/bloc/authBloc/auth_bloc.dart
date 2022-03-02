@@ -45,7 +45,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     // When User Presses the SignOut Button, we will send the SignOutRequested Event to the AuthBloc to handle it and emit the UnAuthenticated State
     on<AuthEventLogout>((event, emit) async {
       try {
+        if (authServices.currentUser != null) {
+          emit(AuthStateLoggedIn(user: authServices.currentUser!, isLoading: true));
+        }
         await authServices.signOut();
+
         emit(const AuthStateLoggedOut(exception: null, isLoading: false));
       } on Exception catch (e) {
         emit(AuthStateLoggedOut(exception: e, isLoading: false));

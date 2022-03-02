@@ -1,7 +1,11 @@
+import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/services/cloud/firebase_cloud_storage.dart';
+import 'package:demo_app_bloc/utils/app_colors.dart';
+import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/utils/dialogs/cannot_share_empty_note_dialog.dart';
+import 'package:demo_app_bloc/widgets/simple_circular_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -88,38 +92,37 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.cDarkBlue,
       appBar: AppBar(
+        backgroundColor: AppColors.cDarkBlue,
         title: const Text("Create new note"),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              final text = _textController.text;
-              if (_note == null || text.isEmpty) {
-                await showCannotShareEmptyNoteDialog(context);
-              } else {
-                Share.share(text);
-              }
-            },
-            icon: const Icon(Icons.share),
-          )
-        ],
       ),
-      body: FutureBuilder(
-        future: createOrGetExistingNote(context),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              _setupTextControllerListener();
-              return TextField(
-                controller: _textController,
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                decoration: const InputDecoration(hintText: "Enter new note... "),
-              );
-            default:
-              return const Center(child: CircularProgressIndicator());
-          }
-        },
+      body: Container(
+        height: Utilities.screenHeight(context),
+        color: AppColors.cDarkBlueAccent,
+        padding: const EdgeInsets.all(25),
+        child: FutureBuilder(
+          future: createOrGetExistingNote(context),
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.done:
+                _setupTextControllerListener();
+                return TextField(
+                  controller: _textController,
+                  keyboardType: TextInputType.multiline,
+                  style: CustomTextStyle.bodyTextLight.copyWith(fontSize: 18),
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    hintText: "Enter new note... ",
+                    hintStyle: CustomTextStyle.bodyText.copyWith(color: AppColors.cDarkBlueLight, fontSize: 16),
+                    border: const UnderlineInputBorder(borderSide: BorderSide.none),
+                  ),
+                );
+              default:
+                return const Center(child: SimpleCircularLoader());
+            }
+          },
+        ),
       ),
     );
   }

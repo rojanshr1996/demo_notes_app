@@ -9,40 +9,61 @@ class NotesListView extends StatelessWidget {
   final Iterable<CloudNote> notes;
   final NoteCallback? onDeleteNote;
   final NoteCallback? onTap;
-  const NotesListView({Key? key, required this.notes, this.onDeleteNote, this.onTap}) : super(key: key);
+  final NoteCallback? onLongPress;
+  const NotesListView({Key? key, required this.notes, this.onDeleteNote, this.onTap, this.onLongPress})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(12),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 200, childAspectRatio: 5 / 4, crossAxisSpacing: 8, mainAxisSpacing: 8),
-      itemCount: notes.length,
-      itemBuilder: (BuildContext ctx, index) {
-        final note = notes.elementAt(index);
-        return Card(
-          child: InkWell(
-            onTap: () {
-              onTap!(note);
-            },
-            child: GridTile(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(note.text, maxLines: 4, softWrap: true, overflow: TextOverflow.ellipsis),
+    return SliverPadding(
+      padding: const EdgeInsets.all(15),
+      sliver: SliverGrid(
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 200, childAspectRatio: 5 / 4, crossAxisSpacing: 8, mainAxisSpacing: 8),
+        delegate: SliverChildBuilderDelegate(
+          (BuildContext context, int index) {
+            final note = notes.elementAt(index);
+            return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
               ),
-              footer: IconButton(
-                icon: const Icon(Icons.delete, color: AppColors.cRed, size: 22),
-                onPressed: () async {
-                  final shouldDelete = await showDeleteDialog(context);
-                  if (shouldDelete) {
-                    onDeleteNote!(note);
-                  }
+              color: AppColors.cDarkBlueAccent,
+              elevation: 5,
+              shadowColor: AppColors.cDarkBlue,
+              child: InkWell(
+                onTap: () {
+                  onTap!(note);
                 },
+                onLongPress: () {
+                  onLongPress!(note);
+                },
+                child: GridTile(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text(
+                      note.text,
+                      maxLines: 6,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: AppColors.cLightShade),
+                    ),
+                  ),
+                  // footer: IconButton(
+                  //   icon: const Icon(Icons.delete, color: AppColors.cRed, size: 22),
+                  //   onPressed: () async {
+                  //     final shouldDelete = await showDeleteDialog(context);
+                  //     if (shouldDelete) {
+                  //       onDeleteNote!(note);
+                  //     }
+                  //   },
+                  // ),
+                ),
               ),
-            ),
-          ),
-        );
-      },
+            );
+          },
+          childCount: notes.length,
+        ),
+      ),
     );
   }
 }

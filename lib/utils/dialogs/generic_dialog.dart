@@ -1,4 +1,5 @@
 import 'package:custom_widgets/custom_widgets.dart';
+import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
 typedef DialogOptionBuilder<T> = Map<String, T?> Function();
@@ -15,8 +16,15 @@ Future<T?> showGenericDialog<T>({
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text(title),
-        content: Text(content),
+        backgroundColor: AppColors.cDarkBlue,
+        title: Text(
+          title,
+          style: const TextStyle(color: AppColors.cLight),
+        ),
+        content: Text(
+          content,
+          style: const TextStyle(color: AppColors.cLightShade),
+        ),
         actions: options.keys.map((optionTitle) {
           final T value = options[optionTitle];
           return TextButton(
@@ -27,7 +35,10 @@ Future<T?> showGenericDialog<T>({
                 Utilities.closeActivity(context);
               }
             },
-            child: Text(optionTitle),
+            child: Text(
+              optionTitle,
+              style: const TextStyle(color: AppColors.cLightShade),
+            ),
           );
         }).toList(),
       );

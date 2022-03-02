@@ -1,6 +1,10 @@
 import 'package:demo_app_bloc/cubit/post_cubit.dart';
 import 'package:demo_app_bloc/model/model.dart';
 import 'package:demo_app_bloc/view/posts/posts_bloc_screen.dart';
+import 'package:demo_app_bloc/widgets/no_data_widget.dart';
+import 'package:demo_app_bloc/widgets/simple_circular_loader.dart';
+import 'package:demo_app_bloc/widgets/sliver_header_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,6 +17,25 @@ class PostsScreen extends StatefulWidget {
 }
 
 class _PostsScreenState extends State<PostsScreen> {
+  double top = 0.0;
+
+  final _controller = ScrollController();
+
+  double get maxHeight => 200 + MediaQuery.of(context).padding.top;
+
+  double get minHeight => 120;
+
+  void _snapAppbar() {
+    final scrollDistance = maxHeight - minHeight;
+
+    if (_controller.offset > 0 && _controller.offset < scrollDistance) {
+      final double snapOffset = _controller.offset / scrollDistance > 0.5 ? scrollDistance : 0;
+
+      Future.microtask(
+          () => _controller.animateTo(snapOffset, duration: const Duration(milliseconds: 200), curve: Curves.easeIn));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // context.read<PostCubit>().getPosts();
@@ -34,7 +57,7 @@ class _PostsScreenState extends State<PostsScreen> {
           builder: (context, posts) {
             if (posts == null) {
               return const Center(
-                child: CircularProgressIndicator(),
+                child: SimpleCircularLoader(),
               );
             }
             if (posts.isEmpty) {
@@ -42,7 +65,42 @@ class _PostsScreenState extends State<PostsScreen> {
                 child: Text("No posts available"),
               );
             }
-            return PostsList(posts: posts);
+            return NotificationListener<ScrollEndNotification>(
+              onNotification: (_) {
+                _snapAppbar();
+                return false;
+              },
+              child: CupertinoScrollbar(
+                controller: _controller,
+                child: CustomScrollView(
+                  controller: _controller,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    SliverAppBar(
+                      pinned: true,
+                      stretch: true,
+                      centerTitle: false,
+                      flexibleSpace: SliverHeaderText(
+                        maxHeight: maxHeight,
+                        minHeight: minHeight,
+                        notesLength: posts.length,
+                      ),
+                      expandedHeight: maxHeight - MediaQuery.of(context).padding.top,
+                      actions: [],
+                    ),
+                    if (posts.isNotEmpty)
+                      PostsList(posts: posts)
+                    else
+                      const SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: NoDataWidget(title: "No data"),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            );
           },
         ),
       ),

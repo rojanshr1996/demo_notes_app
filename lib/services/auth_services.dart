@@ -70,7 +70,7 @@ class AuthServices {
         throw UserNotLoggedInAuthException();
       }
     } catch (e) {
-      throw Exception(e);
+      throw GenericAuthException();
     }
   }
 

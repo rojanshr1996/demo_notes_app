@@ -38,6 +38,8 @@ class IndexScreen extends StatelessWidget {
       ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
+          // devtools.log("LOADING STATE: ${state.isLoading}");
+
           if (state.isLoading) {
             LoadingScreen().show(context: context, text: state.loadingText ?? "Please wait a moment");
           } else {
@@ -77,7 +79,7 @@ class IndexScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 35),
                   Expanded(
                     flex: 2,
                     child: Padding(
@@ -95,7 +97,7 @@ class IndexScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 35),
                   Expanded(
                     flex: 2,
                     child: Padding(
@@ -112,7 +114,7 @@ class IndexScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Expanded(child: Container())
+                  const SizedBox(height: 35),
                 ],
               ),
             );
@@ -127,51 +129,46 @@ class IndexScreen extends StatelessWidget {
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Column(
-                          children: [
-                            Container(
-                              height: 70,
-                              width: 70,
-                              decoration: const BoxDecoration(color: AppColors.cDarkBlue, shape: BoxShape.circle),
-                              child:
-                                  const Icon(Icons.person_outline_outlined, color: AppColors.cDarkBlueLight, size: 38),
-                            ),
-                            const SizedBox(height: 20),
-                            Text(
-                              " ${FirebaseAuth.instance.currentUser!.email}",
-                              style: CustomTextStyle.headerTextLight,
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                        Container(
+                          height: 70,
+                          width: 70,
+                          decoration: const BoxDecoration(color: AppColors.cDarkBlue, shape: BoxShape.circle),
+                          child: const Icon(Icons.person_outline_outlined, color: AppColors.cDarkBlueLight, size: 38),
                         ),
-                        const SizedBox(height: 25),
+                        const SizedBox(height: 20),
+                        Text(
+                          " ${FirebaseAuth.instance.currentUser!.email}",
+                          style: CustomTextStyle.headerTextLight,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 35),
                         Expanded(
-                          flex: 2,
+                          flex: 1,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 30, right: 30),
+                            padding: const EdgeInsets.only(left: 25, right: 25),
                             child: IndexButtons(
                               title: "VIEW POSTS",
-                              prefixIcon: const Icon(Icons.note_outlined, size: 55, color: AppColors.cLightShade),
+                              prefixIcon: const Icon(Icons.file_copy_rounded, size: 55, color: AppColors.cLightShade),
                               textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
                               borderRadius: BorderRadius.circular(15),
                               splashBorderRadius: BorderRadius.circular(15),
-                              imagePath: "assets/notesImage.png",
+                              imagePath: "assets/postImage.png",
                               buttonColor: AppColors.cDarkBlue,
                               shadowColor: AppColors.cDarkBlue,
                               onPressed: () => Utilities.openNamedActivity(context, Routes.post),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 25),
+                        const SizedBox(height: 35),
                         Expanded(
-                          flex: 2,
+                          flex: 1,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 30, right: 30),
+                            padding: const EdgeInsets.only(left: 25, right: 25),
                             child: IndexButtons(
                               title: "VIEW NOTES",
-                              prefixIcon: const Icon(Icons.note_outlined, size: 55, color: AppColors.cLightShade),
+                              prefixIcon: const Icon(Icons.note_rounded, size: 55, color: AppColors.cLightShade),
                               textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
                               borderRadius: BorderRadius.circular(15),
                               splashBorderRadius: BorderRadius.circular(15),
@@ -181,16 +178,12 @@ class IndexScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Expanded(child: Container())
+                        const SizedBox(height: 45),
                       ],
                     )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Padding(
-                        //   padding: const EdgeInsets.all(20),
-                        //   child: Text("${FirebaseAuth.instance.currentUser?.email} is not verified"),
-                        // ),
                         Container(
                           height: 70,
                           width: 70,
@@ -203,7 +196,9 @@ class IndexScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          " ${FirebaseAuth.instance.currentUser!.email}",
+                          FirebaseAuth.instance.currentUser == null
+                              ? ""
+                              : " ${FirebaseAuth.instance.currentUser!.email}",
                           style: CustomTextStyle.headerTextLight,
                           textAlign: TextAlign.center,
                           maxLines: 2,
@@ -218,7 +213,6 @@ class IndexScreen extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 25),
-
                         Padding(
                           padding: const EdgeInsets.only(left: 30, right: 30),
                           child: CustomButton(
@@ -270,7 +264,7 @@ class IndexButtons extends StatelessWidget {
     this.buttonWidth,
     this.elevation = 2.0,
     this.shadowColor,
-    this.imagePath = "assets/postImage.png",
+    this.imagePath = "assets/notesImage.png",
   }) : super(key: key);
 
   @override

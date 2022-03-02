@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:demo_app_bloc/helpers/loading/loading_screen_controller.dart';
+import 'package:demo_app_bloc/utils/app_colors.dart';
+import 'package:demo_app_bloc/widgets/simple_circular_loader.dart';
 import 'package:flutter/material.dart';
 
 class LoadingScreen {
@@ -42,7 +44,7 @@ class LoadingScreen {
               minWidth: size.width * 0.5,
             ),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.cDarkBlue,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Padding(
@@ -53,7 +55,7 @@ class LoadingScreen {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 10),
-                    const CircularProgressIndicator(),
+                    const SimpleCircularLoader(),
                     const SizedBox(height: 20),
                     StreamBuilder(
                       stream: _text.stream,
@@ -62,6 +64,7 @@ class LoadingScreen {
                           return Text(
                             snapshot.data as String,
                             textAlign: TextAlign.center,
+                            style: const TextStyle(color: AppColors.cDarkBlueLight),
                           );
                         } else {
                           return Container();

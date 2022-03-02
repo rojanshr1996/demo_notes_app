@@ -7,11 +7,9 @@ import 'package:demo_app_bloc/services/auth_exceptions.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/utils/dialogs/error_dialog.dart';
-import 'package:demo_app_bloc/utils/dialogs/loading_dialog.dart';
 import 'package:demo_app_bloc/utils/utils.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:demo_app_bloc/widgets/custom_text_field.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -110,9 +108,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Stack(
                                     children: [
                                       Container(
-                                        height: 48,
+                                        height: 50,
                                         decoration: BoxDecoration(
-                                          color: AppColors.cBlueShade,
+                                          color: AppColors.cDarkBlueAccent,
                                           boxShadow: [
                                             BoxShadow(
                                                 color: AppColors.cDarkBlueAccent.withAlpha(200),
@@ -147,9 +145,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Stack(
                                     children: [
                                       Container(
-                                        height: 48,
+                                        height: 50,
                                         decoration: BoxDecoration(
-                                          color: AppColors.cBlueShade,
+                                          color: AppColors.cDarkBlueAccent,
                                           boxShadow: [
                                             BoxShadow(
                                                 color: AppColors.cDarkBlueAccent.withAlpha(200),
@@ -200,8 +198,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               title: "SIGN IN",
                               borderRadius: BorderRadius.circular(5),
                               splashBorderRadius: BorderRadius.circular(5),
-                              buttonColor: AppColors.cDarkBlueAccent,
-                              shadowColor: AppColors.cDarkBlueAccent,
+                              buttonColor: AppColors.cBlueShade,
+                              shadowColor: AppColors.cBlueShade,
                               onPressed: () => _authenticateWithEmailAndPassword(context),
                             ),
                           ),
@@ -213,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () => Utilities.openNamedActivity(context, Routes.register),
                                 child: Text(
                                   "SIGN UP",
-                                  style: CustomTextStyle.bodyText.copyWith(color: AppColors.cBlueShade),
+                                  style: CustomTextStyle.bodyText.copyWith(color: AppColors.cDarkBlueLight),
                                 ),
                               ),
                             ),
@@ -234,6 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _authenticateWithEmailAndPassword(context) {
     if (_formKey.currentState!.validate()) {
+      FocusScope.of(context).unfocus();
       // If email is valid adding new Event [SignInRequested].
       BlocProvider.of<AuthBloc>(context).add(
         AuthEventLogin(_emailController.text, _passwordController.text),

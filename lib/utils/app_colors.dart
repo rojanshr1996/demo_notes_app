@@ -23,9 +23,9 @@ class AppColors {
   static const Color transparent = Colors.transparent;
 
   static const Color cDarkBlue = Color(0xff0b2d39);
-  static const Color cDarkBlueAccent = Color(0xff1a6985);
+  static const Color cDarkBlueAccent = Color.fromARGB(255, 22, 79, 100);
   static const Color cDarkBlueLight = Color(0xffa8d5e5);
   static const Color cLightShade = Color(0xffe9f5f9);
-  static const Color cBlueShade = Color(0xff2596be);
+  static const Color cBlueShade = Color.fromARGB(255, 34, 130, 165);
   static const Color cDarkTextShade = Color(0xff041014);
 }
