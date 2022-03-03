@@ -55,7 +55,7 @@ class _MyAppState extends State<MyApp> {
             onGenerateRoute: AppRouter.onGenerateRoute,
             theme: ThemeData(
                 primaryColor: AppColors.cDarkBlue,
-                fontFamily: 'euclid',
+                // fontFamily: 'euclid',
                 highlightColor: AppColors.transparent,
                 splashColor: AppColors.cBlueShade.withAlpha(40),
                 buttonTheme: const ButtonThemeData(
