@@ -8,7 +8,7 @@ import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/utils/dialogs/error_dialog.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
-import 'package:demo_app_bloc/widgets/custom_text_field.dart';
+import 'package:demo_app_bloc/widgets/custom_text_enter_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
