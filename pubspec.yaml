@@ -54,14 +54,14 @@ flutter:
   fonts:
     - family: euclid
       fonts:
-        - asset: assets/euclid/euclidCircularABold.ttf
+        - asset: fonts/euclid/euclidCircularABold.ttf
           weight: 700
-        - asset: assets/euclid/euclidCircularASemibold.ttf
+        - asset: fonts/euclid/euclidCircularASemibold.ttf
           weight: 600
-        - asset: assets/euclid/euclidCircularAMedium.ttf
+        - asset: fonts/euclid/euclidCircularAMedium.ttf
           weight: 500
-        - asset: assets/euclid/euclidCircularARegular.ttf
+        - asset: fonts/euclid/euclidCircularARegular.ttf
           weight: 400
-        - asset: assets/euclid/euclidCircularALight.ttf
+        - asset: assefontsts/euclid/euclidCircularALight.ttf
           weight: 300
 
