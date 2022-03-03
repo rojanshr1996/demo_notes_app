@@ -215,7 +215,7 @@ class _SingupScreenState extends State<SingupScreen> {
                             child: TextButton(
                               onPressed: () {
                                 Utilities.closeActivity(context);
-                                context.read<AuthBloc>().add(const AuthEventLogout());
+                                // context.read<AuthBloc>().add(const AuthEventLogout());
                               },
                               child: Text("Go Back",
                                   style: CustomTextStyle.bodyText.copyWith(color: AppColors.cDarkBlueLight)),
