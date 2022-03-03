@@ -17,9 +17,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(DevicePreview(
-    builder: (context) => const MyApp(),
-  ));
+  runApp(const MyApp());
+  // runApp(
+  //   DevicePreview(
+  //     builder: (context) => const MyApp(),
+  //   ),
+  // );
 }
 
 class MyApp extends StatefulWidget {
@@ -47,7 +50,7 @@ class _MyAppState extends State<MyApp> {
           builder: () => MaterialApp(
             useInheritedMediaQuery: true,
             debugShowCheckedModeBanner: false,
-            builder: DevicePreview.appBuilder,
+            // builder: DevicePreview.appBuilder,
             title: 'Notes App',
             onGenerateRoute: AppRouter.onGenerateRoute,
             theme: ThemeData(
