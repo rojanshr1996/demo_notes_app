@@ -1,7 +1,7 @@
 import 'package:custom_widgets/custom_widgets.dart';
 import 'package:flutter/material.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextEnterField extends StatelessWidget {
   final TextEditingController? textEditingController;
   final String? hintText;
   final TextInputType? textInputType;
@@ -31,7 +31,7 @@ class CustomTextField extends StatelessWidget {
   final TextCapitalization textCapitalization;
   final Widget? label;
 
-  const CustomTextField({
+  const CustomTextEnterField({
     Key? key,
     this.textEditingController,
     this.hintText,

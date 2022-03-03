@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           borderRadius: BorderRadius.circular(5.0),
                                         ),
                                       ),
-                                      CustomTextField(
+                                      CustomTextEnterField(
                                         textEditingController: _emailController,
                                         label: const Text("Email Addresss", style: CustomTextStyle.hintTextLight),
                                         textInputType: TextInputType.emailAddress,
@@ -159,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                       ValueListenableBuilder(
                                         valueListenable: _obscureText,
-                                        builder: (context, value, child) => CustomTextField(
+                                        builder: (context, value, child) => CustomTextEnterField(
                                           textEditingController: _passwordController,
                                           label: const Text("Password", style: CustomTextStyle.hintTextLight),
                                           style: CustomTextStyle.bodyTextLight,
