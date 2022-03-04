@@ -5,6 +5,7 @@ import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
 import 'package:demo_app_bloc/helpers/loading/loading_screen.dart';
 import 'package:demo_app_bloc/services/auth_exceptions.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
+import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/utils/dialogs/error_dialog.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
@@ -51,7 +52,7 @@ class _SingupScreenState extends State<SingupScreen> {
   Widget build(BuildContext context) {
     return RemoveFocus(
       child: Scaffold(
-        backgroundColor: AppColors.cDarkBlue,
+        backgroundColor: Theme.of(context).backgroundColor,
         body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) async {
             if (state.isLoading) {
@@ -100,9 +101,9 @@ class _SingupScreenState extends State<SingupScreen> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(10, 40, 10, 70),
-                          child: Text("CREATE NEW ACCOUNT", style: CustomTextStyle.titleLight),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 40, 10, 70),
+                          child: Text("CREATE NEW ACCOUNT", style: Theme.of(context).textTheme.titleLarge),
                         ),
                         Form(
                           key: _formKey,
@@ -115,10 +116,10 @@ class _SingupScreenState extends State<SingupScreen> {
                                     Container(
                                       height: 50,
                                       decoration: BoxDecoration(
-                                        color: AppColors.cDarkBlueAccent,
+                                        color: Theme.of(context).colorScheme.background,
                                         boxShadow: [
                                           BoxShadow(
-                                              color: AppColors.cDarkBlueAccent.withAlpha(200),
+                                              color: AppColors.cSkyBlue.withAlpha(200),
                                               blurRadius: 8,
                                               offset: const Offset(0, 3)),
                                         ],
@@ -127,10 +128,10 @@ class _SingupScreenState extends State<SingupScreen> {
                                     ),
                                     CustomTextEnterField(
                                       textEditingController: _emailController,
-                                      label: const Text("Email Addresss", style: CustomTextStyle.hintTextLight),
+                                      label: Text("Email Addresss", style: Theme.of(context).textTheme.bodyText2),
                                       textInputType: TextInputType.emailAddress,
+                                      style: Theme.of(context).textTheme.bodyMedium,
                                       hintStyle: CustomTextStyle.hintTextLight,
-                                      style: CustomTextStyle.bodyTextLight,
                                       validator: (value) => validateEmail(context: context, value: value!),
                                       focusedBorder:
                                           const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cBlueShade)),
@@ -152,10 +153,10 @@ class _SingupScreenState extends State<SingupScreen> {
                                     Container(
                                       height: 50,
                                       decoration: BoxDecoration(
-                                        color: AppColors.cDarkBlueAccent,
+                                        color: Theme.of(context).colorScheme.background,
                                         boxShadow: [
                                           BoxShadow(
-                                              color: AppColors.cDarkBlueAccent.withAlpha(200),
+                                              color: AppColors.cSkyBlue.withAlpha(200),
                                               blurRadius: 8,
                                               offset: const Offset(0, 3)),
                                         ],
@@ -166,8 +167,8 @@ class _SingupScreenState extends State<SingupScreen> {
                                       valueListenable: _obscureText,
                                       builder: (context, value, child) => CustomTextEnterField(
                                         textEditingController: _passwordController,
-                                        label: const Text("Password", style: CustomTextStyle.hintTextLight),
-                                        style: CustomTextStyle.bodyTextLight,
+                                        label: Text("Password", style: Theme.of(context).textTheme.bodyText2),
+                                        style: Theme.of(context).textTheme.bodyMedium,
                                         textInputType: TextInputType.visiblePassword,
                                         obscureText: _obscureText.value,
                                         hintStyle: CustomTextStyle.hintTextLight,
@@ -203,8 +204,7 @@ class _SingupScreenState extends State<SingupScreen> {
                             title: "SIGN UP",
                             borderRadius: BorderRadius.circular(5),
                             splashBorderRadius: BorderRadius.circular(5),
-                            buttonColor: AppColors.cBlueShade,
-                            shadowColor: AppColors.cBlueShade,
+                            buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                             onPressed: () => _createAccountWithEmailAndPassword(context),
                           ),
                         ),
@@ -217,8 +217,13 @@ class _SingupScreenState extends State<SingupScreen> {
                                 Utilities.closeActivity(context);
                                 // context.read<AuthBloc>().add(const AuthEventLogout());
                               },
-                              child: Text("Go Back",
-                                  style: CustomTextStyle.bodyText.copyWith(color: AppColors.cDarkBlueLight)),
+                              child: Text(
+                                "Go Back",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: AppColors.cDarkBlueAccent, fontWeight: semibold),
+                              ),
                             ),
                           ),
                         ),

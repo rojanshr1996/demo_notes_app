@@ -53,15 +53,18 @@ class _MyAppState extends State<MyApp> {
             // builder: DevicePreview.appBuilder,
             title: 'Notes App',
             onGenerateRoute: AppRouter.onGenerateRoute,
-            theme: ThemeData(
-                primaryColor: AppColors.cDarkBlue,
-                // fontFamily: 'euclid',
-                highlightColor: AppColors.transparent,
-                splashColor: AppColors.cBlueShade.withAlpha(40),
-                buttonTheme: const ButtonThemeData(
-                    buttonColor: AppColors.cDarkBlueAccent,
-                    highlightColor: AppColors.transparent,
-                    splashColor: AppColors.cDarkBlue)),
+            themeMode: ThemeMode.system,
+            theme: ThemeClass.lightTheme,
+            darkTheme: ThemeClass.darkTheme,
+            // theme: ThemeData(
+            //     primaryColor: AppColors.cDarkBlue,
+            //     fontFamily: 'euclid',
+            //     highlightColor: AppColors.transparent,
+            //     splashColor: AppColors.cBlueShade.withAlpha(40),
+            //     buttonTheme: const ButtonThemeData(
+            //         buttonColor: AppColors.cDarkBlueAccent,
+            //         highlightColor: AppColors.transparent,
+            //         splashColor: AppColors.cDarkBlue)),
             initialRoute: Routes.login,
           ),
         ),

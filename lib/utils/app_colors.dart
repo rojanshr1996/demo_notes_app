@@ -1,3 +1,4 @@
+import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class AppColors {
@@ -24,8 +25,89 @@ class AppColors {
 
   static const Color cDarkBlue = Color(0xff0b2d39);
   static const Color cDarkBlueAccent = Color.fromARGB(255, 22, 79, 100);
-  static const Color cDarkBlueLight = Color(0xffa8d5e5);
+  static const Color cDarkBlueLight = Color.fromARGB(255, 187, 228, 243);
   static const Color cLightShade = Color(0xffe9f5f9);
   static const Color cBlueShade = Color.fromARGB(255, 34, 130, 165);
   static const Color cDarkTextShade = Color(0xff041014);
+}
+
+class ThemeClass {
+  static ThemeData lightTheme = ThemeData(
+      scaffoldBackgroundColor: AppColors.cDarkBlueLight,
+      primaryColor: AppColors.cLightShade,
+      fontFamily: "euclid",
+      splashColor: AppColors.cBlueShade.withAlpha(40),
+      highlightColor: AppColors.transparent,
+      colorScheme: const ColorScheme.light(
+        background: AppColors.cLight,
+        error: AppColors.cRedAccent,
+        primary: AppColors.cDarkBlueAccent,
+        secondary: AppColors.cLight,
+      ),
+      buttonTheme: const ButtonThemeData(
+        highlightColor: AppColors.transparent,
+        colorScheme: ColorScheme.light(
+            background: AppColors.cLight,
+            error: AppColors.cRedAccent,
+            primary: AppColors.cDarkBlueAccent,
+            secondary: AppColors.cLight),
+      ),
+      textTheme: const TextTheme(
+        titleLarge: TextStyle(fontSize: 28, fontWeight: black, color: AppColors.cBlack, letterSpacing: 0.5),
+        titleMedium: TextStyle(fontSize: 24, fontWeight: black, color: AppColors.cDarkBlueAccent, letterSpacing: 0.5),
+        titleSmall: TextStyle(fontSize: 20, fontWeight: black, color: AppColors.cDarkBlueAccent, letterSpacing: 0.5),
+        bodyLarge: TextStyle(fontSize: 16, fontWeight: semibold, color: AppColors.cBlack),
+        bodyMedium: TextStyle(fontSize: 14, color: AppColors.cBlack),
+        bodySmall: TextStyle(fontSize: 12, color: AppColors.cBlack),
+        displayLarge: TextStyle(fontSize: 24, color: AppColors.cBlack, fontWeight: bold),
+        displayMedium: TextStyle(fontSize: 20, color: AppColors.cBlack, fontWeight: bold),
+        displaySmall: TextStyle(fontSize: 18, color: AppColors.cBlack, fontWeight: semibold),
+        labelSmall: TextStyle(fontSize: 12, color: AppColors.cBlack),
+        labelMedium: TextStyle(color: AppColors.cDarkBlue),
+        labelLarge: TextStyle(fontSize: 16, color: AppColors.cBlack, fontWeight: semibold),
+      ),
+      appBarTheme: const AppBarTheme(
+          backgroundColor: AppColors.transparent,
+          iconTheme: IconThemeData(color: AppColors.cDarkBlueAccent),
+          titleTextStyle: TextStyle(fontSize: 20, color: AppColors.cDarkBlue, fontWeight: bold)));
+
+  static ThemeData darkTheme = ThemeData(
+    scaffoldBackgroundColor: AppColors.cDarkBlueAccent,
+    primaryColor: AppColors.cDarkBlue,
+    fontFamily: "euclid",
+    splashColor: AppColors.cBlueShade.withAlpha(40),
+    highlightColor: AppColors.transparent,
+    colorScheme: const ColorScheme.dark(
+      error: AppColors.cRedAccent,
+      primary: AppColors.cDarkBlue,
+      secondary: AppColors.cDarkBlueAccent,
+    ),
+    textTheme: const TextTheme(
+      titleLarge: TextStyle(fontSize: 28, fontWeight: black, color: AppColors.cLight, letterSpacing: 0.5),
+      titleMedium: TextStyle(fontSize: 24, fontWeight: bold, color: AppColors.cLight, letterSpacing: 0.5),
+      titleSmall: TextStyle(fontSize: 20, fontWeight: bold, color: AppColors.cLight, letterSpacing: 0.5),
+      bodyLarge: TextStyle(fontWeight: semibold, color: AppColors.cBlack),
+      bodyMedium: TextStyle(fontSize: 14, color: AppColors.cLight),
+      bodySmall: TextStyle(fontSize: 12, color: AppColors.cLight),
+      displayLarge: TextStyle(fontSize: 24, color: AppColors.cLight, fontWeight: bold),
+      displayMedium: TextStyle(fontSize: 20, color: AppColors.cLight, fontWeight: bold),
+      displaySmall: TextStyle(fontSize: 18, color: AppColors.cLight, fontWeight: semibold),
+      labelSmall: TextStyle(fontSize: 12, color: AppColors.cLight),
+      labelMedium: TextStyle(color: AppColors.cLight),
+      labelLarge: TextStyle(fontSize: 16, color: AppColors.cLight, fontWeight: semibold),
+    ),
+    buttonTheme: const ButtonThemeData(
+        buttonColor: AppColors.cDarkBlueAccent,
+        highlightColor: AppColors.transparent,
+        splashColor: AppColors.cDarkBlue),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.transparent,
+      iconTheme: IconThemeData(color: AppColors.cLight),
+      titleTextStyle: TextStyle(
+        fontSize: 20,
+        color: AppColors.cLight,
+        fontWeight: bold,
+      ),
+    ),
+  );
 }

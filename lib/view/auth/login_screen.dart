@@ -5,6 +5,7 @@ import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
 import 'package:demo_app_bloc/helpers/loading/loading_screen.dart';
 import 'package:demo_app_bloc/services/auth_exceptions.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
+import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/utils/dialogs/error_dialog.dart';
 import 'package:demo_app_bloc/utils/utils.dart';
@@ -59,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
     context.read<AuthBloc>().add(const AuthEventInitialize());
     return RemoveFocus(
       child: Scaffold(
-        backgroundColor: AppColors.cDarkBlue,
+        backgroundColor: Theme.of(context).backgroundColor,
         body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) async {
             if (state.isLoading) {
@@ -95,9 +96,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          const Padding(
-                            padding: EdgeInsets.fromLTRB(10, 40, 10, 70),
-                            child: Text("LOGIN", style: CustomTextStyle.titleLight),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 40, 10, 70),
+                            child: Text("LOGIN", style: Theme.of(context).textTheme.titleLarge),
                           ),
                           Form(
                             key: _formKey,
@@ -110,10 +111,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       Container(
                                         height: 50,
                                         decoration: BoxDecoration(
-                                          color: AppColors.cDarkBlueAccent,
+                                          color: Theme.of(context).colorScheme.background,
                                           boxShadow: [
                                             BoxShadow(
-                                                color: AppColors.cDarkBlueAccent.withAlpha(200),
+                                                color: AppColors.cSkyBlue.withAlpha(200),
                                                 blurRadius: 8,
                                                 offset: const Offset(0, 3)),
                                           ],
@@ -122,9 +123,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                       CustomTextEnterField(
                                         textEditingController: _emailController,
-                                        label: const Text("Email Addresss", style: CustomTextStyle.hintTextLight),
+                                        label: Text("Email Addresss", style: Theme.of(context).textTheme.bodyText2),
                                         textInputType: TextInputType.emailAddress,
-                                        style: CustomTextStyle.bodyTextLight,
+                                        style: Theme.of(context).textTheme.bodyMedium,
                                         hintStyle: CustomTextStyle.hintTextLight,
                                         validator: (value) => validateEmail(context: context, value: value!),
                                         focusedBorder: const OutlineInputBorder(
@@ -147,10 +148,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       Container(
                                         height: 50,
                                         decoration: BoxDecoration(
-                                          color: AppColors.cDarkBlueAccent,
+                                          color: Theme.of(context).colorScheme.background,
                                           boxShadow: [
                                             BoxShadow(
-                                                color: AppColors.cDarkBlueAccent.withAlpha(200),
+                                                color: AppColors.cSkyBlue.withAlpha(200),
                                                 blurRadius: 8,
                                                 offset: const Offset(0, 3)),
                                           ],
@@ -161,8 +162,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                         valueListenable: _obscureText,
                                         builder: (context, value, child) => CustomTextEnterField(
                                           textEditingController: _passwordController,
-                                          label: const Text("Password", style: CustomTextStyle.hintTextLight),
-                                          style: CustomTextStyle.bodyTextLight,
+                                          label: Text("Password", style: Theme.of(context).textTheme.bodyText2),
+                                          style: Theme.of(context).textTheme.bodyMedium,
                                           textInputType: TextInputType.visiblePassword,
                                           obscureText: _obscureText.value,
                                           hintStyle: CustomTextStyle.hintTextLight,
@@ -198,8 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               title: "SIGN IN",
                               borderRadius: BorderRadius.circular(5),
                               splashBorderRadius: BorderRadius.circular(5),
-                              buttonColor: AppColors.cBlueShade,
-                              shadowColor: AppColors.cBlueShade,
+                              buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                               onPressed: () => _authenticateWithEmailAndPassword(context),
                             ),
                           ),
@@ -211,7 +211,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () => Utilities.openNamedActivity(context, Routes.register),
                                 child: Text(
                                   "SIGN UP",
-                                  style: CustomTextStyle.bodyText.copyWith(color: AppColors.cDarkBlueLight),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(color: AppColors.cDarkBlueAccent, fontWeight: semibold),
                                 ),
                               ),
                             ),

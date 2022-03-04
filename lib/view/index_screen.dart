@@ -10,6 +10,7 @@ import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
+import 'package:demo_app_bloc/view/settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,18 +22,27 @@ class IndexScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     devtools.log("${FirebaseAuth.instance.currentUser}");
     return Scaffold(
-      backgroundColor: AppColors.cDarkBlueAccent,
+      backgroundColor: Theme.of(context).backgroundColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: AppColors.transparent,
         automaticallyImplyLeading: false,
         title: Text((FirebaseAuth.instance.currentUser?.emailVerified ?? false) ? "Welcome" : ""),
         actions: [
           IconButton(
             onPressed: () {
+              Utilities.openNamedActivity(context, Routes.settings);
+            },
+            icon: const Icon(
+              Icons.settings,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
               BlocProvider.of<AuthBloc>(context).add(const AuthEventLogout());
             },
-            icon: const Icon(Icons.logout),
+            icon: const Icon(
+              Icons.logout,
+            ),
           ),
         ],
       ),
@@ -72,7 +82,7 @@ class IndexScreen extends StatelessWidget {
                       const SizedBox(height: 20),
                       Text(
                         " ${FirebaseAuth.instance.currentUser!.email}",
-                        style: CustomTextStyle.headerTextLight,
+                        style: Theme.of(context).textTheme.displayMedium,
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -91,8 +101,7 @@ class IndexScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(15),
                         splashBorderRadius: BorderRadius.circular(15),
                         imagePath: "assets/notesImage.png",
-                        buttonColor: AppColors.cDarkBlue,
-                        shadowColor: AppColors.cDarkBlue,
+                        buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                         onPressed: () => Utilities.openNamedActivity(context, Routes.post),
                       ),
                     ),
@@ -108,8 +117,7 @@ class IndexScreen extends StatelessWidget {
                         textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
                         borderRadius: BorderRadius.circular(15),
                         splashBorderRadius: BorderRadius.circular(15),
-                        buttonColor: AppColors.cDarkBlue,
-                        shadowColor: AppColors.cDarkBlue,
+                        buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                         onPressed: () => Utilities.openNamedActivity(context, Routes.notes),
                       ),
                     ),
@@ -138,7 +146,7 @@ class IndexScreen extends StatelessWidget {
                         const SizedBox(height: 20),
                         Text(
                           " ${FirebaseAuth.instance.currentUser!.email}",
-                          style: CustomTextStyle.headerTextLight,
+                          style: Theme.of(context).textTheme.displayMedium,
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -172,8 +180,7 @@ class IndexScreen extends StatelessWidget {
                               textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
                               borderRadius: BorderRadius.circular(15),
                               splashBorderRadius: BorderRadius.circular(15),
-                              buttonColor: AppColors.cDarkBlue,
-                              shadowColor: AppColors.cDarkBlue,
+                              buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                               onPressed: () => Utilities.openNamedActivity(context, Routes.notes),
                             ),
                           ),
@@ -199,7 +206,7 @@ class IndexScreen extends StatelessWidget {
                           FirebaseAuth.instance.currentUser == null
                               ? ""
                               : " ${FirebaseAuth.instance.currentUser!.email}",
-                          style: CustomTextStyle.headerTextLight,
+                          style: Theme.of(context).textTheme.titleSmall,
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -207,7 +214,7 @@ class IndexScreen extends StatelessWidget {
                         const SizedBox(height: 25),
                         Text(
                           "Your email is not verified. Click on the button below to send a verification link to your email",
-                          style: CustomTextStyle.bodyTextLight.copyWith(color: AppColors.cDarkBlueLight),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.cDarkBlueAccent),
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -219,8 +226,7 @@ class IndexScreen extends StatelessWidget {
                             title: "Verify Email",
                             borderRadius: BorderRadius.circular(5),
                             splashBorderRadius: BorderRadius.circular(5),
-                            buttonColor: AppColors.cDarkBlue,
-                            shadowColor: AppColors.cDarkBlue,
+                            buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                             onPressed: () => _sendEmailVerification(context),
                           ),
                         ),

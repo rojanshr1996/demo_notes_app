@@ -44,7 +44,7 @@ class LoadingScreen {
               minWidth: size.width * 0.5,
             ),
             decoration: BoxDecoration(
-              color: AppColors.cDarkBlue,
+              color: Theme.of(context).backgroundColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Padding(
@@ -64,7 +64,7 @@ class LoadingScreen {
                           return Text(
                             snapshot.data as String,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(color: AppColors.cDarkBlueLight),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           );
                         } else {
                           return Container();

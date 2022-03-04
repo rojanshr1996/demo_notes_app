@@ -11,6 +11,7 @@ import 'package:demo_app_bloc/view/posts/post_detail_screen.dart';
 import 'package:demo_app_bloc/view/posts/posts_bloc_screen.dart';
 
 import 'package:demo_app_bloc/view/route/routes.dart';
+import 'package:demo_app_bloc/view/settings.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {
@@ -32,6 +33,9 @@ class AppRouter {
 
       case Routes.notes:
         return MaterialPageRoute(builder: (_) => const NotesScreen());
+
+      case Routes.settings:
+        return MaterialPageRoute(builder: (_) => const Settings());
 
       case Routes.createUpdateNote:
         if (args is CloudNote) {
