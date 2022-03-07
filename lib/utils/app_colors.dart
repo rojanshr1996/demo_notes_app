@@ -33,16 +33,17 @@ class AppColors {
 
 class ThemeClass {
   static ThemeData lightTheme = ThemeData(
-      scaffoldBackgroundColor: AppColors.cDarkBlueLight,
-      primaryColor: AppColors.cLightShade,
+      scaffoldBackgroundColor: AppColors.cLightShade,
+      primaryColor: AppColors.cDarkBlueAccent,
       fontFamily: "euclid",
       splashColor: AppColors.cBlueShade.withAlpha(40),
       highlightColor: AppColors.transparent,
-      colorScheme: const ColorScheme.light(
+      colorScheme: ColorScheme.light(
         background: AppColors.cLight,
         error: AppColors.cRedAccent,
         primary: AppColors.cDarkBlueAccent,
         secondary: AppColors.cLight,
+        shadow: AppColors.cDarkBlueLight.withAlpha(220),
       ),
       buttonTheme: const ButtonThemeData(
         highlightColor: AppColors.transparent,
@@ -77,10 +78,11 @@ class ThemeClass {
     fontFamily: "euclid",
     splashColor: AppColors.cBlueShade.withAlpha(40),
     highlightColor: AppColors.transparent,
-    colorScheme: const ColorScheme.dark(
+    colorScheme: ColorScheme.dark(
       error: AppColors.cRedAccent,
       primary: AppColors.cDarkBlue,
       secondary: AppColors.cDarkBlueAccent,
+      shadow: AppColors.cSkyBlue.withAlpha(200),
     ),
     textTheme: const TextTheme(
       titleLarge: TextStyle(fontSize: 28, fontWeight: black, color: AppColors.cLight, letterSpacing: 0.5),

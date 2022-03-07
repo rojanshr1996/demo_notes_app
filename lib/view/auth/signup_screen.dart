@@ -52,7 +52,7 @@ class _SingupScreenState extends State<SingupScreen> {
   Widget build(BuildContext context) {
     return RemoveFocus(
       child: Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) async {
             if (state.isLoading) {
@@ -119,7 +119,7 @@ class _SingupScreenState extends State<SingupScreen> {
                                         color: Theme.of(context).colorScheme.background,
                                         boxShadow: [
                                           BoxShadow(
-                                              color: AppColors.cSkyBlue.withAlpha(200),
+                                              color: Theme.of(context).colorScheme.shadow,
                                               blurRadius: 8,
                                               offset: const Offset(0, 3)),
                                         ],
@@ -156,7 +156,7 @@ class _SingupScreenState extends State<SingupScreen> {
                                         color: Theme.of(context).colorScheme.background,
                                         boxShadow: [
                                           BoxShadow(
-                                              color: AppColors.cSkyBlue.withAlpha(200),
+                                              color: Theme.of(context).colorScheme.shadow,
                                               blurRadius: 8,
                                               offset: const Offset(0, 3)),
                                         ],

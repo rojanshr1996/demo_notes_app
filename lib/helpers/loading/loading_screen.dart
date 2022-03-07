@@ -44,7 +44,7 @@ class LoadingScreen {
               minWidth: size.width * 0.5,
             ),
             decoration: BoxDecoration(
-              color: Theme.of(context).backgroundColor,
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Padding(

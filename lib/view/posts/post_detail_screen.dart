@@ -1,7 +1,5 @@
 import 'package:demo_app_bloc/model/model.dart';
-import 'package:demo_app_bloc/utils/app_colors.dart';
-import 'package:demo_app_bloc/utils/custom_text_style.dart';
-import 'package:demo_app_bloc/view/route/routes.dart';
+import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,11 +10,7 @@ class PostDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: AppColors.cDarkBlue,
-        // appBar: AppBar(
-        //   backgroundColor: AppColors.cDarkBlue,
-        //   title: Text(post.title),
-        // ),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         body: CupertinoScrollbar(
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -25,11 +19,12 @@ class PostDetailScreen extends StatelessWidget {
                 pinned: true,
                 stretch: true,
                 flexibleSpace: FlexibleSpaceBar(
-                  background: Container(color: AppColors.cDarkBlueAccent),
+                  background: Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                  ),
                   title: Text(
                     post.title,
-                    style: CustomTextStyle.bodyTextLight
-                        .copyWith(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.cDarkBlueLight),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: semibold),
                     maxLines: 4,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -42,42 +37,14 @@ class PostDetailScreen extends StatelessWidget {
                   [
                     Padding(
                       padding: const EdgeInsets.all(20.0),
-                      child:
-                          Text(post.body, style: CustomTextStyle.largeTextLight.copyWith(fontWeight: FontWeight.w400)),
+                      child: Text(post.body, style: Theme.of(context).textTheme.bodyMedium),
                     ),
                   ],
                 ),
               )
             ],
           ),
-        )
-
-        //  Center(
-        //   child: Column(
-        //     children: [
-        //       Padding(
-        //         padding: const EdgeInsets.all(20.0),
-        //         child: Text(post.body),
-        //       ),
-        //       Padding(
-        //         padding: const EdgeInsets.all(20),
-        //         child: ButtonBar(
-        //           alignment: MainAxisAlignment.spaceEvenly,
-        //           children: [
-        //             ElevatedButton(
-        //               onPressed: () {
-        //                 Navigator.pushNamed(context, Routes.anotherPage,
-        //                     arguments: ScreenArguments(title: "NewTitle", id: 1));
-        //               },
-        //               child: const Text("Another Page"),
-        //             ),
-        //           ],
-        //         ),
-        //       )
-        //     ],
-        //   ),
-        // ),
-        );
+        ));
   }
 }
 

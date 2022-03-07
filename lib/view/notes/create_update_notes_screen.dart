@@ -92,14 +92,13 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cDarkBlue,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.cDarkBlue,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         title: const Text("Create new note"),
       ),
       body: Container(
         height: Utilities.screenHeight(context),
-        color: AppColors.cDarkBlueAccent,
         padding: const EdgeInsets.all(25),
         child: FutureBuilder(
           future: createOrGetExistingNote(context),
@@ -110,11 +109,11 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                 return TextField(
                   controller: _textController,
                   keyboardType: TextInputType.multiline,
-                  style: CustomTextStyle.bodyTextLight.copyWith(fontSize: 18),
+                  style: Theme.of(context).textTheme.displaySmall,
                   maxLines: null,
                   decoration: InputDecoration(
                     hintText: "Enter new note... ",
-                    hintStyle: CustomTextStyle.bodyText.copyWith(color: AppColors.cDarkBlueLight, fontSize: 16),
+                    hintStyle: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).primaryColor),
                     border: const UnderlineInputBorder(borderSide: BorderSide.none),
                   ),
                 );

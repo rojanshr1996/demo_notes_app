@@ -1,6 +1,5 @@
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
-import 'package:demo_app_bloc/utils/dialogs/delete_dialog.dart';
 import 'package:flutter/material.dart';
 
 typedef NoteCallback = void Function(CloudNote note);
@@ -27,9 +26,9 @@ class NotesListView extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0),
               ),
-              color: AppColors.cDarkBlueAccent,
-              elevation: 5,
-              shadowColor: AppColors.cDarkBlue,
+              color: Theme.of(context).colorScheme.secondary,
+              elevation: 4,
+              shadowColor: Theme.of(context).colorScheme.shadow,
               child: InkWell(
                 onTap: () {
                   onTap!(note);
@@ -45,7 +44,7 @@ class NotesListView extends StatelessWidget {
                       maxLines: 6,
                       softWrap: true,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: AppColors.cLightShade),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                   // footer: IconButton(

@@ -12,7 +12,6 @@ import 'package:demo_app_bloc/view/auth/login_screen.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:demo_app_bloc/widgets/default_loading_screen.dart';
 import 'package:demo_app_bloc/widgets/no_data_widget.dart';
-import 'package:demo_app_bloc/widgets/simple_circular_loader.dart';
 import 'package:demo_app_bloc/widgets/sliver_header_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +48,7 @@ class _PostsBlocScreenState extends State<PostsBlocScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cDarkBlue,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           debugPrint("State has changed");
@@ -88,6 +87,10 @@ class _PostsBlocScreenState extends State<PostsBlocScreen> {
                           pinned: true,
                           stretch: true,
                           centerTitle: false,
+                          iconTheme: Theme.of(context)
+                              .appBarTheme
+                              .iconTheme
+                              ?.copyWith(color: Theme.of(context).scaffoldBackgroundColor),
                           flexibleSpace: SliverHeaderText(
                             maxHeight: maxHeight,
                             minHeight: minHeight,
@@ -103,13 +106,10 @@ class _PostsBlocScreenState extends State<PostsBlocScreen> {
                                 final postBloc = BlocProvider.of<PostsBloc>(context);
                                 postBloc.add(LoadPostEvent());
                               },
-                              icon: const Icon(Icons.refresh),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                BlocProvider.of<AuthBloc>(context).add(const AuthEventLogout());
-                              },
-                              icon: const Icon(Icons.logout),
+                              icon: Icon(
+                                Icons.refresh,
+                                color: Theme.of(context).scaffoldBackgroundColor,
+                              ),
                             ),
                           ],
                         ),
@@ -156,8 +156,9 @@ class PostsList extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
               child: Card(
-                color: AppColors.cDarkBlueAccent,
+                color: Theme.of(context).colorScheme.secondary,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                shadowColor: Theme.of(context).colorScheme.shadow,
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(8),
                   onTap: () {
@@ -166,13 +167,13 @@ class PostsList extends StatelessWidget {
                   },
                   title: Text(
                     posts[index].title,
-                    style: CustomTextStyle.subtitleTextLight,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
                       posts[index].body,
-                      style: CustomTextStyle.bodyTextLight.copyWith(color: AppColors.cDarkBlueLight),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                 ),

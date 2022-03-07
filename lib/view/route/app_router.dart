@@ -1,6 +1,5 @@
 import 'package:demo_app_bloc/model/model.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
-import 'package:demo_app_bloc/services/crud/notes_service.dart';
 import 'package:demo_app_bloc/view/another_page.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
 import 'package:demo_app_bloc/view/auth/signup_screen.dart';
