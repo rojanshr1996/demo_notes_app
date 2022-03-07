@@ -116,7 +116,7 @@ class _SingupScreenState extends State<SingupScreen> {
                                     Container(
                                       height: 50,
                                       decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.background,
+                                        color: Theme.of(context).primaryColor,
                                         boxShadow: [
                                           BoxShadow(
                                               color: Theme.of(context).colorScheme.shadow,
@@ -153,7 +153,7 @@ class _SingupScreenState extends State<SingupScreen> {
                                     Container(
                                       height: 50,
                                       decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.background,
+                                        color: Theme.of(context).primaryColor,
                                         boxShadow: [
                                           BoxShadow(
                                               color: Theme.of(context).colorScheme.shadow,
@@ -222,7 +222,7 @@ class _SingupScreenState extends State<SingupScreen> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium
-                                    ?.copyWith(color: AppColors.cDarkBlueAccent, fontWeight: semibold),
+                                    ?.copyWith(color: Theme.of(context).colorScheme.background, fontWeight: semibold),
                               ),
                             ),
                           ),

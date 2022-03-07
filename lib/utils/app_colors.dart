@@ -1,5 +1,6 @@
 import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppColors {
   AppColors._();
@@ -34,15 +35,15 @@ class AppColors {
 class ThemeClass {
   static ThemeData lightTheme = ThemeData(
       scaffoldBackgroundColor: AppColors.cLightShade,
-      primaryColor: AppColors.cDarkBlueAccent,
+      primaryColor: AppColors.cLight,
       fontFamily: "euclid",
       splashColor: AppColors.cBlueShade.withAlpha(40),
       highlightColor: AppColors.transparent,
       colorScheme: ColorScheme.light(
-        background: AppColors.cLight,
+        background: AppColors.cDarkBlue,
         error: AppColors.cRedAccent,
         primary: AppColors.cDarkBlueAccent,
-        secondary: AppColors.cLight,
+        secondary: AppColors.cDarkBlue,
         shadow: AppColors.cDarkBlueLight.withAlpha(220),
       ),
       buttonTheme: const ButtonThemeData(
@@ -82,13 +83,14 @@ class ThemeClass {
       error: AppColors.cRedAccent,
       primary: AppColors.cDarkBlue,
       secondary: AppColors.cDarkBlueAccent,
-      shadow: AppColors.cSkyBlue.withAlpha(200),
+      shadow: AppColors.cBlackShadow.withAlpha(200),
+      background: AppColors.cLight,
     ),
     textTheme: const TextTheme(
       titleLarge: TextStyle(fontSize: 28, fontWeight: black, color: AppColors.cLight, letterSpacing: 0.5),
       titleMedium: TextStyle(fontSize: 24, fontWeight: bold, color: AppColors.cLight, letterSpacing: 0.5),
       titleSmall: TextStyle(fontSize: 20, fontWeight: bold, color: AppColors.cLight, letterSpacing: 0.5),
-      bodyLarge: TextStyle(fontWeight: semibold, color: AppColors.cBlack),
+      bodyLarge: TextStyle(fontSize: 16, fontWeight: semibold, color: AppColors.cLight),
       bodyMedium: TextStyle(fontSize: 14, color: AppColors.cLight),
       bodySmall: TextStyle(fontSize: 12, color: AppColors.cLight),
       displayLarge: TextStyle(fontSize: 24, color: AppColors.cLight, fontWeight: bold),
@@ -112,4 +114,18 @@ class ThemeClass {
       ),
     ),
   );
+}
+
+class DarkThemePreference {
+  static const themStatus = "THEMESTATUS";
+
+  setDarkTheme(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(themStatus, value);
+  }
+
+  Future<bool> getTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(themStatus) ?? false;
+  }
 }

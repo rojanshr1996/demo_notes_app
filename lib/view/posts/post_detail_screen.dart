@@ -10,7 +10,7 @@ class PostDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: Theme.of(context).primaryColor,
         body: CupertinoScrollbar(
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),

@@ -35,6 +35,8 @@ dependencies:
     git:
       url: https://github.com/rojanshr1996/custom_widgets.git
       ref: main
+  provider: ^6.0.2
+  flutter_quill: ^4.0.8
 
 
 dev_dependencies:

@@ -20,7 +20,7 @@ class SimpleCircularLoader extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-    Color colors = Theme.of(context).primaryColor;
+    Color colors = Theme.of(context).colorScheme.background;
     return Padding(
       padding: padding ?? const EdgeInsets.all(4.0),
       child: SizedBox(

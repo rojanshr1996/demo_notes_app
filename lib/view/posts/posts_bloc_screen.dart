@@ -156,7 +156,7 @@ class PostsList extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
               child: Card(
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).primaryColor,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 shadowColor: Theme.of(context).colorScheme.shadow,
                 child: ListTile(

@@ -179,7 +179,7 @@ class _NotesScreenState extends State<NotesScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0)),
       ),
-      backgroundColor: AppColors.cDarkBlueAccent,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       builder: (context) {
         return Container(
           color: AppColors.transparent,
@@ -188,13 +188,13 @@ class _NotesScreenState extends State<NotesScreen> {
             children: [
               ListTile(
                 onTap: onShareTap,
-                leading: const Icon(Icons.share, color: AppColors.cDarkBlueLight),
-                title: const Text("Share", style: CustomTextStyle.subtitleTextLight),
+                leading: Icon(Icons.share, color: Theme.of(context).colorScheme.background),
+                title: Text("Share", style: Theme.of(context).textTheme.bodyLarge),
               ),
               ListTile(
                 onTap: onDeleteTap,
                 leading: const Icon(Icons.delete, color: AppColors.cRedAccent),
-                title: const Text("Delete", style: CustomTextStyle.subtitleTextLight),
+                title: Text("Delete", style: Theme.of(context).textTheme.bodyLarge),
               ),
             ],
           ),

@@ -2,10 +2,11 @@ import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
+import 'package:demo_app_bloc/provider/dark_theme_provider.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -17,19 +18,26 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   bool _light = false;
 
-  bool onToggleDarkMode() {
+  onToggleDarkMode(BuildContext context) {
+    final themeChange = Provider.of<DarkThemeProvider>(context, listen: false);
+
     setState(() {
       _light = !_light;
     });
-    return _light;
+
+    themeChange.darkTheme = _light;
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeChange = Provider.of<DarkThemeProvider>(context);
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        elevation: 0,
+        elevation: 4,
+        shadowColor: Theme.of(context).colorScheme.shadow,
+        backgroundColor: Theme.of(context).primaryColor,
         title: const Text("Settings"),
       ),
       body: BlocConsumer<AuthBloc, AuthState>(
@@ -48,35 +56,43 @@ class _SettingsState extends State<Settings> {
                 child: Column(
                   children: [
                     Container(
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary, borderRadius: BorderRadius.circular(15)),
+                      decoration:
+                          BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(15)),
                       child: ListTile(
                         leading: Icon(
-                          Icons.dark_mode,
-                          color: Theme.of(context).colorScheme.primary,
+                          themeChange.darkTheme ? Icons.dark_mode : Icons.light_mode,
+                          color: Theme.of(context).iconTheme.color,
                         ),
-                        onTap: onToggleDarkMode,
+                        onTap: () => onToggleDarkMode(context),
                         title: Text(
                           "Dark Mode",
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         trailing: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            _light ? "ON" : "OFF",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
+                            padding: const EdgeInsets.all(8.0),
+                            child: Switch(
+                              value: themeChange.darkTheme,
+                              onChanged: (value) {
+                                themeChange.darkTheme = value;
+                              },
+                              activeColor: Theme.of(context).colorScheme.background,
+                            )
+
+                            //  Text(
+                            //   themeChange.darkTheme ? "ON" : "OFF",
+                            //   style: Theme.of(context).textTheme.bodyLarge,
+                            // ),
+                            ),
                       ),
                     ),
                     const SizedBox(height: 10),
                     Container(
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary, borderRadius: BorderRadius.circular(15)),
+                      decoration:
+                          BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(15)),
                       child: ListTile(
                         leading: Icon(
                           Icons.logout,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Theme.of(context).iconTheme.color,
                         ),
                         onTap: () {
                           BlocProvider.of<AuthBloc>(context).add(const AuthEventLogout());

@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
 import 'package:demo_app_bloc/bloc/postBloc/post_bloc.dart';
 import 'package:demo_app_bloc/bloc/postBloc/post_event.dart';
 import 'package:demo_app_bloc/cubit/post_cubit.dart';
+import 'package:demo_app_bloc/provider/dark_theme_provider.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/services/post_service.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
@@ -11,6 +14,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,39 +35,52 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  DarkThemeProvider themeChangeProvider = DarkThemeProvider();
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentAppTheme();
+  }
+
+  void getCurrentAppTheme() async {
+    themeChangeProvider.darkTheme = await themeChangeProvider.darkThemePreference.getTheme();
+    log("Dark Theme activated: ${themeChangeProvider.darkTheme}");
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(create: (_) => AuthServices()),
       ],
-      child: MultiBlocProvider(
+      child: MultiProvider(
         providers: [
-          BlocProvider<PostsBloc>(create: (_) => PostsBloc(PostService())..add(LoadPostEvent())),
-          BlocProvider<PostCubit>(create: (_) => PostCubit()),
-          BlocProvider(create: (context) => AuthBloc(authServices: RepositoryProvider.of<AuthServices>(context)))
+          ChangeNotifierProvider(create: (_) => themeChangeProvider),
         ],
-        child: ScreenUtilInit(
-          designSize: const Size(411.428, 820.5),
-          builder: () => MaterialApp(
-            useInheritedMediaQuery: true,
-            debugShowCheckedModeBanner: false,
-            // builder: DevicePreview.appBuilder,
-            title: 'Notes App',
-            onGenerateRoute: AppRouter.onGenerateRoute,
-            themeMode: ThemeMode.system,
-            theme: ThemeClass.lightTheme,
-            darkTheme: ThemeClass.darkTheme,
-            // theme: ThemeData(
-            //     primaryColor: AppColors.cDarkBlue,
-            //     fontFamily: 'euclid',
-            //     highlightColor: AppColors.transparent,
-            //     splashColor: AppColors.cBlueShade.withAlpha(40),
-            //     buttonTheme: const ButtonThemeData(
-            //         buttonColor: AppColors.cDarkBlueAccent,
-            //         highlightColor: AppColors.transparent,
-            //         splashColor: AppColors.cDarkBlue)),
-            initialRoute: Routes.login,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<PostsBloc>(create: (_) => PostsBloc(PostService())..add(LoadPostEvent())),
+            BlocProvider<PostCubit>(create: (_) => PostCubit()),
+            BlocProvider(create: (context) => AuthBloc(authServices: RepositoryProvider.of<AuthServices>(context)))
+          ],
+          child: ScreenUtilInit(
+            designSize: const Size(411.428, 820.5),
+            builder: () => Consumer<DarkThemeProvider>(
+              builder: (context, value, child) {
+                return MaterialApp(
+                  useInheritedMediaQuery: true,
+                  debugShowCheckedModeBanner: false,
+                  // builder: DevicePreview.appBuilder,
+                  title: 'Notes App',
+                  onGenerateRoute: AppRouter.onGenerateRoute,
+                  themeMode: ThemeMode.system,
+                  theme: value.darkTheme ? ThemeClass.darkTheme : ThemeClass.lightTheme,
+                  darkTheme: ThemeClass.darkTheme,
+                  initialRoute: Routes.login,
+                );
+              },
+            ),
           ),
         ),
       ),

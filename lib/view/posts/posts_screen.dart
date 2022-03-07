@@ -86,7 +86,6 @@ class _PostsScreenState extends State<PostsScreen> {
                         notesLength: posts.length,
                       ),
                       expandedHeight: maxHeight - MediaQuery.of(context).padding.top,
-                      actions: [],
                     ),
                     if (posts.isNotEmpty)
                       PostsList(posts: posts)

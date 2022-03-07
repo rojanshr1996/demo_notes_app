@@ -1,5 +1,4 @@
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
-import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
 typedef NoteCallback = void Function(CloudNote note);
@@ -26,7 +25,7 @@ class NotesListView extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0),
               ),
-              color: Theme.of(context).colorScheme.secondary,
+              color: Theme.of(context).primaryColor,
               elevation: 4,
               shadowColor: Theme.of(context).colorScheme.shadow,
               child: InkWell(

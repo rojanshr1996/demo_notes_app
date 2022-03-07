@@ -1,13 +1,12 @@
+import 'dart:developer';
+
 import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/services/cloud/firebase_cloud_storage.dart';
-import 'package:demo_app_bloc/utils/app_colors.dart';
-import 'package:demo_app_bloc/utils/custom_text_style.dart';
-import 'package:demo_app_bloc/utils/dialogs/cannot_share_empty_note_dialog.dart';
 import 'package:demo_app_bloc/widgets/simple_circular_loader.dart';
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 class CreateUpdateNotesScreen extends StatefulWidget {
   final CloudNote? note;
@@ -21,12 +20,12 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
   final AuthServices _auth = AuthServices();
   CloudNote? _note;
   late final FirebaseCloudStorage _notesService;
-  late final TextEditingController _textController;
-
+  // late final TextEditingController _textController;
+  late quill.QuillController _controller = quill.QuillController.basic();
   @override
   void initState() {
     _notesService = FirebaseCloudStorage();
-    _textController = TextEditingController();
+    // _textController = TextEditingController();
     super.initState();
   }
 
@@ -36,13 +35,26 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     if (note == null) {
       return;
     }
-    final text = _textController.text;
+    final text = _controller.plainTextEditingValue.text;
+    await _notesService.updateNote(documentId: note.documentId, text: text);
+  }
+
+  void _quillControllerListener() async {
+    log(_controller.plainTextEditingValue.text);
+    final note = _note;
+    debugPrint("$_note");
+    if (note == null) {
+      return;
+    }
+    final text = _controller.plainTextEditingValue.text;
     await _notesService.updateNote(documentId: note.documentId, text: text);
   }
 
   void _setupTextControllerListener() {
-    _textController.removeListener(_textControllerListener);
-    _textController.addListener(_textControllerListener);
+    _controller.removeListener(_quillControllerListener);
+    _controller.addListener(_quillControllerListener);
+    // _textController.removeListener(_textControllerListener);
+    // _textController.addListener(_textControllerListener);
   }
 
   Future<CloudNote> createOrGetExistingNote(BuildContext context) async {
@@ -50,7 +62,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
 
     if (widget.note != null) {
       _note = widget.note;
-      _textController.text = widget.note!.text;
+      // _controller.plainTextEditingValue.text = widget.note!.text;
       return widget.note!;
     }
 
@@ -67,14 +79,14 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
 
   void _deleteNoteIfTextIsEmpty() {
     final note = _note;
-    if (_textController.text.isEmpty && note != null) {
+    if (_controller.plainTextEditingValue.text.isEmpty && note != null) {
       _notesService.deleteNote(documentId: note.documentId);
     }
   }
 
   void _saveNoteIfTextNotEmpty() async {
     final note = _note;
-    final text = _textController.text;
+    final text = _controller.plainTextEditingValue.text;
     debugPrint(text);
     if (note != null && text.isNotEmpty) {
       await _notesService.updateNote(documentId: note.documentId, text: text);
@@ -85,7 +97,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
   void dispose() {
     _deleteNoteIfTextIsEmpty();
     _saveNoteIfTextNotEmpty();
-    _textController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -94,7 +106,9 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        shadowColor: Theme.of(context).colorScheme.shadow,
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 2,
         title: const Text("Create new note"),
       ),
       body: Container(
@@ -106,17 +120,42 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
             switch (snapshot.connectionState) {
               case ConnectionState.done:
                 _setupTextControllerListener();
-                return TextField(
-                  controller: _textController,
-                  keyboardType: TextInputType.multiline,
-                  style: Theme.of(context).textTheme.displaySmall,
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    hintText: "Enter new note... ",
-                    hintStyle: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).primaryColor),
-                    border: const UnderlineInputBorder(borderSide: BorderSide.none),
-                  ),
+                return Column(
+                  children: [
+                    quill.QuillToolbar.basic(
+                      controller: _controller,
+                      showColorButton: false,
+                      showImageButton: false,
+                      showDirection: false,
+                      showLink: false,
+                      showVideoButton: false,
+                      showSmallButton: false,
+                      showCodeBlock: false,
+                      showListCheck: false,
+                      showHeaderStyle: false,
+                    ),
+                    const SizedBox(height: 25),
+                    Expanded(
+                      child: quill.QuillEditor.basic(
+                        controller: _controller,
+                        readOnly: false, // true for view only mode
+                      ),
+                    )
+                  ],
                 );
+
+              //  TextField(
+              //   controller: _textController,
+              //   keyboardType: TextInputType.multiline,
+              //   style: Theme.of(context).textTheme.displaySmall,
+              //   maxLines: null,
+              //   decoration: InputDecoration(
+              //     hintText: "Enter new note... ",
+              //     hintStyle:
+              //         Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.primary),
+              //     border: const UnderlineInputBorder(borderSide: BorderSide.none),
+              //   ),
+              // );
               default:
                 return const Center(child: SimpleCircularLoader());
             }

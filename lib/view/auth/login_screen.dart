@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       Container(
                                         height: 50,
                                         decoration: BoxDecoration(
-                                          color: Theme.of(context).colorScheme.background,
+                                          color: Theme.of(context).primaryColor,
                                           boxShadow: [
                                             BoxShadow(
                                                 color: Theme.of(context).colorScheme.shadow,
@@ -148,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       Container(
                                         height: 50,
                                         decoration: BoxDecoration(
-                                          color: Theme.of(context).colorScheme.background,
+                                          color: Theme.of(context).primaryColor,
                                           boxShadow: [
                                             BoxShadow(
                                                 color: Theme.of(context).colorScheme.shadow,
@@ -210,11 +210,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: TextButton(
                                 onPressed: () => Utilities.openNamedActivity(context, Routes.register),
                                 child: Text(
-                                  "SIGN UP",
+                                  "Sign up",
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyMedium
-                                      ?.copyWith(color: AppColors.cDarkBlueAccent, fontWeight: semibold),
+                                      ?.copyWith(color: Theme.of(context).colorScheme.background, fontWeight: semibold),
                                 ),
                               ),
                             ),
