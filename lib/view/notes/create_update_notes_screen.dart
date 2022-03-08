@@ -10,7 +10,6 @@ import 'package:demo_app_bloc/utils/utils.dart';
 import 'package:demo_app_bloc/view/notes/color_slider.dart';
 import 'package:demo_app_bloc/widgets/simple_circular_loader.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 class CreateUpdateNotesScreen extends StatefulWidget {
   final CloudNote? note;
