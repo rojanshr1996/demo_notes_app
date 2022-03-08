@@ -56,8 +56,8 @@ class ThemeClass {
       ),
       textTheme: const TextTheme(
         titleLarge: TextStyle(fontSize: 28, fontWeight: black, color: AppColors.cBlack, letterSpacing: 0.5),
-        titleMedium: TextStyle(fontSize: 24, fontWeight: black, color: AppColors.cDarkBlueAccent, letterSpacing: 0.5),
-        titleSmall: TextStyle(fontSize: 20, fontWeight: black, color: AppColors.cDarkBlueAccent, letterSpacing: 0.5),
+        titleMedium: TextStyle(fontSize: 24, fontWeight: black, color: AppColors.cDarkBlueAccent),
+        titleSmall: TextStyle(fontSize: 20, fontWeight: black, color: AppColors.cDarkBlueAccent),
         bodyLarge: TextStyle(fontSize: 16, fontWeight: semibold, color: AppColors.cBlack),
         bodyMedium: TextStyle(fontSize: 14, color: AppColors.cBlack),
         bodySmall: TextStyle(fontSize: 12, color: AppColors.cBlack),
@@ -88,8 +88,8 @@ class ThemeClass {
     ),
     textTheme: const TextTheme(
       titleLarge: TextStyle(fontSize: 28, fontWeight: black, color: AppColors.cLight, letterSpacing: 0.5),
-      titleMedium: TextStyle(fontSize: 24, fontWeight: bold, color: AppColors.cLight, letterSpacing: 0.5),
-      titleSmall: TextStyle(fontSize: 20, fontWeight: bold, color: AppColors.cLight, letterSpacing: 0.5),
+      titleMedium: TextStyle(fontSize: 24, fontWeight: bold, color: AppColors.cLight),
+      titleSmall: TextStyle(fontSize: 20, fontWeight: bold, color: AppColors.cLight),
       bodyLarge: TextStyle(fontSize: 16, fontWeight: semibold, color: AppColors.cLight),
       bodyMedium: TextStyle(fontSize: 14, color: AppColors.cLight),
       bodySmall: TextStyle(fontSize: 12, color: AppColors.cLight),

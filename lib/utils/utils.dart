@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:custom_widgets/custom_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Utils {
@@ -96,5 +97,16 @@ class Utils {
             ],
           );
         });
+  }
+
+  static addImage(BuildContext context) async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? result = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (result != null) {
+      return result;
+    } else {
+      return null;
+    }
   }
 }

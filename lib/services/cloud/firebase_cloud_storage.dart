@@ -11,10 +11,11 @@ class FirebaseCloudStorage {
   factory FirebaseCloudStorage() => _shared;
 
   Future<CloudNote> createNewNote({required String ownerUserId}) async {
-    final document = await notes.add({ownerUserIdFieldName: ownerUserId, textFieldname: ''});
+    final document =
+        await notes.add({ownerUserIdFieldName: ownerUserId, textFieldname: '', titleFieldname: '', colorFieldname: ''});
 
     final fetchedNote = await document.get();
-    return CloudNote(documentId: fetchedNote.id, ownerUserId: ownerUserId, text: "");
+    return CloudNote(documentId: fetchedNote.id, ownerUserId: ownerUserId, text: "", title: "");
   }
 
   Future<Iterable<CloudNote>> getNotes({required String ownerUserId}) async {
@@ -32,9 +33,10 @@ class FirebaseCloudStorage {
             event.docs.map((doc) => CloudNote.fromSnapshot(doc)).where((note) => note.ownerUserId == ownerUserId),
       );
 
-  Future<void> updateNote({required String documentId, required String text}) async {
+  Future<void> updateNote(
+      {required String documentId, required String text, required String title, String color = ""}) async {
     try {
-      await notes.doc(documentId).update({textFieldname: text});
+      await notes.doc(documentId).update({textFieldname: text, titleFieldname: title, colorFieldname: color});
     } catch (e) {
       throw CouldNotGetUpdateNoteException();
     }

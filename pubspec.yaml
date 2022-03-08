@@ -37,6 +37,8 @@ dependencies:
       ref: main
   provider: ^6.0.2
   flutter_quill: ^4.0.8
+  firebase_storage: ^10.2.9
+  image_picker: ^0.8.4+10
 
 
 dev_dependencies:
