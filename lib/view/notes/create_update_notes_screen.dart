@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
@@ -9,7 +11,9 @@ import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:demo_app_bloc/utils/utils.dart';
 import 'package:demo_app_bloc/view/notes/color_slider.dart';
 import 'package:demo_app_bloc/widgets/simple_circular_loader.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 
 class CreateUpdateNotesScreen extends StatefulWidget {
   final CloudNote? note;
@@ -25,13 +29,18 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
   late final FirebaseCloudStorage _notesService;
   late final TextEditingController _titleController;
   late final TextEditingController _textController;
-  // Color? color;
   late ValueNotifier<Color> _color;
+  late ValueNotifier<File?> _imageFile;
+  late ValueNotifier<UploadTask?> _task;
+  late ValueNotifier<String> _imageUrl;
+  // String _imageUrl = "";
 
-  // late quill.QuillController _controller = quill.QuillController.basic();
   @override
   void initState() {
     _color = ValueNotifier<Color>(AppColors.cWhite);
+    _imageFile = ValueNotifier<File?>(null);
+    _task = ValueNotifier<UploadTask?>(null);
+    _imageUrl = ValueNotifier<String>("");
     _notesService = FirebaseCloudStorage();
     _titleController = TextEditingController();
     _textController = TextEditingController();
@@ -46,7 +55,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     }
     final text = _textController.text;
     final title = _titleController.text.trim();
-    await _notesService.updateNote(documentId: note.documentId, text: text, title: title);
+    await _notesService.updateNote(documentId: note.documentId, text: text, title: title, imageUrl: _imageUrl.value);
   }
 
   void _textControllerListener() async {
@@ -77,7 +86,15 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
       }
       _titleController.text = widget.note!.title;
       _textController.text = widget.note!.text;
+      log("INITIAL IMAGE: ${_note!.imageUrl}");
 
+      if (_note!.imageUrl != "") {
+        if (_imageUrl.value == "" || _imageUrl.value == _note!.imageUrl) {
+          _imageUrl.value = _note!.imageUrl!;
+          log("PROGRESS: $_imageUrl");
+          setState(() {});
+        }
+      }
       return widget.note!;
     }
 
@@ -94,8 +111,11 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
 
   void _deleteNoteIfTextIsEmpty() {
     final note = _note;
-    if (_textController.text.isEmpty && note != null) {
+    if (_textController.text.isEmpty && note != null && _imageUrl.value == "") {
       _notesService.deleteNote(documentId: note.documentId);
+      // if (_imageUrl != "") {
+      //   _notesService.deleteFile(_imageUrl);
+      // }
     }
   }
 
@@ -104,9 +124,11 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     final text = _textController.text;
     final title = _titleController.text.trim();
     final color = _color.value;
+
     debugPrint(text);
     if (note != null && text.isNotEmpty) {
-      await _notesService.updateNote(documentId: note.documentId, text: text, title: title, color: "${color.value}");
+      await _notesService.updateNote(
+          documentId: note.documentId, text: text, title: title, color: "${color.value}", imageUrl: _imageUrl.value);
     }
   }
 
@@ -116,6 +138,10 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     _saveNoteIfTextNotEmpty();
     _textController.dispose();
     _titleController.dispose();
+    _imageFile.dispose();
+    _imageUrl.dispose();
+    _color.dispose();
+    _task.dispose();
     super.dispose();
   }
 
@@ -123,9 +149,17 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     final result = await Utils.addImage(context);
 
     if (result != null) {
-      log("Selected image: $result");
+      if (_imageUrl.value != "") {
+        _notesService.deleteFile(_imageUrl.value);
+      }
+      _imageUrl.value = "";
+      _saveNoteIfTextNotEmpty();
+      _imageFile.value = File(result.path);
+      uploadFile();
     }
   }
+
+  // https://firebasestorage.googleapis.com/v0/b/apptest-726c6.appspot.com/o/attachments%2Fimage_picker8372823839918575517.jpg?alt=media&token=ffc45346-01f2-4551-8879-4d3976694684
 
   @override
   Widget build(BuildContext context) {
@@ -140,9 +174,10 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
           actions: [
             IconButton(
               onPressed: () {
+                FocusScope.of(context).unfocus();
                 addImage(context);
               },
-              icon: const Icon(Icons.attachment),
+              icon: const Icon(Icons.photo),
             ),
           ],
         ),
@@ -158,6 +193,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                     valueListenable: _color,
                     builder: (context, color, _) {
                       return Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(25),
@@ -214,8 +250,109 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                             ),
                           ),
                           const Spacer(),
+                          ValueListenableBuilder(
+                            valueListenable: _imageFile,
+                            builder: (context, imageFile, _) {
+                              return _imageFile.value == null || _imageFile.value?.path == null
+                                  ? ValueListenableBuilder(
+                                      valueListenable: _imageUrl,
+                                      builder: (context, imageUrl, _) {
+                                        return _imageUrl.value != ""
+                                            ? Padding(
+                                                padding: const EdgeInsets.all(15),
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(15),
+                                                  child: Column(
+                                                    children: [
+                                                      Container(
+                                                        height: 150,
+                                                        width: 200,
+                                                        color: AppColors.cBlueShadow,
+                                                        child: CachedNetworkImage(
+                                                          imageUrl: _imageUrl.value,
+                                                          fit: BoxFit.cover,
+                                                          memCacheHeight: 50,
+                                                          errorWidget: (context, url, error) => Icon(
+                                                            Icons.error,
+                                                            color: Theme.of(context).colorScheme.background,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      InkWell(
+                                                        onTap: () {
+                                                          _imageFile.value = null;
+                                                          if (_imageUrl.value != "") {
+                                                            _notesService.deleteFile(_imageUrl.value);
+                                                            _imageUrl.value = "";
+                                                          }
+                                                        },
+                                                        child: Container(
+                                                          height: 42,
+                                                          width: 200,
+                                                          color: AppColors.cRedAccent,
+                                                          child: const Center(
+                                                            child: Icon(
+                                                              Icons.close,
+                                                              color: AppColors.cWhite,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )
+                                            : const SizedBox();
+                                      },
+                                    )
+                                  : Padding(
+                                      padding: const EdgeInsets.all(15),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(15),
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              height: 150,
+                                              width: 200,
+                                              color: AppColors.cBlueShadow,
+                                              child: Image.file(_imageFile.value!, fit: BoxFit.cover, cacheHeight: 500),
+                                            ),
+                                            ValueListenableBuilder(
+                                              valueListenable: _task,
+                                              builder: (context, task, _) {
+                                                return task != null
+                                                    ? buildUploadStatus(_task.value!)
+                                                    : const SizedBox();
+                                              },
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                _imageFile.value = null;
+                                                if (_imageUrl.value != "") {
+                                                  _notesService.deleteFile(_imageUrl.value);
+                                                  _imageUrl.value = "";
+                                                }
+                                              },
+                                              child: Container(
+                                                height: 42,
+                                                width: 200,
+                                                color: AppColors.cRedAccent,
+                                                child: const Center(
+                                                  child: Icon(
+                                                    Icons.close,
+                                                    color: AppColors.cWhite,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                            },
+                          ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 20, 0, 20),
+                            padding: const EdgeInsets.fromLTRB(20, 0, 0, 20),
                             child: SizedBox(
                               height: 50,
                               child: ColorSlider(
@@ -242,7 +379,45 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
       ),
     );
   }
+
+  Future uploadFile() async {
+    if (_imageFile.value == null) return;
+    final fileName = basename(_imageFile.value!.path);
+    _task.value = _notesService.uploadFile(fileName, _imageFile.value!);
+    // setState(() {});
+
+    if (_task.value == null) return;
+    final snapshot = await _task.value!.whenComplete(() {});
+    final urlDownload = await snapshot.ref.getDownloadURL();
+    log("Donwload-link: $urlDownload");
+    _imageUrl.value = urlDownload;
+    _saveNoteIfTextNotEmpty();
+  }
 }
+
+Widget buildUploadStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(
+      stream: task.snapshotEvents,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final snap = snapshot.data!;
+          final progress = snap.bytesTransferred / snap.totalBytes;
+          // final percentage = (progress * 100).toStringAsFixed(2);
+          log("PROGRESS: $progress");
+          return Container(
+            width: 200,
+            alignment: Alignment.topCenter,
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: AppColors.cWhite,
+              color: AppColors.cGreen,
+              minHeight: 10,
+            ),
+          );
+        } else {
+          return Container(height: 10, width: 200, color: AppColors.cWhite);
+        }
+      },
+    );
 
 
 // SQFLITE USAGE

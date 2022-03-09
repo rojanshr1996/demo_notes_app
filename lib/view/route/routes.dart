@@ -8,6 +8,7 @@ class Routes {
   static const String postDetail = '/post/detail';
   static const String anotherPage = '/post/another';
   static const String notes = '/notes';
+  static const String notesImage = '/notes/image';
   static const String createUpdateNote = '/notes/new-note';
   static const String settings = '/settings';
 }

@@ -11,6 +11,7 @@ import 'package:demo_app_bloc/view/posts/posts_bloc_screen.dart';
 
 import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:demo_app_bloc/view/settings.dart';
+import 'package:demo_app_bloc/widgets/enlarge_image.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {
@@ -46,6 +47,12 @@ class AppRouter {
       case Routes.postDetail:
         if (args is Posts) {
           return MaterialPageRoute(builder: (_) => PostDetailScreen(post: args));
+        }
+        return errorRoute(settings);
+
+      case Routes.notesImage:
+        if (args is ImageArgs) {
+          return MaterialPageRoute(builder: (_) => EnlargeImage(imageArgs: args));
         }
         return errorRoute(settings);
 

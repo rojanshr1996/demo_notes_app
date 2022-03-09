@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:custom_widgets/custom_widgets.dart';
+import 'package:demo_app_bloc/model/model.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/services/cloud/firebase_cloud_storage.dart';
@@ -89,7 +92,7 @@ class _NotesScreenState extends State<NotesScreen> {
                           flexibleSpace: SliverHeaderText(
                             maxHeight: maxHeight,
                             minHeight: minHeight,
-                            notesLength: allNotes.length,
+                            notesLength: allNotes.isEmpty ? 0 : allNotes.length,
                           ),
                           expandedHeight: maxHeight - MediaQuery.of(context).padding.top,
                           actions: [
@@ -108,12 +111,20 @@ class _NotesScreenState extends State<NotesScreen> {
                           NotesListView(
                             notes: allNotes,
                             onTap: (note) {
-                              Navigator.pushNamed(context, Routes.createUpdateNote, arguments: note);
+                              Utilities.openNamedActivity(context, Routes.createUpdateNote, arguments: note);
+                            },
+                            onImageTap: (imageUrl) {
+                              log(imageUrl);
+                              Utilities.openNamedActivity(context, Routes.notesImage,
+                                  arguments: ImageArgs(imageUrl: imageUrl));
                             },
                             onLongPress: (note) {
                               showBottomSheet(
                                 context: context,
                                 onDeleteTap: () async {
+                                  if (note.imageUrl != "") {
+                                    _notesService.deleteFile(note.imageUrl!);
+                                  }
                                   await _notesService.deleteNote(documentId: note.documentId);
                                   Utilities.closeActivity(context);
                                 },

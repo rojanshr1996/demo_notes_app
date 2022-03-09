@@ -36,3 +36,9 @@ class Posts {
     );
   }
 }
+
+class ImageArgs {
+  final String imageUrl;
+
+  ImageArgs({required this.imageUrl});
+}
