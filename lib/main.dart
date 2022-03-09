@@ -74,9 +74,11 @@ class _MyAppState extends State<MyApp> {
                   // builder: DevicePreview.appBuilder,
                   title: 'Notes App',
                   onGenerateRoute: AppRouter.onGenerateRoute,
-                  themeMode: ThemeMode.system,
+                  themeMode: ThemeMode.light,
                   theme: value.darkTheme ? ThemeClass.darkTheme : ThemeClass.lightTheme,
-                  darkTheme: ThemeClass.darkTheme,
+
+                  // theme: value.darkTheme ? ThemeClass.darkTheme : ThemeClass.lightTheme,
+                  darkTheme: value.darkTheme ? ThemeClass.darkTheme : ThemeClass.darkTheme,
                   initialRoute: Routes.login,
                 );
               },

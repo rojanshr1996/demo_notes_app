@@ -99,7 +99,7 @@ class Utils {
         });
   }
 
-  static addImage(BuildContext context) async {
+  static Future<XFile?> addImage(BuildContext context) async {
     final ImagePicker _picker = ImagePicker();
     final XFile? result = await _picker.pickImage(source: ImageSource.gallery);
 
