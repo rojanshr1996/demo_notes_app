@@ -21,11 +21,13 @@ class FirebaseCloudStorage {
       textFieldname: '',
       titleFieldname: '',
       colorFieldname: '',
-      imageUrlFieldname: ''
+      imageUrlFieldname: '',
+      fileUrlFieldname: '',
     });
 
     final fetchedNote = await document.get();
-    return CloudNote(documentId: fetchedNote.id, ownerUserId: ownerUserId, text: "", title: "", imageUrl: "");
+    return CloudNote(
+        documentId: fetchedNote.id, ownerUserId: ownerUserId, text: "", title: "", imageUrl: "", fileUrl: "");
   }
 
   Future<Iterable<CloudNote>> getNotes({required String ownerUserId}) async {
@@ -43,16 +45,22 @@ class FirebaseCloudStorage {
             event.docs.map((doc) => CloudNote.fromSnapshot(doc)).where((note) => note.ownerUserId == ownerUserId),
       );
 
-  Future<void> updateNote(
-      {required String documentId,
-      required String text,
-      required String title,
-      String color = "",
-      String imageUrl = ""}) async {
+  Future<void> updateNote({
+    required String documentId,
+    required String text,
+    required String title,
+    String color = "",
+    String imageUrl = "",
+    String fileUrl = "",
+  }) async {
     try {
-      await notes
-          .doc(documentId)
-          .update({textFieldname: text, titleFieldname: title, colorFieldname: color, imageUrlFieldname: imageUrl});
+      await notes.doc(documentId).update({
+        textFieldname: text,
+        titleFieldname: title,
+        colorFieldname: color,
+        imageUrlFieldname: imageUrl,
+        fileUrlFieldname: fileUrl
+      });
     } catch (e) {
       throw CouldNotGetUpdateNoteException();
     }
@@ -84,9 +92,9 @@ class FirebaseCloudStorage {
     }
   }
 
-  Future<void> deleteFile(String imageUrl) async {
+  Future<void> deleteFile(String file) async {
     try {
-      await FirebaseStorage.instance.refFromURL(imageUrl).delete();
+      await FirebaseStorage.instance.refFromURL(file).delete();
     } catch (e) {
       throw CouldNotUploadImage();
     }

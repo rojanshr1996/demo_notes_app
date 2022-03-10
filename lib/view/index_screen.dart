@@ -5,6 +5,7 @@ import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
 import 'package:demo_app_bloc/helpers/loading/loading_screen.dart';
+import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
@@ -19,12 +20,13 @@ class IndexScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     devtools.log("${FirebaseAuth.instance.currentUser}");
+    final AuthServices _auth = AuthServices();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: Text((FirebaseAuth.instance.currentUser?.emailVerified ?? false) ? "Welcome" : ""),
+        title: Text((_auth.currentUser?.isEmailVerified ?? false) ? "Welcome" : ""),
         actions: [
           IconButton(
             onPressed: () {
@@ -34,28 +36,14 @@ class IndexScreen extends StatelessWidget {
               Icons.settings,
             ),
           ),
-          // IconButton(
-          //   onPressed: () {
-          //     BlocProvider.of<AuthBloc>(context).add(const AuthEventLogout());
-          //   },
-          //   icon: const Icon(
-          //     Icons.logout,
-          //   ),
-          // ),
         ],
       ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
-          // devtools.log("LOADING STATE: ${state.isLoading}");
-
           if (state.isLoading) {
             LoadingScreen().show(context: context, text: state.loadingText ?? "Please wait a moment");
           } else {
             LoadingScreen().hide();
-          }
-          if (state is AuthStateEmailVerified) {
-            // Navigating to the post screen if the user is authenticated
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Email verified successfully")));
           }
 
           if (state is AuthStateLoggedOut) {
@@ -63,174 +51,67 @@ class IndexScreen extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          if (state is AuthStateEmailVerified) {
-            return Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                        height: 70,
-                        width: 70,
-                        decoration: const BoxDecoration(color: AppColors.cDarkBlue, shape: BoxShape.circle),
-                        child: const Icon(Icons.person_outline_outlined, color: AppColors.cDarkBlueLight, size: 38),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        " ${FirebaseAuth.instance.currentUser!.email}",
-                        style: Theme.of(context).textTheme.displayMedium,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 35),
-                  Expanded(
-                    flex: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 30, right: 30),
-                      child: IndexButtons(
-                        title: "VIEW POSTS",
-                        prefixIcon: const Icon(Icons.note_outlined, size: 55, color: AppColors.cLightShade),
-                        textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
-                        borderRadius: BorderRadius.circular(15),
-                        splashBorderRadius: BorderRadius.circular(15),
-                        imagePath: "assets/notesImage.png",
-                        buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
-                        onPressed: () => Utilities.openNamedActivity(context, Routes.post),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 35),
-                  Expanded(
-                    flex: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 30, right: 30),
-                      child: IndexButtons(
-                        title: "VIEW NOTES",
-                        prefixIcon: const Icon(Icons.note_outlined, size: 55, color: AppColors.cLightShade),
-                        textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
-                        borderRadius: BorderRadius.circular(15),
-                        splashBorderRadius: BorderRadius.circular(15),
-                        buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
-                        onPressed: () => Utilities.openNamedActivity(context, Routes.notes),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 35),
-                ],
-              ),
-            );
-          }
+          debugPrint("$state");
 
           return SizedBox(
             width: Utilities.screenWidth(context),
             height: Utilities.screenHeight(context),
             child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: (FirebaseAuth.instance.currentUser?.emailVerified ?? false)
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 70,
-                          width: 70,
-                          decoration: const BoxDecoration(color: AppColors.cDarkBlue, shape: BoxShape.circle),
-                          child: const Icon(Icons.person_outline_outlined, color: AppColors.cDarkBlueLight, size: 38),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          " ${FirebaseAuth.instance.currentUser!.email}",
-                          style: Theme.of(context).textTheme.displayMedium,
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 35),
-                        Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 25, right: 25),
-                            child: IndexButtons(
-                              title: "VIEW POSTS",
-                              prefixIcon: const Icon(Icons.file_copy_rounded, size: 55, color: AppColors.cLightShade),
-                              textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
-                              borderRadius: BorderRadius.circular(15),
-                              splashBorderRadius: BorderRadius.circular(15),
-                              imagePath: "assets/postImage.png",
-                              buttonColor: AppColors.cDarkBlue,
-                              shadowColor: AppColors.cDarkBlue,
-                              onPressed: () => Utilities.openNamedActivity(context, Routes.post),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 35),
-                        Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 25, right: 25),
-                            child: IndexButtons(
-                              title: "VIEW NOTES",
-                              prefixIcon: const Icon(Icons.note_rounded, size: 55, color: AppColors.cLightShade),
-                              textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
-                              borderRadius: BorderRadius.circular(15),
-                              splashBorderRadius: BorderRadius.circular(15),
-                              buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
-                              onPressed: () => Utilities.openNamedActivity(context, Routes.notes),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 45),
-                      ],
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          height: 70,
-                          width: 70,
-                          decoration: const BoxDecoration(color: AppColors.cDarkBlue, shape: BoxShape.circle),
-                          child: const Icon(
-                            Icons.person_outline_outlined,
-                            color: AppColors.cDarkBlueLight,
-                            size: 38,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          FirebaseAuth.instance.currentUser == null
-                              ? ""
-                              : " ${FirebaseAuth.instance.currentUser!.email}",
-                          style: Theme.of(context).textTheme.titleSmall,
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 25),
-                        Text(
-                          "Your email is not verified. Click on the button below to send a verification link to your email",
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.cDarkBlueAccent),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 25),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 30, right: 30),
-                          child: CustomButton(
-                            title: "Verify Email",
-                            borderRadius: BorderRadius.circular(5),
-                            splashBorderRadius: BorderRadius.circular(5),
-                            buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
-                            onPressed: () => _sendEmailVerification(context),
-                          ),
-                        ),
-                      ],
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 70,
+                      width: 70,
+                      decoration: const BoxDecoration(color: AppColors.cDarkBlue, shape: BoxShape.circle),
+                      child: const Icon(Icons.person_outline_outlined, color: AppColors.cDarkBlueLight, size: 38),
                     ),
-            ),
+                    const SizedBox(height: 20),
+                    Text(
+                      " ${_auth.currentUser?.email}",
+                      style: Theme.of(context).textTheme.displayMedium,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 35),
+                    Expanded(
+                      flex: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 25, right: 25),
+                        child: IndexButtons(
+                          title: "VIEW POSTS",
+                          prefixIcon: const Icon(Icons.file_copy_rounded, size: 55, color: AppColors.cLightShade),
+                          textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
+                          borderRadius: BorderRadius.circular(15),
+                          splashBorderRadius: BorderRadius.circular(15),
+                          imagePath: "assets/postImage.png",
+                          buttonColor: AppColors.cDarkBlue,
+                          shadowColor: AppColors.cDarkBlue,
+                          onPressed: () => Utilities.openNamedActivity(context, Routes.post),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 35),
+                    Expanded(
+                      flex: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 25, right: 25),
+                        child: IndexButtons(
+                          title: "VIEW NOTES",
+                          prefixIcon: const Icon(Icons.note_rounded, size: 55, color: AppColors.cLightShade),
+                          textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
+                          borderRadius: BorderRadius.circular(15),
+                          splashBorderRadius: BorderRadius.circular(15),
+                          buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                          onPressed: () => Utilities.openNamedActivity(context, Routes.notes),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 45),
+                  ],
+                )),
           );
         },
       ),
@@ -239,6 +120,7 @@ class IndexScreen extends StatelessWidget {
 
   void _sendEmailVerification(context) {
     BlocProvider.of<AuthBloc>(context).add(const AuthEventSendEmailVerification());
+    Utilities.removeStackActivity(context, const LoginScreen());
   }
 }
 

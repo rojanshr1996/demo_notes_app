@@ -28,7 +28,7 @@ class _NotesScreenState extends State<NotesScreen> {
   late final FirebaseCloudStorage _notesService;
   final AuthServices _auth = AuthServices();
 
-  String get userId => _auth.currentUser!.id;
+  String? get userId => _auth.currentUser == null ? "" : _auth.currentUser!.id;
 
   double top = 0.0;
 
@@ -62,8 +62,12 @@ class _NotesScreenState extends State<NotesScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: StreamBuilder(
-        stream: _notesService.allNotes(ownerUserId: userId),
+        stream: _notesService.allNotes(ownerUserId: userId!),
         builder: (context, snapshot) {
+          if (userId == null) {
+            Utilities.removeNamedStackActivity(context, Routes.login);
+          }
+
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
             case ConnectionState.active:

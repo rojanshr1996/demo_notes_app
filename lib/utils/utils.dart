@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:custom_widgets/custom_widgets.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -99,12 +101,25 @@ class Utils {
         });
   }
 
-  static Future<XFile?> addImage(BuildContext context) async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? result = await _picker.pickImage(source: ImageSource.gallery);
+  static Future<File?> addImage(BuildContext context) async {
+    // final ImagePicker _picker = ImagePicker();
+    FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image);
+    // final XFile? result = await _picker.pickImage(source: ImageSource.gallery);
 
     if (result != null) {
-      return result;
+      File? file = File(result.files.single.path ?? "");
+      return file;
+    } else {
+      return null;
+    }
+  }
+
+  static Future<File?> addFile(BuildContext context) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+
+    if (result != null) {
+      File? file = File(result.files.single.path ?? "");
+      return file;
     } else {
       return null;
     }

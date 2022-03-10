@@ -3,6 +3,7 @@ import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/view/another_page.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
 import 'package:demo_app_bloc/view/auth/signup_screen.dart';
+import 'package:demo_app_bloc/view/auth/email_verify_screen.dart';
 import 'package:demo_app_bloc/view/index_screen.dart';
 import 'package:demo_app_bloc/view/notes/create_update_notes_screen.dart';
 import 'package:demo_app_bloc/view/notes/notes_screen.dart';
@@ -33,6 +34,9 @@ class AppRouter {
 
       case Routes.notes:
         return MaterialPageRoute(builder: (_) => const NotesScreen());
+
+      case Routes.verifyEmail:
+        return MaterialPageRoute(builder: (_) => const EmailVerifyScreen());
 
       case Routes.settings:
         return MaterialPageRoute(builder: (_) => const Settings());

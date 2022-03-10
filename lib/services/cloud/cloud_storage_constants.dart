@@ -3,3 +3,4 @@ const textFieldname = "text";
 const titleFieldname = "title";
 const colorFieldname = "color";
 const imageUrlFieldname = "image_url";
+const fileUrlFieldname = "file_url";

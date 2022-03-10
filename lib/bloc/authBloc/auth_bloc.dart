@@ -12,6 +12,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = authServices.currentUser;
       if (user == null) {
         emit(const AuthStateLoggedOut(exception: null, isLoading: false));
+      } else if (!user.isEmailVerified) {
+        emit(const AuthStateNeedsVerification(isLoading: false));
       } else {
         emit(AuthStateLoggedIn(user: user, isLoading: false));
       }
@@ -22,7 +24,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(const AuthStateLoggedOut(exception: null, isLoading: true));
       try {
         final user = await authServices.signIn(email: event.email, password: event.password);
-        emit(AuthStateLoggedIn(user: user!, isLoading: false));
+
+        if (!user!.isEmailVerified) {
+          emit(const AuthStateLoggedOut(exception: null, isLoading: false));
+          emit(const AuthStateNeedsVerification(isLoading: false));
+        } else {
+          emit(const AuthStateLoggedOut(exception: null, isLoading: false));
+          emit(AuthStateLoggedIn(user: user, isLoading: false));
+        }
       } on Exception catch (e) {
         emit(AuthStateLoggedOut(exception: e, isLoading: false, loadingText: "Please wait while I log you in"));
         // emit(const AuthStateLoggedOut());
@@ -33,8 +42,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventSignUp>((event, emit) async {
       emit(const AuthStateLoggedOut(exception: null, isLoading: true));
       try {
-        final result = await authServices.signUp(email: event.email, password: event.password);
-        emit(AuthStateLoggedIn(user: result, isLoading: false));
+        await authServices.signUp(email: event.email, password: event.password);
+        authServices.sendEmailVerification();
+        emit(const AuthStateNeedsVerification(isLoading: false));
+        // emit(AuthStateLoggedIn(user: result, isLoading: false));
       } on Exception catch (e) {
         emit(AuthStateRegistering(exception: e, isLoading: false));
         emit(const AuthStateLoggedOut(exception: null, isLoading: false));
@@ -49,7 +60,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(AuthStateLoggedIn(user: authServices.currentUser!, isLoading: true));
         }
         await authServices.signOut();
-
         emit(const AuthStateLoggedOut(exception: null, isLoading: false));
       } on Exception catch (e) {
         emit(AuthStateLoggedOut(exception: e, isLoading: false));
@@ -60,7 +70,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(const AuthStateLoading(isLoading: false));
       try {
         await authServices.sendEmailVerification();
-        emit(const AuthStateEmailVerified(isLoading: false));
+        emit(state);
+        // emit(const AuthStateEmailVerified(isLoading: false));
       } on Exception catch (e) {
         emit(AuthStateLoggedOut(exception: e, isLoading: false));
       }

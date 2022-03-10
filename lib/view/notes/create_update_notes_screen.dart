@@ -8,6 +8,7 @@ import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/services/cloud/firebase_cloud_storage.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/constants.dart';
+import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/utils/utils.dart';
 import 'package:demo_app_bloc/view/notes/color_slider.dart';
 import 'package:demo_app_bloc/widgets/simple_circular_loader.dart';
@@ -31,16 +32,20 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
   late final TextEditingController _textController;
   late ValueNotifier<Color> _color;
   late ValueNotifier<File?> _imageFile;
+  late ValueNotifier<File?> _file;
   late ValueNotifier<UploadTask?> _task;
   late ValueNotifier<String> _imageUrl;
+  late ValueNotifier<String> _fileUrl;
   // String _imageUrl = "";
 
   @override
   void initState() {
     _color = ValueNotifier<Color>(AppColors.cWhite);
     _imageFile = ValueNotifier<File?>(null);
+    _file = ValueNotifier<File?>(null);
     _task = ValueNotifier<UploadTask?>(null);
     _imageUrl = ValueNotifier<String>("");
+    _fileUrl = ValueNotifier<String>("");
     _notesService = FirebaseCloudStorage();
     _titleController = TextEditingController();
     _textController = TextEditingController();
@@ -55,7 +60,8 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     }
     final text = _textController.text;
     final title = _titleController.text.trim();
-    await _notesService.updateNote(documentId: note.documentId, text: text, title: title, imageUrl: _imageUrl.value);
+    await _notesService.updateNote(
+        documentId: note.documentId, text: text, title: title, imageUrl: _imageUrl.value, fileUrl: _fileUrl.value);
   }
 
   void _textControllerListener() async {
@@ -68,7 +74,13 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     final text = _textController.text;
     final title = _titleController.text.trim();
     final color = _color.value;
-    await _notesService.updateNote(documentId: note.documentId, text: text, title: title, color: "${color.value}");
+    await _notesService.updateNote(
+        documentId: note.documentId,
+        text: text,
+        title: title,
+        color: "${color.value}",
+        imageUrl: _imageUrl.value,
+        fileUrl: _fileUrl.value);
   }
 
   void _setupTextControllerListener() {
@@ -95,6 +107,13 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
           setState(() {});
         }
       }
+      if (_note!.fileUrl != "") {
+        if (_fileUrl.value == "" || _fileUrl.value == _note!.fileUrl) {
+          _fileUrl.value = _note!.fileUrl!;
+          log("PROGRESS FILE: $_fileUrl");
+          setState(() {});
+        }
+      }
       return widget.note!;
     }
 
@@ -111,11 +130,8 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
 
   void _deleteNoteIfTextIsEmpty() {
     final note = _note;
-    if (_textController.text.isEmpty && note != null && _imageUrl.value == "") {
+    if (_textController.text.isEmpty && note != null && _imageUrl.value == "" && _fileUrl.value == "") {
       _notesService.deleteNote(documentId: note.documentId);
-      // if (_imageUrl != "") {
-      //   _notesService.deleteFile(_imageUrl);
-      // }
     }
   }
 
@@ -128,7 +144,12 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     debugPrint(text);
     if (note != null && text.isNotEmpty) {
       await _notesService.updateNote(
-          documentId: note.documentId, text: text, title: title, color: "${color.value}", imageUrl: _imageUrl.value);
+          documentId: note.documentId,
+          text: text,
+          title: title,
+          color: "${color.value}",
+          imageUrl: _imageUrl.value,
+          fileUrl: _fileUrl.value);
     }
   }
 
@@ -139,7 +160,9 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     _textController.dispose();
     _titleController.dispose();
     _imageFile.dispose();
+    _file.dispose();
     _imageUrl.dispose();
+    _fileUrl.dispose();
     _color.dispose();
     _task.dispose();
     super.dispose();
@@ -155,11 +178,23 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
       _imageUrl.value = "";
       _saveNoteIfTextNotEmpty();
       _imageFile.value = File(result.path);
-      uploadFile();
+      uploadImage();
     }
   }
 
-  // https://firebasestorage.googleapis.com/v0/b/apptest-726c6.appspot.com/o/attachments%2Fimage_picker8372823839918575517.jpg?alt=media&token=ffc45346-01f2-4551-8879-4d3976694684
+  addFile(BuildContext context) async {
+    final result = await Utils.addFile(context);
+    debugPrint("RESULT: $result");
+    if (result != null) {
+      if (_fileUrl.value != "") {
+        _notesService.deleteFile(_fileUrl.value);
+      }
+      _fileUrl.value = "";
+      _saveNoteIfTextNotEmpty();
+      _file.value = result;
+      uploadFile();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,6 +213,13 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                 addImage(context);
               },
               icon: const Icon(Icons.photo),
+            ),
+            IconButton(
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+                addFile(context);
+              },
+              icon: const Icon(Icons.attachment),
             ),
           ],
         ),
@@ -250,106 +292,228 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                             ),
                           ),
                           const Spacer(),
-                          ValueListenableBuilder(
-                            valueListenable: _imageFile,
-                            builder: (context, imageFile, _) {
-                              return _imageFile.value == null || _imageFile.value?.path == null
-                                  ? ValueListenableBuilder(
-                                      valueListenable: _imageUrl,
-                                      builder: (context, imageUrl, _) {
-                                        return _imageUrl.value != ""
-                                            ? Padding(
-                                                padding: const EdgeInsets.all(15),
-                                                child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(15),
-                                                  child: Column(
-                                                    children: [
-                                                      Container(
-                                                        height: 150,
-                                                        width: 200,
-                                                        color: AppColors.cBlueShadow,
-                                                        child: CachedNetworkImage(
-                                                          imageUrl: _imageUrl.value,
-                                                          fit: BoxFit.cover,
-                                                          memCacheHeight: 50,
-                                                          errorWidget: (context, url, error) => Icon(
-                                                            Icons.error,
-                                                            color: Theme.of(context).colorScheme.background,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      InkWell(
-                                                        onTap: () {
-                                                          _imageFile.value = null;
-                                                          if (_imageUrl.value != "") {
-                                                            _notesService.deleteFile(_imageUrl.value);
-                                                            _imageUrl.value = "";
-                                                          }
-                                                        },
-                                                        child: Container(
-                                                          height: 42,
-                                                          width: 200,
-                                                          color: AppColors.cRedAccent,
-                                                          child: const Center(
-                                                            child: Icon(
-                                                              Icons.close,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Expanded(
+                                child: ValueListenableBuilder(
+                                  valueListenable: _imageFile,
+                                  builder: (context, imageFile, _) {
+                                    return _imageFile.value == null || _imageFile.value?.path == null
+                                        ? ValueListenableBuilder(
+                                            valueListenable: _imageUrl,
+                                            builder: (context, imageUrl, _) {
+                                              return _imageUrl.value != ""
+                                                  ? Padding(
+                                                      padding: const EdgeInsets.all(15),
+                                                      child: ClipRRect(
+                                                        borderRadius: BorderRadius.circular(15),
+                                                        child: Column(
+                                                          children: [
+                                                            Container(
+                                                              height: 150,
+                                                              width: 200,
                                                               color: AppColors.cWhite,
+                                                              child: CachedNetworkImage(
+                                                                imageUrl: _imageUrl.value,
+                                                                fit: BoxFit.cover,
+                                                                memCacheHeight: 50,
+                                                                errorWidget: (context, url, error) => Icon(
+                                                                  Icons.error,
+                                                                  color: Theme.of(context).colorScheme.background,
+                                                                ),
+                                                              ),
                                                             ),
-                                                          ),
+                                                            InkWell(
+                                                              onTap: () {
+                                                                _imageFile.value = null;
+                                                                if (_imageUrl.value != "") {
+                                                                  _notesService.deleteFile(_imageUrl.value);
+                                                                  _imageUrl.value = "";
+                                                                }
+                                                              },
+                                                              child: Container(
+                                                                height: 42,
+                                                                width: 200,
+                                                                color: AppColors.cRedAccent,
+                                                                child: const Center(
+                                                                  child: Icon(
+                                                                    Icons.close,
+                                                                    color: AppColors.cWhite,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox();
-                                      },
-                                    )
-                                  : Padding(
-                                      padding: const EdgeInsets.all(15),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(15),
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              height: 150,
-                                              width: 200,
-                                              color: AppColors.cBlueShadow,
-                                              child: Image.file(_imageFile.value!, fit: BoxFit.cover, cacheHeight: 500),
-                                            ),
-                                            ValueListenableBuilder(
-                                              valueListenable: _task,
-                                              builder: (context, task, _) {
-                                                return task != null
-                                                    ? buildUploadStatus(_task.value!)
-                                                    : const SizedBox();
-                                              },
-                                            ),
-                                            InkWell(
-                                              onTap: () {
-                                                _imageFile.value = null;
-                                                if (_imageUrl.value != "") {
-                                                  _notesService.deleteFile(_imageUrl.value);
-                                                  _imageUrl.value = "";
-                                                }
-                                              },
-                                              child: Container(
-                                                height: 42,
-                                                width: 200,
-                                                color: AppColors.cRedAccent,
-                                                child: const Center(
-                                                  child: Icon(
-                                                    Icons.close,
+                                                    )
+                                                  : const SizedBox();
+                                            },
+                                          )
+                                        : Padding(
+                                            padding: const EdgeInsets.all(15),
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(15),
+                                              child: Column(
+                                                children: [
+                                                  Container(
+                                                    height: 150,
+                                                    width: 200,
                                                     color: AppColors.cWhite,
+                                                    child: Image.file(_imageFile.value!,
+                                                        fit: BoxFit.cover, cacheHeight: 500),
                                                   ),
-                                                ),
+                                                  ValueListenableBuilder(
+                                                    valueListenable: _task,
+                                                    builder: (context, task, _) {
+                                                      return task != null
+                                                          ? buildUploadStatus(_task.value!)
+                                                          : const SizedBox();
+                                                    },
+                                                  ),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      _imageFile.value = null;
+                                                      if (_imageUrl.value != "") {
+                                                        _notesService.deleteFile(_imageUrl.value);
+                                                        _imageUrl.value = "";
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      height: 42,
+                                                      width: 200,
+                                                      color: AppColors.cRedAccent,
+                                                      child: const Center(
+                                                        child: Icon(
+                                                          Icons.close,
+                                                          color: AppColors.cWhite,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                            },
+                                          );
+                                  },
+                                ),
+                              ),
+                              Expanded(
+                                child: ValueListenableBuilder(
+                                  valueListenable: _file,
+                                  builder: (context, fileUrl, _) {
+                                    return _file.value == null || _file.value?.path == null
+                                        ? ValueListenableBuilder(
+                                            valueListenable: _fileUrl,
+                                            builder: (context, fileUrl, _) {
+                                              return _fileUrl.value != ""
+                                                  ? Padding(
+                                                      padding: const EdgeInsets.all(15),
+                                                      child: ClipRRect(
+                                                        borderRadius: BorderRadius.circular(15),
+                                                        child: Column(
+                                                          children: [
+                                                            Container(
+                                                              height: 150,
+                                                              width: 200,
+                                                              color: AppColors.cWhite,
+                                                              child: Center(
+                                                                child: Column(
+                                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                                  children: const [
+                                                                    Icon(Icons.file_copy,
+                                                                        size: 48, color: AppColors.cDarkBlue),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            InkWell(
+                                                              onTap: () {
+                                                                _file.value = null;
+                                                                if (_fileUrl.value != "") {
+                                                                  _notesService.deleteFile(_fileUrl.value);
+                                                                  _fileUrl.value = "";
+                                                                }
+                                                              },
+                                                              child: Container(
+                                                                height: 42,
+                                                                width: 200,
+                                                                color: AppColors.cRedAccent,
+                                                                child: const Center(
+                                                                  child: Icon(
+                                                                    Icons.close,
+                                                                    color: AppColors.cWhite,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : const SizedBox();
+                                            },
+                                          )
+                                        : Padding(
+                                            padding: const EdgeInsets.all(15),
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(15),
+                                              child: Column(
+                                                children: [
+                                                  Container(
+                                                    height: 150,
+                                                    width: 200,
+                                                    color: AppColors.cWhite,
+                                                    child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: [
+                                                        const Icon(Icons.file_copy,
+                                                            size: 48, color: AppColors.cDarkBlue),
+                                                        const SizedBox(height: 10),
+                                                        Text(
+                                                          _file.value!.path.split("/").last + " asdjasd",
+                                                          textAlign: TextAlign.center,
+                                                          maxLines: 2,
+                                                          style: CustomTextStyle.smallText,
+                                                          overflow: TextOverflow.ellipsis,
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  ValueListenableBuilder(
+                                                    valueListenable: _task,
+                                                    builder: (context, task, _) {
+                                                      return task != null
+                                                          ? buildUploadStatus(_task.value!)
+                                                          : const SizedBox();
+                                                    },
+                                                  ),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      _file.value = null;
+                                                      if (_fileUrl.value != "") {
+                                                        _notesService.deleteFile(_fileUrl.value);
+                                                        _fileUrl.value = "";
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      height: 42,
+                                                      width: 200,
+                                                      color: AppColors.cRedAccent,
+                                                      child: const Center(
+                                                        child: Icon(Icons.close, color: AppColors.cWhite),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(20, 0, 0, 20),
@@ -380,7 +544,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     );
   }
 
-  Future uploadFile() async {
+  Future uploadImage() async {
     if (_imageFile.value == null) return;
     final fileName = basename(_imageFile.value!.path);
     _task.value = _notesService.uploadFile(fileName, _imageFile.value!);
@@ -389,36 +553,48 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     if (_task.value == null) return;
     final snapshot = await _task.value!.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
-    log("Donwload-link: $urlDownload");
+    log("Donwload-link image: $urlDownload");
     _imageUrl.value = urlDownload;
     _saveNoteIfTextNotEmpty();
   }
+
+  Future uploadFile() async {
+    if (_file.value == null) return;
+    final fileName = basename(_file.value!.path);
+    _task.value = _notesService.uploadFile(fileName, _file.value!);
+    // setState(() {});
+
+    if (_task.value == null) return;
+    final snapshot = await _task.value!.whenComplete(() {});
+    final urlDownload = await snapshot.ref.getDownloadURL();
+    log("Donwload-link file: $urlDownload");
+    _fileUrl.value = urlDownload;
+    _saveNoteIfTextNotEmpty();
+  }
+
+  Widget buildUploadStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(
+        stream: task.snapshotEvents,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final snap = snapshot.data!;
+            final progress = snap.bytesTransferred / snap.totalBytes;
+            log("PROGRESS: $progress");
+            return Container(
+              width: 200,
+              alignment: Alignment.topCenter,
+              child: LinearProgressIndicator(
+                value: progress,
+                backgroundColor: AppColors.cWhite,
+                color: AppColors.cGreen,
+                minHeight: 10,
+              ),
+            );
+          } else {
+            return Container(height: 10, width: 200, color: AppColors.cWhite);
+          }
+        },
+      );
 }
-
-Widget buildUploadStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(
-      stream: task.snapshotEvents,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final snap = snapshot.data!;
-          final progress = snap.bytesTransferred / snap.totalBytes;
-          // final percentage = (progress * 100).toStringAsFixed(2);
-          log("PROGRESS: $progress");
-          return Container(
-            width: 200,
-            alignment: Alignment.topCenter,
-            child: LinearProgressIndicator(
-              value: progress,
-              backgroundColor: AppColors.cWhite,
-              color: AppColors.cGreen,
-              minHeight: 10,
-            ),
-          );
-        } else {
-          return Container(height: 10, width: 200, color: AppColors.cWhite);
-        }
-      },
-    );
-
 
 // SQFLITE USAGE
 // class CreateUpdateNotesScreen extends StatefulWidget {

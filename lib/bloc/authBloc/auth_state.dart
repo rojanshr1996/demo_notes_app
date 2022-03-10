@@ -34,20 +34,8 @@ class AuthStateLoggedIn extends AuthState {
   List<Object?> get props => [];
 }
 
-// This is the initial state of the bloc. When the user is not authenticated the state is changed to Unauthenticated.
-
-// If any error occurs the state is changed to AuthError.
-// class AuthStateLoginFailure extends AuthState {
-//   final Exception exception;
-
-//   const AuthStateLoginFailure(this.exception);
-//   @override
-//   List<Object?> get props => [exception];
-// }
-
-// If any error occurs the state is changed to AuthError.
-class AuthStateEmailVerified extends AuthState {
-  const AuthStateEmailVerified({required bool isLoading}) : super(isLoading: isLoading);
+class AuthStateNeedsVerification extends AuthState {
+  const AuthStateNeedsVerification({required bool isLoading}) : super(isLoading: isLoading);
 
   @override
   List<Object?> get props => [];

@@ -10,14 +10,17 @@ class CloudNote {
   final String title;
   final Color? color;
   final String? imageUrl;
+  final String? fileUrl;
 
-  const CloudNote(
-      {required this.documentId,
-      required this.ownerUserId,
-      required this.text,
-      required this.title,
-      this.color,
-      this.imageUrl});
+  const CloudNote({
+    required this.documentId,
+    required this.ownerUserId,
+    required this.text,
+    required this.title,
+    this.color,
+    this.imageUrl,
+    this.fileUrl,
+  });
 
   CloudNote.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
       : documentId = snapshot.id,
@@ -25,7 +28,8 @@ class CloudNote {
         text = snapshot.data()[textFieldname] as String,
         title = snapshot.data()[titleFieldname] as String,
         color = _parseColor(snapshot.data()[colorFieldname]),
-        imageUrl = snapshot.data()[imageUrlFieldname] as String;
+        imageUrl = snapshot.data()[imageUrlFieldname] as String,
+        fileUrl = snapshot.data()[fileUrlFieldname] as String;
 }
 
 Color? _parseColor(String? colorInt) =>
