@@ -114,7 +114,7 @@ class _SingupScreenState extends State<SingupScreen> {
                                 child: Stack(
                                   children: [
                                     Container(
-                                      height: 50,
+                                      height: 48,
                                       decoration: BoxDecoration(
                                         color: Theme.of(context).primaryColor,
                                         boxShadow: [
@@ -151,7 +151,7 @@ class _SingupScreenState extends State<SingupScreen> {
                                 child: Stack(
                                   children: [
                                     Container(
-                                      height: 50,
+                                      height: 48,
                                       decoration: BoxDecoration(
                                         color: Theme.of(context).primaryColor,
                                         boxShadow: [

@@ -4,6 +4,7 @@ import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
 import 'package:demo_app_bloc/helpers/loading/loading_screen.dart';
 import 'package:demo_app_bloc/services/auth_exceptions.dart';
+import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
@@ -11,6 +12,7 @@ import 'package:demo_app_bloc/utils/dialogs/error_dialog.dart';
 import 'package:demo_app_bloc/utils/utils.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:demo_app_bloc/widgets/custom_text_enter_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,6 +30,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthServices _auth = AuthServices();
+
   // CloseDialog? _closeDialogHandle;
   void toggle() {
     // Add your super logic here!
@@ -68,10 +72,14 @@ class _LoginScreenState extends State<LoginScreen> {
             } else {
               LoadingScreen().hide();
             }
+
             if (state is AuthStateLoggedIn) {
               // Navigating to the post screen if the user is authenticated
               debugPrint("LOGGED IN USER: ${state.user}");
+              debugPrint("LOGGED IN USER 111: ${FirebaseAuth.instance.currentUser}");
               Utilities.replaceNamedActivity(context, Routes.index);
+            } else if (state is AuthStateNeedsVerification) {
+              Utilities.replaceNamedActivity(context, Routes.verifyEmail);
             }
 
             if (state is AuthStateLoggedOut) {
@@ -109,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Stack(
                                     children: [
                                       Container(
-                                        height: 50,
+                                        height: 48,
                                         decoration: BoxDecoration(
                                           color: Theme.of(context).primaryColor,
                                           boxShadow: [
@@ -146,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Stack(
                                     children: [
                                       Container(
-                                        height: 50,
+                                        height: 48,
                                         decoration: BoxDecoration(
                                           color: Theme.of(context).primaryColor,
                                           boxShadow: [
