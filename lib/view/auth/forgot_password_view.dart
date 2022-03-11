@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
+import 'package:demo_app_bloc/helpers/loading/loading_screen.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
@@ -44,13 +47,14 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) async {
-            // if (state.isLoading) {
-            //   LoadingScreen().show(context: context, text: state.loadingText ?? "Please wait a moment");
-            // } else {
-            //   LoadingScreen().hide();
-            // }
+            log("THIS IS THE STATE RIGHT NOW: ${state.isLoading}");
 
             if (state is AuthStateForgotPassword) {
+              if (state.isLoading) {
+                LoadingScreen().show(context: context, text: state.loadingText ?? "Please wait a moment");
+              } else {
+                LoadingScreen().hide();
+              }
               if (state.hasSentEmail) {
                 debugPrint("THIS IS THE STATE: ${state.hasSentEmail}");
                 _emailController.clear();
@@ -71,19 +75,21 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               width: Utilities.screenWidth(context),
               child: Container(
                 alignment: Alignment.center,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 40, 10, 50),
-                        child: Text(
-                          "FORGOT PASSWORD?",
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 40, 10, 40),
+                      child: Text(
+                        "FORGOT PASSWORD?",
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      Form(
-                        key: _formKey,
+                    ),
+                    Form(
+                      key: _formKey,
+                      child: SingleChildScrollView(
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(30),
@@ -131,42 +137,37 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 35),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 30, right: 30),
-                        child: CustomButton(
-                          title: "SEND RESET LINK",
-                          borderRadius: BorderRadius.circular(5),
-                          splashBorderRadius: BorderRadius.circular(5),
-                          buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
-                          onPressed: () async {
-                            FocusScope.of(context).unfocus();
-                            context.read<AuthBloc>().add(AuthEventForgotPassword(email: _emailController.text));
-                          },
-                        ),
+                    ),
+                    const SizedBox(height: 35),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 30, right: 30),
+                      child: CustomButton(
+                        title: "SEND RESET LINK",
+                        borderRadius: BorderRadius.circular(5),
+                        splashBorderRadius: BorderRadius.circular(5),
+                        buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                        onPressed: () => _sendResetLink(context),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 24, right: 24, top: 10),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: TextButton(
-                            onPressed: () {
-                              // context.read<AuthBloc>().add(AuthEventLogout());
-                              // Utilities.removeNamedStackActivity(context, Routes.login);
-                              context.read<AuthBloc>().add(const AuthEventLogout());
-                            },
-                            child: Text(
-                              "Go Back",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(color: Theme.of(context).colorScheme.background, fontWeight: semibold),
-                            ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 24, right: 24, top: 10),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: TextButton(
+                          onPressed: () {
+                            Utilities.removeNamedStackActivity(context, Routes.login);
+                          },
+                          child: Text(
+                            "Go Back",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: Theme.of(context).colorScheme.background, fontWeight: semibold),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -174,5 +175,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         ),
       ),
     );
+  }
+
+  void _sendResetLink(context) {
+    if (_formKey.currentState!.validate()) {
+      FocusScope.of(context).unfocus();
+      BlocProvider.of<AuthBloc>(context).add(AuthEventForgotPassword(email: _emailController.text));
+      // showPasswordResetDialog(context);
+    }
   }
 }

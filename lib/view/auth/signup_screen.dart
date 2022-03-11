@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
@@ -73,21 +75,6 @@ class _SingupScreenState extends State<SingupScreen> {
             if (state is AuthStateLoggedIn) {
               Utilities.replaceNamedActivity(context, Routes.index);
             }
-
-            // if (state is AuthStateLoggedOut) {
-            //   if (state.exception is EmailInUseAuthException) {
-            //     await showErrorDialog(context, "Email already in use");
-            //   } else if (state.exception is WrongPasswordAuthException) {
-            //     await showErrorDialog(context, "Wrong credentials");
-            //   } else if (state.exception is GenericAuthException) {
-            //     await showErrorDialog(context, "Authentication Error");
-            //   }
-            // }
-            // if (state is AuthStateLoginFailure) {
-            //   // Displaying the error message if the user is not authenticated
-            //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${state.exception}")));
-            //   await showErrorDialog(context, "${state.exception}");
-            // }
           },
           builder: (context, state) {
             if (state is AuthStateLoggedOut) {
@@ -247,9 +234,5 @@ class _SingupScreenState extends State<SingupScreen> {
         AuthEventSignUp(_emailController.text, _passwordController.text),
       );
     }
-  }
-
-  void _sendEmailVerification(context) {
-    BlocProvider.of<AuthBloc>(context).add(AuthEventSendEmailVerification());
   }
 }

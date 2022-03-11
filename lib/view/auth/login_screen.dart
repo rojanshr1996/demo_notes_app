@@ -117,94 +117,98 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             Form(
                               key: _formKey,
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 24, right: 24),
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          height: 48,
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context).primaryColor,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: Theme.of(context).colorScheme.shadow,
-                                                  blurRadius: 8,
-                                                  offset: const Offset(0, 3)),
-                                            ],
-                                            borderRadius: BorderRadius.circular(5.0),
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 24, right: 24),
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            height: 48,
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context).primaryColor,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    color: Theme.of(context).colorScheme.shadow,
+                                                    blurRadius: 8,
+                                                    offset: const Offset(0, 3)),
+                                              ],
+                                              borderRadius: BorderRadius.circular(5.0),
+                                            ),
                                           ),
-                                        ),
-                                        CustomTextEnterField(
-                                          textEditingController: _emailController,
-                                          label: Text("Email Addresss", style: Theme.of(context).textTheme.bodyText2),
-                                          textInputType: TextInputType.emailAddress,
-                                          style: Theme.of(context).textTheme.bodyMedium,
-                                          hintStyle: CustomTextStyle.hintTextLight,
-                                          validator: (value) => validateEmail(context: context, value: value!),
-                                          focusedBorder: const OutlineInputBorder(
-                                              borderSide: BorderSide(color: AppColors.cBlueShade)),
-                                          enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
-                                          disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
-                                          focusedErrorBorder: const OutlineInputBorder(
-                                              borderSide: BorderSide(color: AppColors.cRedAccent)),
-                                          errorBorder: const OutlineInputBorder(
-                                              borderSide: BorderSide(color: AppColors.cRedAccent)),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 15),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 24, right: 24),
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          height: 48,
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context).primaryColor,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: Theme.of(context).colorScheme.shadow,
-                                                  blurRadius: 8,
-                                                  offset: const Offset(0, 3)),
-                                            ],
-                                            borderRadius: BorderRadius.circular(5.0),
-                                          ),
-                                        ),
-                                        ValueListenableBuilder(
-                                          valueListenable: _obscureText,
-                                          builder: (context, value, child) => CustomTextEnterField(
-                                            textEditingController: _passwordController,
-                                            label: Text("Password", style: Theme.of(context).textTheme.bodyText2),
+                                          CustomTextEnterField(
+                                            textEditingController: _emailController,
+                                            label: Text("Email Addresss", style: Theme.of(context).textTheme.bodyText2),
+                                            textInputType: TextInputType.emailAddress,
                                             style: Theme.of(context).textTheme.bodyMedium,
-                                            textInputType: TextInputType.visiblePassword,
-                                            obscureText: _obscureText.value,
                                             hintStyle: CustomTextStyle.hintTextLight,
-                                            validator: (value) => validatePassword(context: context, value: value!),
-                                            suffixIcon: _passwordController.text.isEmpty
-                                                ? const SizedBox()
-                                                : IconButton(
-                                                    onPressed: toggle,
-                                                    icon: _obscureText.value
-                                                        ? const Icon(Icons.visibility, color: AppColors.cDarkBlue)
-                                                        : const Icon(Icons.visibility_off, color: AppColors.cDarkBlue),
-                                                  ),
+                                            validator: (value) => validateEmail(context: context, value: value!),
                                             focusedBorder: const OutlineInputBorder(
                                                 borderSide: BorderSide(color: AppColors.cBlueShade)),
                                             enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
                                             disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
-                                            focusedErrorBorder:
-                                                const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRed)),
-                                            errorBorder:
-                                                const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRed)),
+                                            focusedErrorBorder: const OutlineInputBorder(
+                                                borderSide: BorderSide(color: AppColors.cRedAccent)),
+                                            errorBorder: const OutlineInputBorder(
+                                                borderSide: BorderSide(color: AppColors.cRedAccent)),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(height: 15),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 24, right: 24),
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            height: 48,
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context).primaryColor,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    color: Theme.of(context).colorScheme.shadow,
+                                                    blurRadius: 8,
+                                                    offset: const Offset(0, 3)),
+                                              ],
+                                              borderRadius: BorderRadius.circular(5.0),
+                                            ),
+                                          ),
+                                          ValueListenableBuilder(
+                                            valueListenable: _obscureText,
+                                            builder: (context, value, child) => CustomTextEnterField(
+                                              textEditingController: _passwordController,
+                                              label: Text("Password", style: Theme.of(context).textTheme.bodyText2),
+                                              style: Theme.of(context).textTheme.bodyMedium,
+                                              textInputType: TextInputType.visiblePassword,
+                                              obscureText: _obscureText.value,
+                                              hintStyle: CustomTextStyle.hintTextLight,
+                                              validator: (value) => validatePassword(context: context, value: value!),
+                                              suffixIcon: _passwordController.text.isEmpty
+                                                  ? const SizedBox()
+                                                  : IconButton(
+                                                      onPressed: toggle,
+                                                      icon: _obscureText.value
+                                                          ? const Icon(Icons.visibility, color: AppColors.cDarkBlue)
+                                                          : const Icon(Icons.visibility_off,
+                                                              color: AppColors.cDarkBlue),
+                                                    ),
+                                              focusedBorder: const OutlineInputBorder(
+                                                  borderSide: BorderSide(color: AppColors.cBlueShade)),
+                                              enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
+                                              disabledBorder:
+                                                  OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
+                                              focusedErrorBorder: const OutlineInputBorder(
+                                                  borderSide: BorderSide(color: AppColors.cRed)),
+                                              errorBorder: const OutlineInputBorder(
+                                                  borderSide: BorderSide(color: AppColors.cRed)),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                             const SizedBox(height: 35),
@@ -228,6 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     TextButton(
                                       onPressed: () {
                                         context.read<AuthBloc>().add(const AuthEventForgotPassword());
+                                        // Utilities.openNamedActivity(context, Routes.forgotPassword);
                                       },
                                       child: Text(
                                         "Forgot Password?",

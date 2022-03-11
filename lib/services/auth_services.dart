@@ -90,7 +90,7 @@ class AuthServices {
 
   Future<void> sendPasswordReset({required String email}) async {
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'firebase_auth/inavalid-email') {
         throw InvalidEmailAuthException();
