@@ -87,4 +87,20 @@ class AuthServices {
       throw GenericAuthException();
     }
   }
+
+  Future<void> sendPasswordReset({required String email}) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'firebase_auth/inavalid-email') {
+        throw InvalidEmailAuthException();
+      } else if (e.code == 'firebase_auth/user-not-found') {
+        throw UserNotFoundException();
+      } else {
+        throw GenericAuthException();
+      }
+    } catch (_) {
+      throw GenericAuthException();
+    }
+  }
 }

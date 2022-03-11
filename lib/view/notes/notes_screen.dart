@@ -6,7 +6,6 @@ import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/services/cloud/firebase_cloud_storage.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
-import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/utils/dialogs/cannot_share_empty_note_dialog.dart';
 import 'package:demo_app_bloc/view/notes/notes_list_view.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';

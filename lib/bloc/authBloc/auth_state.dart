@@ -59,10 +59,12 @@ class AuthStateRegistering extends AuthState {
   List<Object?> get props => [];
 }
 
-// class AuthStateLogoutFailure extends AuthState {
-//   final Exception exception;
+class AuthStateForgotPassword extends AuthState {
+  final Exception? exception;
+  final bool hasSentEmail;
 
-//   const AuthStateLogoutFailure(this.exception);
-//   @override
-//   List<Object?> get props => [exception];
-// }
+  const AuthStateForgotPassword({required bool isLoading, required this.exception, required this.hasSentEmail})
+      : super(isLoading: isLoading);
+  @override
+  List<Object?> get props => [];
+}
