@@ -218,7 +218,7 @@ class _SingupScreenState extends State<SingupScreen> {
                                 // context.read<AuthBloc>().add(const AuthEventLogout());
                               },
                               child: Text(
-                                "Go Back",
+                                "Already registered? Sign In",
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium

@@ -1,6 +1,7 @@
 import 'package:demo_app_bloc/model/model.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/view/another_page.dart';
+import 'package:demo_app_bloc/view/auth/forgot_password_view.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
 import 'package:demo_app_bloc/view/auth/signup_screen.dart';
 import 'package:demo_app_bloc/view/auth/email_verify_screen.dart';
@@ -40,6 +41,9 @@ class AppRouter {
 
       case Routes.settings:
         return MaterialPageRoute(builder: (_) => const Settings());
+
+      case Routes.forgotPassword:
+        return MaterialPageRoute(builder: (_) => const ForgotPasswordView());
 
       case Routes.createUpdateNote:
         if (args is CloudNote) {
