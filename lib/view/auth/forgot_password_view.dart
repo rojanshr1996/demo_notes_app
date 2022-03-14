@@ -29,7 +29,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   @override
   void initState() {
     _emailController.addListener(() {
-      setState(() {});
+      // setState(() {});
     });
     super.initState();
   }
@@ -42,136 +42,141 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
   @override
   Widget build(BuildContext context) {
-    return RemoveFocus(
-      child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: BlocConsumer<AuthBloc, AuthState>(
-          listener: (context, state) async {
-            log("THIS IS THE STATE RIGHT NOW: ${state.isLoading}");
-
-            if (state is AuthStateForgotPassword) {
+    return WillPopScope(
+      onWillPop: () async {
+        Utilities.removeNamedStackActivity(context, Routes.login);
+        return true;
+      },
+      child: RemoveFocus(
+        child: Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          body: BlocConsumer<AuthBloc, AuthState>(
+            listener: (context, state) async {
               if (state.isLoading) {
                 LoadingScreen().show(context: context, text: state.loadingText ?? "Please wait a moment");
               } else {
                 LoadingScreen().hide();
               }
-              if (state.hasSentEmail) {
-                debugPrint("THIS IS THE STATE: ${state.hasSentEmail}");
-                _emailController.clear();
-                await showPasswordResetDialog(context);
-              }
-              if (state.exception != null) {
-                await showErrorDialog(context, "Request failed. Please try again.");
-              }
-            }
+              if (state is AuthStateForgotPassword) {
+                if (state.hasSentEmail) {
+                  debugPrint("THIS IS EMAIL SENT: ${state.hasSentEmail}");
 
-            if (state is AuthStateLoggedOut) {
-              Utilities.removeNamedStackActivity(context, Routes.login);
-            }
-          },
-          builder: (context, state) {
-            return SizedBox(
-              height: Utilities.screenHeight(context),
-              width: Utilities.screenWidth(context),
-              child: Container(
-                alignment: Alignment.center,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 40, 10, 40),
-                      child: Text(
-                        "FORGOT PASSWORD?",
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
-                    Form(
-                      key: _formKey,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(30),
-                              child: Text(
-                                "If you forgot your password, enter your email and we will send you a password reset link.",
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 24, right: 24),
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    height: 48,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).primaryColor,
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Theme.of(context).colorScheme.shadow,
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 3)),
-                                      ],
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                  ),
-                                  CustomTextEnterField(
-                                    textEditingController: _emailController,
-                                    label: Text("Email Addresss", style: Theme.of(context).textTheme.bodyText2),
-                                    textInputType: TextInputType.emailAddress,
-                                    style: Theme.of(context).textTheme.bodyMedium,
-                                    hintStyle: CustomTextStyle.hintTextLight,
-                                    validator: (value) => validateEmail(context: context, value: value!),
-                                    focusedBorder:
-                                        const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cBlueShade)),
-                                    enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
-                                    disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
-                                    focusedErrorBorder:
-                                        const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRedAccent)),
-                                    errorBorder:
-                                        const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRedAccent)),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 35),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 30, right: 30),
-                      child: CustomButton(
-                        title: "SEND RESET LINK",
-                        borderRadius: BorderRadius.circular(5),
-                        splashBorderRadius: BorderRadius.circular(5),
-                        buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
-                        onPressed: () => _sendResetLink(context),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 24, right: 24, top: 10),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: TextButton(
-                          onPressed: () {
-                            Utilities.removeNamedStackActivity(context, Routes.login);
-                          },
+                  showPasswordResetDialog(context).then((value) {
+                    _emailController.clear();
+                    Utilities.removeNamedStackActivity(context, Routes.login);
+                  });
+                }
+                if (state.exception != null) {
+                  await showErrorDialog(context, "Password Reset failed. Please try again.");
+                }
+              }
+            },
+            builder: (context, state) {
+              return SizedBox(
+                height: Utilities.screenHeight(context),
+                width: Utilities.screenWidth(context),
+                child: Container(
+                  alignment: Alignment.center,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 40, 10, 40),
                           child: Text(
-                            "Go Back",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: Theme.of(context).colorScheme.background, fontWeight: semibold),
+                            "FORGOT PASSWORD?",
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
-                      ),
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(30),
+                                child: Text(
+                                  "If you forgot your password, enter your email and we will send you a password reset link.",
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 24, right: 24),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: Theme.of(context).colorScheme.shadow,
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 3)),
+                                        ],
+                                        borderRadius: BorderRadius.circular(5.0),
+                                      ),
+                                    ),
+                                    CustomTextEnterField(
+                                      textEditingController: _emailController,
+                                      label: Text("Email Addresss", style: Theme.of(context).textTheme.bodyText2),
+                                      textInputType: TextInputType.emailAddress,
+                                      style: Theme.of(context).textTheme.bodyMedium,
+                                      hintStyle: CustomTextStyle.hintTextLight,
+                                      validator: (value) => validateEmail(context: context, value: value!),
+                                      focusedBorder:
+                                          const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cBlueShade)),
+                                      enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
+                                      disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
+                                      focusedErrorBorder:
+                                          const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRedAccent)),
+                                      errorBorder:
+                                          const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRedAccent)),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 35),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 30, right: 30),
+                          child: CustomButton(
+                            title: "SEND RESET LINK",
+                            borderRadius: BorderRadius.circular(5),
+                            splashBorderRadius: BorderRadius.circular(5),
+                            buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                            onPressed: () => _sendResetLink(context),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 24, right: 24, top: 10),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: TextButton(
+                              onPressed: () {
+                                // Utilities.closeActivity(context);
+
+                                Utilities.removeNamedStackActivity(context, Routes.login);
+                              },
+                              child: Text(
+                                "Go Back",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: Theme.of(context).colorScheme.background, fontWeight: semibold),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

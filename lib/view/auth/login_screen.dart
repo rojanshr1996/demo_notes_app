@@ -4,7 +4,6 @@ import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
 import 'package:demo_app_bloc/helpers/loading/loading_screen.dart';
 import 'package:demo_app_bloc/services/auth_exceptions.dart';
-import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
@@ -85,10 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Utilities.replaceNamedActivity(context, Routes.index);
               } else if (state is AuthStateNeedsVerification) {
                 Utilities.replaceNamedActivity(context, Routes.verifyEmail);
-              } else if (state is AuthStateForgotPassword) {
-                Utilities.openNamedActivity(context, Routes.forgotPassword);
               }
-
               if (state is AuthStateLoggedOut) {
                 if (state.exception is UserNotFoundException) {
                   await showErrorDialog(context, "Cannot find user with the entered credentials.");
@@ -231,8 +227,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   children: [
                                     TextButton(
                                       onPressed: () {
-                                        context.read<AuthBloc>().add(const AuthEventForgotPassword());
-                                        // Utilities.openNamedActivity(context, Routes.forgotPassword);
+                                        // context.read<AuthBloc>().add(const AuthEventForgotPassword());
+                                        Utilities.openNamedActivity(context, Routes.forgotPassword);
                                       },
                                       child: Text(
                                         "Forgot Password?",
