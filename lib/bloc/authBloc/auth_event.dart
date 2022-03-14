@@ -22,10 +22,11 @@ class AuthEventLogin extends AuthEvent {
 
 // When the user signing up with email and password this event is called and the [AuthServices] is called to sign up the user
 class AuthEventSignUp extends AuthEvent {
+  final String fullName;
   final String email;
   final String password;
 
-  const AuthEventSignUp(this.email, this.password);
+  const AuthEventSignUp(this.fullName, this.email, this.password);
 }
 
 // When the user signing out this event is called and the [AuthServices] is called to sign out the user

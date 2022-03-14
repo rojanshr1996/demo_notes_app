@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
@@ -44,7 +42,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventSignUp>((event, emit) async {
       emit(const AuthStateLoggedOut(exception: null, isLoading: true));
       try {
-        await authServices.signUp(email: event.email, password: event.password);
+        await authServices.signUp(email: event.email, password: event.password, fullName: event.fullName);
         authServices.sendEmailVerification();
         emit(const AuthStateNeedsVerification(isLoading: false));
         // emit(AuthStateLoggedIn(user: result, isLoading: false));
@@ -79,23 +77,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<AuthEventForgotPassword>((event, emit) async {
-      emit(const AuthStateForgotPassword(exception: null, hasSentEmail: false, isLoading: false));
+      emit(const AuthStateLoggedOut(exception: null, isLoading: true));
+
       final email = event.email;
       if (email == null) {
         return; // user just wants to go to forgot password screen
       }
+
       emit(const AuthStateForgotPassword(exception: null, hasSentEmail: false, isLoading: true));
       bool didSendEmail;
       Exception? exception;
       try {
+        emit(const AuthStateForgotPassword(exception: null, hasSentEmail: false, isLoading: false));
+
         await authServices.sendPasswordReset(email: email);
         didSendEmail = true;
         exception = null;
+        emit(AuthStateForgotPassword(exception: exception, hasSentEmail: didSendEmail, isLoading: false));
       } on Exception catch (e) {
         didSendEmail = false;
         exception = e;
+        emit(AuthStateForgotPassword(exception: exception, hasSentEmail: didSendEmail, isLoading: false));
       }
-      emit(AuthStateForgotPassword(exception: exception, hasSentEmail: didSendEmail, isLoading: false));
     });
   }
 }
