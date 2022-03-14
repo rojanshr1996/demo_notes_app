@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
 import 'package:demo_app_bloc/provider/dark_theme_provider.dart';
+import 'package:demo_app_bloc/utils/dialogs/logout_dialog.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -76,13 +79,7 @@ class _SettingsState extends State<Settings> {
                                 themeChange.darkTheme = value;
                               },
                               activeColor: Theme.of(context).colorScheme.background,
-                            )
-
-                            //  Text(
-                            //   themeChange.darkTheme ? "ON" : "OFF",
-                            //   style: Theme.of(context).textTheme.bodyLarge,
-                            // ),
-                            ),
+                            )),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -94,8 +91,12 @@ class _SettingsState extends State<Settings> {
                           Icons.logout,
                           color: Theme.of(context).iconTheme.color,
                         ),
-                        onTap: () {
-                          BlocProvider.of<AuthBloc>(context).add(const AuthEventLogout());
+                        onTap: () async {
+                          final shouldLogOut = await showLogoutDialog(context);
+                          log(shouldLogOut.toString());
+                          if (shouldLogOut) {
+                            BlocProvider.of<AuthBloc>(context).add(const AuthEventLogout());
+                          }
                         },
                         title: Text(
                           "Logout",

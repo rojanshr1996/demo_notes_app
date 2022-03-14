@@ -7,6 +7,7 @@ import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/services/cloud/firebase_cloud_storage.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/dialogs/cannot_share_empty_note_dialog.dart';
+import 'package:demo_app_bloc/utils/dialogs/delete_dialog.dart';
 import 'package:demo_app_bloc/view/notes/notes_list_view.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:demo_app_bloc/widgets/default_loading_screen.dart';
@@ -125,11 +126,19 @@ class _NotesScreenState extends State<NotesScreen> {
                               showBottomSheet(
                                 context: context,
                                 onDeleteTap: () async {
-                                  if (note.imageUrl != "") {
-                                    _notesService.deleteFile(note.imageUrl!);
-                                  }
-                                  await _notesService.deleteNote(documentId: note.documentId);
                                   Utilities.closeActivity(context);
+
+                                  final shouldDelete = await showDeleteDialog(context);
+                                  log(shouldDelete.toString());
+                                  if (shouldDelete) {
+                                    if (note.imageUrl != "") {
+                                      _notesService.deleteFile(note.imageUrl!);
+                                    }
+                                    if (note.fileUrl != "") {
+                                      _notesService.deleteFile(note.fileUrl!);
+                                    }
+                                    await _notesService.deleteNote(documentId: note.documentId);
+                                  }
                                 },
                                 onShareTap: () async {
                                   Utilities.closeActivity(context);

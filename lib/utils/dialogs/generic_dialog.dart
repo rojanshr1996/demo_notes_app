@@ -19,11 +19,11 @@ Future<T?> showGenericDialog<T>({
         backgroundColor: AppColors.cDarkBlue,
         title: Text(
           title,
-          style: const TextStyle(color: AppColors.cLight),
+          style: const TextStyle(color: AppColors.cLight, fontSize: 24),
         ),
         content: Text(
           content,
-          style: const TextStyle(color: AppColors.cLightShade),
+          style: const TextStyle(color: AppColors.cLightShade, fontSize: 18, fontWeight: FontWeight.w500),
         ),
         actions: options.keys.map((optionTitle) {
           final T value = options[optionTitle];
