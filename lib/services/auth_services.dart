@@ -1,15 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demo_app_bloc/model/auth_user.dart';
 import 'package:demo_app_bloc/services/auth_exceptions.dart';
+import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
+import 'package:demo_app_bloc/services/cloud/cloud_storage_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class AuthServices {
   final _firebaseAuth = FirebaseAuth.instance;
+  final users = FirebaseFirestore.instance.collection('users');
 
-  Future<AuthUser> signUp({required String email, required String password}) async {
+  Future<AuthUser> signUp({required String email, required String password, required String fullName}) async {
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
 
       final user = currentUser;
+      updateUserName(fullName);
       if (user != null) {
         return user;
       } else {
@@ -25,6 +31,27 @@ class AuthServices {
       }
     } catch (e) {
       // throw Exception(e.toString());
+      throw GenericAuthException();
+    }
+  }
+
+  updateUserName(String fullName) async {
+    User? user = _firebaseAuth.currentUser;
+
+    UserModel userModel = UserModel();
+
+    userModel.email = user!.email;
+    userModel.userId = user.uid;
+    userModel.name = fullName;
+    userModel.profileImage = user.photoURL;
+    try {
+      await users.doc(user.uid).set({
+        fullNameFieldName: userModel.name,
+        profileImageFieldName: userModel.profileImage,
+        emailFieldName: userModel.email,
+        userIdFieldName: userModel.userId,
+      });
+    } catch (e) {
       throw GenericAuthException();
     }
   }

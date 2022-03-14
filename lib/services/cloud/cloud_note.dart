@@ -34,3 +34,20 @@ class CloudNote {
 
 Color? _parseColor(String? colorInt) =>
     colorInt == null || colorInt == "" ? const Color(0xFFFFFFFF) : Color(int.parse(colorInt));
+
+class UserModel {
+  String? documentId;
+  String? name;
+  String? email;
+  String? profileImage;
+  String? userId;
+
+  UserModel({this.name, this.email, this.profileImage, this.userId});
+
+  UserModel.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
+      : documentId = snapshot.id,
+        name = snapshot.data()[fullNameFieldName] as String,
+        email = snapshot.data()[emailFieldName] as String,
+        profileImage = snapshot.data()[profileImageFieldName] as String,
+        userId = snapshot.data()[userIdFieldName] as String;
+}
