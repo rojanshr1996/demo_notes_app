@@ -13,7 +13,7 @@ class SliverHeaderText extends StatelessWidget {
     required this.maxHeight,
     required this.minHeight,
     this.notesLength = 0,
-    this.imagePath = "assets/notesImage.png",
+    this.imagePath = "",
     this.fromPost = false,
   }) : super(key: key);
 
@@ -27,10 +27,12 @@ class SliverHeaderText extends StatelessWidget {
         return Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              imagePath,
-              fit: BoxFit.cover,
-            ),
+            imagePath == ""
+                ? Container(color: Theme.of(context).scaffoldBackgroundColor)
+                : Image.asset(
+                    imagePath,
+                    fit: BoxFit.cover,
+                  ),
             _buildTitle(animation),
           ],
         );
@@ -60,7 +62,7 @@ class SliverHeaderText extends StatelessWidget {
               fromPost ? "All Posts" : "All Notes",
               style: TextStyle(
                   fontSize: Tween<double>(begin: 18, end: 32).evaluate(animation),
-                  color: AppColors.cLightShade,
+                  color: AppColors.cWhite,
                   fontWeight: FontWeight.w600),
             ),
             notesLength == 0
@@ -75,7 +77,7 @@ class SliverHeaderText extends StatelessWidget {
                             : "$notesLength notes",
                     style: TextStyle(
                       fontSize: Tween<double>(begin: 0, end: 14).evaluate(animation),
-                      color: AppColors.cDarkBlueLight,
+                      color: AppColors.cLightShade,
                     ),
                   ),
           ],

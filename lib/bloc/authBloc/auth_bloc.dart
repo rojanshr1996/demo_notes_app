@@ -42,7 +42,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventSignUp>((event, emit) async {
       emit(const AuthStateLoggedOut(exception: null, isLoading: true));
       try {
-        await authServices.signUp(email: event.email, password: event.password, fullName: event.fullName);
+        await authServices.signUp(
+            email: event.email, password: event.password, fullName: event.fullName, phoneNumber: event.phone);
         authServices.sendEmailVerification();
         emit(const AuthStateNeedsVerification(isLoading: false));
         // emit(AuthStateLoggedIn(user: result, isLoading: false));

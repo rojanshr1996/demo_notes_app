@@ -1,3 +1,4 @@
+// Notes field names
 const ownerUserIdFieldName = "user_id";
 const textFieldname = "text";
 const titleFieldname = "title";
@@ -5,7 +6,11 @@ const colorFieldname = "color";
 const imageUrlFieldname = "image_url";
 const fileUrlFieldname = "file_url";
 
+// User field names
 const fullNameFieldName = "name";
 const profileImageFieldName = "profile_image";
 const emailFieldName = "email";
-const userIdFieldName = "user_id";
+const createdDateFieldName = "created_date";
+const updatedDateFieldName = "updated_date";
+const addressFieldName = "address";
+const phoneFieldName = "phone_number";

@@ -9,6 +9,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 class FirebaseCloudStorage {
   final notes = FirebaseFirestore.instance.collection('notes');
+  final users = FirebaseFirestore.instance.collection('users');
   final storageDestination = "attachments/";
   static final FirebaseCloudStorage _shared = FirebaseCloudStorage._sharedInstance();
 
@@ -97,6 +98,40 @@ class FirebaseCloudStorage {
       await FirebaseStorage.instance.refFromURL(file).delete();
     } catch (e) {
       throw CouldNotUploadImage();
+    }
+  }
+
+  // User Collection
+  Future<Iterable<UserModel>> getUser({required String ownerUserId}) async {
+    try {
+      return await users.where(ownerUserIdFieldName, isEqualTo: ownerUserId).get().then(
+            (value) => value.docs.map((doc) => UserModel.fromSnapshot(doc)),
+          );
+    } catch (e) {
+      throw CouldNotGetUserException();
+    }
+  }
+
+  Stream<Iterable<UserModel>> userData({required String ownerUserId}) => users.snapshots().map(
+        (event) => event.docs.map((doc) => UserModel.fromSnapshot(doc)).where((user) => user.userId == ownerUserId),
+      );
+
+  Future<void> updateUser({
+    required String documentId,
+    required String name,
+    String phone = "",
+    String address = "",
+    String profileUrl = "",
+  }) async {
+    try {
+      await users.doc(documentId).update({
+        fullNameFieldName: name,
+        profileImageFieldName: profileUrl,
+        phoneFieldName: phone,
+        addressFieldName: address
+      });
+    } catch (e) {
+      throw CouldNotGetUpdateUserException();
     }
   }
 }

@@ -41,13 +41,34 @@ class UserModel {
   String? email;
   String? profileImage;
   String? userId;
+  String? phone;
+  String? address;
+  String? createdDate;
+  String? updatedDate;
 
-  UserModel({this.name, this.email, this.profileImage, this.userId});
+  UserModel(
+      {this.name,
+      this.email,
+      this.profileImage,
+      this.userId,
+      this.phone,
+      this.address,
+      this.createdDate,
+      this.updatedDate});
+
+  @override
+  String toString() {
+    return 'UserModel(name: $name, placeId: $email, placeName: $phone, userId: $userId, createdDate: $createdDate)';
+  }
 
   UserModel.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
       : documentId = snapshot.id,
         name = snapshot.data()[fullNameFieldName] as String,
         email = snapshot.data()[emailFieldName] as String,
         profileImage = snapshot.data()[profileImageFieldName] as String,
-        userId = snapshot.data()[userIdFieldName] as String;
+        userId = snapshot.data()[ownerUserIdFieldName],
+        phone = snapshot.data()[phoneFieldName] as String,
+        address = snapshot.data()[addressFieldName] as String,
+        createdDate = snapshot.data()[createdDateFieldName] as String,
+        updatedDate = snapshot.data()[updatedDateFieldName] as String;
 }

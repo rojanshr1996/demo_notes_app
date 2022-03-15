@@ -11,3 +11,7 @@ class CouldNotGetUpdateNoteException extends CloudStorageException {}
 class CouldNotGetDeleteNoteException extends CloudStorageException {}
 
 class CouldNotUploadImage extends CloudStorageException {}
+
+class CouldNotGetUserException extends CloudStorageException {}
+
+class CouldNotGetUpdateUserException extends CloudStorageException {}

@@ -25,8 +25,9 @@ class AuthEventSignUp extends AuthEvent {
   final String fullName;
   final String email;
   final String password;
+  final String phone;
 
-  const AuthEventSignUp(this.fullName, this.email, this.password);
+  const AuthEventSignUp(this.fullName, this.email, this.password, this.phone);
 }
 
 // When the user signing out this event is called and the [AuthServices] is called to sign out the user

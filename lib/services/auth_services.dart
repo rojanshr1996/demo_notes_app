@@ -1,21 +1,24 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demo_app_bloc/model/auth_user.dart';
 import 'package:demo_app_bloc/services/auth_exceptions.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_storage_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class AuthServices {
   final _firebaseAuth = FirebaseAuth.instance;
   final users = FirebaseFirestore.instance.collection('users');
 
-  Future<AuthUser> signUp({required String email, required String password, required String fullName}) async {
+  Future<AuthUser> signUp(
+      {required String email, required String password, required String fullName, String? phoneNumber}) async {
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-
       final user = currentUser;
-      updateUserName(fullName);
+      log("FROME EVENT NUMBER: $phoneNumber");
+
+      updateUserName(fullName: fullName, phone: phoneNumber);
       if (user != null) {
         return user;
       } else {
@@ -26,6 +29,8 @@ class AuthServices {
         throw WeakPasswordAuthException();
       } else if (e.code == 'email-already-in-use') {
         throw EmailInUseAuthException();
+      } else if (e.code == 'operation-not-allowed') {
+        throw OperationNotAllowedException();
       } else {
         throw GenericAuthException();
       }
@@ -35,7 +40,7 @@ class AuthServices {
     }
   }
 
-  updateUserName(String fullName) async {
+  updateUserName({required String fullName, String? phone, String? address}) async {
     User? user = _firebaseAuth.currentUser;
 
     UserModel userModel = UserModel();
@@ -44,12 +49,21 @@ class AuthServices {
     userModel.userId = user.uid;
     userModel.name = fullName;
     userModel.profileImage = user.photoURL;
+    userModel.createdDate = user.metadata.creationTime.toString();
+    userModel.phone = phone;
+    userModel.address = address;
+
+    log("PHONE NUMBER: $phone");
     try {
       await users.doc(user.uid).set({
         fullNameFieldName: userModel.name,
-        profileImageFieldName: userModel.profileImage,
+        profileImageFieldName: userModel.profileImage ?? "",
         emailFieldName: userModel.email,
-        userIdFieldName: userModel.userId,
+        ownerUserIdFieldName: userModel.userId,
+        phoneFieldName: userModel.phone ?? "",
+        addressFieldName: userModel.address ?? "",
+        createdDateFieldName: userModel.createdDate ?? "",
+        updatedDateFieldName: userModel.updatedDate ?? ""
       });
     } catch (e) {
       throw GenericAuthException();
