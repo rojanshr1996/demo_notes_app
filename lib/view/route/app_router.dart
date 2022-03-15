@@ -1,6 +1,5 @@
 import 'package:demo_app_bloc/model/model.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
-import 'package:demo_app_bloc/view/another_page.dart';
 import 'package:demo_app_bloc/view/auth/forgot_password_view.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
 import 'package:demo_app_bloc/view/auth/signup_screen.dart';
@@ -10,6 +9,7 @@ import 'package:demo_app_bloc/view/notes/create_update_notes_screen.dart';
 import 'package:demo_app_bloc/view/notes/notes_screen.dart';
 import 'package:demo_app_bloc/view/posts/post_detail_screen.dart';
 import 'package:demo_app_bloc/view/posts/posts_bloc_screen.dart';
+import 'package:demo_app_bloc/view/profile/profile_screen.dart';
 
 import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:demo_app_bloc/view/settings.dart';
@@ -64,11 +64,12 @@ class AppRouter {
         }
         return errorRoute(settings);
 
-      case Routes.anotherPage:
-        if (args is ScreenArguments) {
-          return MaterialPageRoute(builder: (_) => AnotherPage(data: args.id, title: args.title));
+      case Routes.profile:
+        if (args is UserModel) {
+          return MaterialPageRoute(builder: (_) => ProfileScreen(profileData: args));
+        } else {
+          return MaterialPageRoute(builder: (_) => const ProfileScreen());
         }
-        return errorRoute(settings);
 
       default:
         return errorRoute(settings);

@@ -28,6 +28,7 @@ class _SingupScreenState extends State<SingupScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
 
   void toggle() {
     // Add your super logic here!
@@ -192,6 +193,49 @@ class _SingupScreenState extends State<SingupScreen> {
                                         borderRadius: BorderRadius.circular(5.0),
                                       ),
                                     ),
+                                    CustomTextEnterField(
+                                      textEditingController: _phoneController,
+                                      label: Text("Phone Number", style: Theme.of(context).textTheme.bodyText2),
+                                      textInputType: TextInputType.phone,
+                                      style: Theme.of(context).textTheme.bodyMedium,
+                                      hintStyle: CustomTextStyle.hintTextLight,
+                                      validator: (value) => validateField(
+                                          context: context,
+                                          value: value!,
+                                          fieldName: "Phone",
+                                          maxCharacter: 10,
+                                          minCharater: 7),
+                                      suffixIcon: const Icon(Icons.phone, color: AppColors.cDarkBlue),
+                                      focusedBorder:
+                                          const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cBlueShade)),
+                                      enabledBorder: const OutlineInputBorder(borderSide: BorderSide.none),
+                                      disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
+                                      focusedErrorBorder:
+                                          const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRedAccent)),
+                                      errorBorder:
+                                          const OutlineInputBorder(borderSide: BorderSide(color: AppColors.cRedAccent)),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 24, right: 24),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: Theme.of(context).colorScheme.shadow,
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 3)),
+                                        ],
+                                        borderRadius: BorderRadius.circular(5.0),
+                                      ),
+                                    ),
                                     ValueListenableBuilder(
                                       valueListenable: _obscureText,
                                       builder: (context, value, child) => CustomTextEnterField(
@@ -278,6 +322,7 @@ class _SingupScreenState extends State<SingupScreen> {
           _nameController.text,
           _emailController.text,
           _passwordController.text,
+          _phoneController.text,
         ),
       );
     }

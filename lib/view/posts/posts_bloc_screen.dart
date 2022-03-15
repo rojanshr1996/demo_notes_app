@@ -1,11 +1,11 @@
 import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
-import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
 import 'package:demo_app_bloc/bloc/postBloc/post_bloc.dart';
 import 'package:demo_app_bloc/bloc/postBloc/post_event.dart';
 import 'package:demo_app_bloc/bloc/postBloc/post_state.dart';
 import 'package:demo_app_bloc/model/model.dart';
+import 'package:demo_app_bloc/provider/dark_theme_provider.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
@@ -16,6 +16,7 @@ import 'package:demo_app_bloc/widgets/sliver_header_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 class PostsBlocScreen extends StatefulWidget {
   const PostsBlocScreen({Key? key, required this.title}) : super(key: key);
@@ -47,96 +48,100 @@ class _PostsBlocScreenState extends State<PostsBlocScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          debugPrint("State has changed");
-          if (state is AuthStateLoggedOut) {
-            Utilities.removeStackActivity(context, const LoginScreen());
-          }
-        },
-        builder: (context, state) {
-          return BlocConsumer<PostsBloc, PostsState>(
+    return Consumer<DarkThemeProvider>(
+      builder: (context, value, child) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          body: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
               debugPrint("State has changed");
-              if (state is LoadedPostState) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  backgroundColor: AppColors.cDarkBlueAccent,
-                  content: Text("Posts loaded", style: CustomTextStyle.subtitleTextLight),
-                  duration: Duration(seconds: 1),
-                ));
+              if (state is AuthStateLoggedOut) {
+                Utilities.removeStackActivity(context, const LoginScreen());
               }
             },
             builder: (context, state) {
-              if (state is LoadingPostState) {
-                return DefaultLoadingScreen(maxHeight: maxHeight, minHeight: minHeight, fromPosts: true);
-              } else if (state is LoadedPostState) {
-                return NotificationListener<ScrollEndNotification>(
-                  onNotification: (_) {
-                    _snapAppbar();
-                    return false;
-                  },
-                  child: CupertinoScrollbar(
-                    controller: _controller,
-                    child: CustomScrollView(
-                      controller: _controller,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      slivers: [
-                        SliverAppBar(
-                          pinned: true,
-                          stretch: true,
-                          centerTitle: false,
-                          iconTheme: Theme.of(context)
-                              .appBarTheme
-                              .iconTheme
-                              ?.copyWith(color: Theme.of(context).scaffoldBackgroundColor),
-                          flexibleSpace: SliverHeaderText(
-                            maxHeight: maxHeight,
-                            minHeight: minHeight,
-                            notesLength: state.posts!.length,
-                            imagePath: "assets/postImage.png",
-                            fromPost: true,
-                          ),
-                          expandedHeight: maxHeight - MediaQuery.of(context).padding.top,
-                          actions: [
-                            IconButton(
-                              onPressed: () {
-                                debugPrint("OK");
-                                final postBloc = BlocProvider.of<PostsBloc>(context);
-                                postBloc.add(LoadPostEvent());
-                              },
-                              icon: Icon(
-                                Icons.refresh,
-                                color: Theme.of(context).scaffoldBackgroundColor,
+              return BlocConsumer<PostsBloc, PostsState>(
+                listener: (context, state) {
+                  debugPrint("State has changed");
+                  if (state is LoadedPostState) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      backgroundColor: AppColors.cDarkBlueAccent,
+                      content: Text("Posts loaded", style: CustomTextStyle.subtitleTextLight),
+                      duration: Duration(seconds: 1),
+                    ));
+                  }
+                },
+                builder: (context, state) {
+                  if (state is LoadingPostState) {
+                    return DefaultLoadingScreen(maxHeight: maxHeight, minHeight: minHeight, fromPosts: true);
+                  } else if (state is LoadedPostState) {
+                    return NotificationListener<ScrollEndNotification>(
+                      onNotification: (_) {
+                        _snapAppbar();
+                        return false;
+                      },
+                      child: CupertinoScrollbar(
+                        controller: _controller,
+                        child: CustomScrollView(
+                          controller: _controller,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          slivers: [
+                            SliverAppBar(
+                              pinned: true,
+                              stretch: true,
+                              centerTitle: false,
+                              iconTheme: Theme.of(context)
+                                  .appBarTheme
+                                  .iconTheme
+                                  ?.copyWith(color: Theme.of(context).scaffoldBackgroundColor),
+                              flexibleSpace: SliverHeaderText(
+                                maxHeight: maxHeight,
+                                minHeight: minHeight,
+                                notesLength: state.posts!.length,
+                                imagePath: value.darkTheme ? "assets/postImage.png" : "assets/postImageLight.png",
+                                fromPost: true,
                               ),
+                              expandedHeight: maxHeight - MediaQuery.of(context).padding.top,
+                              actions: [
+                                IconButton(
+                                  onPressed: () {
+                                    debugPrint("OK");
+                                    final postBloc = BlocProvider.of<PostsBloc>(context);
+                                    postBloc.add(LoadPostEvent());
+                                  },
+                                  icon: Icon(
+                                    Icons.refresh,
+                                    color: Theme.of(context).scaffoldBackgroundColor,
+                                  ),
+                                ),
+                              ],
                             ),
+                            if (state.posts!.isNotEmpty)
+                              PostsList(posts: state.posts ?? [])
+                            else
+                              const SliverFillRemaining(
+                                hasScrollBody: false,
+                                child: Center(
+                                  child: NoDataWidget(title: "No data"),
+                                ),
+                              ),
                           ],
                         ),
-                        if (state.posts!.isNotEmpty)
-                          PostsList(posts: state.posts ?? [])
-                        else
-                          const SliverFillRemaining(
-                            hasScrollBody: false,
-                            child: Center(
-                              child: NoDataWidget(title: "No data"),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                );
-              } else if (state is FailedLoadPostState) {
-                return Center(
-                  child: NoDataWidget(title: "Error occured: ${state.error}"),
-                );
-              } else {
-                return Container();
-              }
+                      ),
+                    );
+                  } else if (state is FailedLoadPostState) {
+                    return Center(
+                      child: NoDataWidget(title: "Error occured: ${state.error}"),
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
+              );
             },
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

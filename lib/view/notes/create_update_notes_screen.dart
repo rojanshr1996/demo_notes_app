@@ -144,8 +144,11 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     debugPrint("NOTE ID: ${note?.documentId}");
     debugPrint("Image if text note empty: ${_imageUrl.value}");
     debugPrint("File if text note empty: ${_fileUrl.value}");
+    debugPrint("File if text note empty: $color");
 
-    if (note != null && (_imageUrl.value != "" || _fileUrl.value != "")) {
+    if (note != null && (_imageUrl.value != "" || _fileUrl.value != "" || text.isNotEmpty)) {
+      debugPrint("Run THIS");
+
       await _notesService.updateNote(
           documentId: note.documentId,
           text: text,
@@ -154,15 +157,6 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
           imageUrl: _imageUrl.value,
           fileUrl: _fileUrl.value);
     }
-    // if (note != null && text.isNotEmpty) {
-    //   await _notesService.updateNote(
-    //       documentId: note.documentId,
-    //       text: text,
-    //       title: title,
-    //       color: "${color.value}",
-    //       imageUrl: _imageUrl.value,
-    //       fileUrl: _fileUrl.value);
-    // }
   }
 
   @override
