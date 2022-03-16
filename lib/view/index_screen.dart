@@ -94,6 +94,7 @@ class _IndexScreenState extends State<IndexScreen> {
                               if (snapshot.hasData) {
                                 final userData = snapshot.data as Iterable<UserModel>;
                                 log("User: " + userData.toString());
+                                log("Profile: ${userData.first.profileImage!}");
                                 return Column(
                                   children: [
                                     InkWell(
@@ -112,19 +113,23 @@ class _IndexScreenState extends State<IndexScreen> {
                                           : Container(
                                               height: 70,
                                               width: 70,
-                                              decoration: const BoxDecoration(
-                                                  color: AppColors.cDarkBlueAccent, shape: BoxShape.circle),
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(color: Theme.of(context).primaryColor),
+                                                  color: AppColors.cDarkBlueAccent,
+                                                  shape: BoxShape.circle),
                                               child: ClipRRect(
                                                 borderRadius: BorderRadius.circular(100),
                                                 child: CachedNetworkImage(
+                                                  memCacheHeight: 200,
                                                   imageUrl: userData.first.profileImage!,
                                                   fit: BoxFit.cover,
-                                                  placeholder: (context, url) =>
-                                                      const Center(child: SimpleCircularLoader()),
+                                                  placeholder: (context, url) => Center(
+                                                      child: SimpleCircularLoader(
+                                                          color: Theme.of(context).colorScheme.outline)),
                                                   errorWidget: (context, url, error) => const Icon(
                                                     Icons.image,
                                                     color: AppColors.cLight,
-                                                    size: 48,
+                                                    size: 36,
                                                   ),
                                                 ),
                                               ),

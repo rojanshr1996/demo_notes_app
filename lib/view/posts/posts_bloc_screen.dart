@@ -93,7 +93,7 @@ class _PostsBlocScreenState extends State<PostsBlocScreen> {
                               iconTheme: Theme.of(context)
                                   .appBarTheme
                                   .iconTheme
-                                  ?.copyWith(color: Theme.of(context).scaffoldBackgroundColor),
+                                  ?.copyWith(color: Theme.of(context).colorScheme.outline),
                               flexibleSpace: SliverHeaderText(
                                 maxHeight: maxHeight,
                                 minHeight: minHeight,
@@ -111,7 +111,7 @@ class _PostsBlocScreenState extends State<PostsBlocScreen> {
                                   },
                                   icon: Icon(
                                     Icons.refresh,
-                                    color: Theme.of(context).scaffoldBackgroundColor,
+                                    color: Theme.of(context).colorScheme.outline,
                                   ),
                                 ),
                               ],

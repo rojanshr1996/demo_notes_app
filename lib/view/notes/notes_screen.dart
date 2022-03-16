@@ -96,7 +96,7 @@ class _NotesScreenState extends State<NotesScreen> {
                               iconTheme: Theme.of(context)
                                   .appBarTheme
                                   .iconTheme
-                                  ?.copyWith(color: Theme.of(context).scaffoldBackgroundColor),
+                                  ?.copyWith(color: Theme.of(context).colorScheme.outline),
                               flexibleSpace: SliverHeaderText(
                                   maxHeight: maxHeight,
                                   minHeight: minHeight,
@@ -110,7 +110,7 @@ class _NotesScreenState extends State<NotesScreen> {
                                   },
                                   icon: Icon(
                                     Icons.add,
-                                    color: Theme.of(context).scaffoldBackgroundColor,
+                                    color: Theme.of(context).colorScheme.outline,
                                   ),
                                 ),
                               ],

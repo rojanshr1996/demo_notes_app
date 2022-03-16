@@ -36,6 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late ValueNotifier<File?> _imageFile;
   late ValueNotifier<String> _imageUrl;
   late ValueNotifier<UploadTask?> _task;
+  double progress = 0.0;
 
   @override
   void initState() {
@@ -133,173 +134,188 @@ class _ProfileScreenState extends State<ProfileScreen> {
               userData = snapshot.data as Iterable<UserModel>;
               log("User: " + userData.toString());
               _imageUrl.value = userData.first.profileImage!;
-              return Scaffold(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                appBar: AppBar(
-                  shadowColor: Theme.of(context).colorScheme.shadow,
-                  backgroundColor: Theme.of(context).primaryColor,
-                  elevation: 2,
-                  title: const Text("User Profile"),
-                  actions: [
-                    userData.isEmpty
-                        ? const SizedBox()
-                        : IconButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  addressController.text = userData.first.address!;
-                                  nameController.text = userData.first.name!;
-                                  phoneController.text = userData.first.phone!;
-                                  return EditProfileDialog(
-                                    addressController: addressController,
-                                    nameController: nameController,
-                                    phoneController: phoneController,
-                                    formKey: formKey,
-                                    onUpdate: () {
-                                      FocusScope.of(context).unfocus();
-                                      log("${nameController.text}, ${phoneController.text}, ${addressController.text}");
-                                      Utilities.closeActivity(context);
-                                      _updateUser();
+              return IgnorePointer(
+                ignoring: _task.value?.snapshot.bytesTransferred != _task.value?.snapshot.totalBytes ? true : false,
+                child: Scaffold(
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  appBar: AppBar(
+                    shadowColor: Theme.of(context).colorScheme.shadow,
+                    backgroundColor: Theme.of(context).primaryColor,
+                    elevation: 2,
+                    title: const Text("User Profile"),
+                    actions: [
+                      userData.isEmpty
+                          ? const SizedBox()
+                          : IconButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    addressController.text = userData.first.address!;
+                                    nameController.text = userData.first.name!;
+                                    phoneController.text = userData.first.phone!;
+                                    return EditProfileDialog(
+                                      addressController: addressController,
+                                      nameController: nameController,
+                                      phoneController: phoneController,
+                                      formKey: formKey,
+                                      onUpdate: () {
+                                        FocusScope.of(context).unfocus();
+                                        log("${nameController.text}, ${phoneController.text}, ${addressController.text}");
+                                        Utilities.closeActivity(context);
+                                        _updateUser();
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              icon: const Icon(Icons.edit),
+                            ),
+                    ],
+                  ),
+                  body: SizedBox(
+                    height: Utilities.screenHeight(context),
+                    width: Utilities.screenWidth(context),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            addImage(context);
+                          },
+                          child: Stack(
+                            children: [
+                              Container(
+                                  height: Utilities.screenHeight(context) * 0.4,
+                                  width: Utilities.screenWidth(context),
+                                  decoration: const BoxDecoration(color: AppColors.cDarkBlue),
+                                  child: ValueListenableBuilder(
+                                    valueListenable: _imageFile,
+                                    builder: (context, imageFile, _) {
+                                      return _imageFile.value == null || _imageFile.value?.path == null
+                                          ? ValueListenableBuilder(
+                                              valueListenable: _imageUrl,
+                                              builder: (context, imageUrl, _) {
+                                                return _imageUrl.value == ""
+                                                    ? const SizedBox()
+                                                    : CachedNetworkImage(
+                                                        imageUrl: userData.first.profileImage!,
+                                                        fit: BoxFit.cover,
+                                                        placeholder: (context, url) =>
+                                                            const Center(child: SimpleCircularLoader()),
+                                                        errorWidget: (context, url, error) => const Icon(
+                                                          Icons.image,
+                                                          color: AppColors.cLight,
+                                                          size: 48,
+                                                        ),
+                                                      );
+                                              },
+                                            )
+                                          : Image.file(_imageFile.value!, fit: BoxFit.cover, cacheHeight: 500);
                                     },
-                                  );
-                                },
-                              );
-                            },
-                            icon: const Icon(Icons.edit),
-                          ),
-                  ],
-                ),
-                body: SizedBox(
-                  height: Utilities.screenHeight(context),
-                  width: Utilities.screenWidth(context),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          addImage(context);
-                        },
-                        child: Stack(
-                          children: [
-                            Container(
+                                  )),
+                              Container(
                                 height: Utilities.screenHeight(context) * 0.4,
                                 width: Utilities.screenWidth(context),
-                                decoration: const BoxDecoration(color: AppColors.cDarkBlue),
-                                child: ValueListenableBuilder(
-                                  valueListenable: _imageFile,
-                                  builder: (context, imageFile, _) {
-                                    return _imageFile.value == null || _imageFile.value?.path == null
-                                        ? ValueListenableBuilder(
-                                            valueListenable: _imageUrl,
-                                            builder: (context, imageUrl, _) {
-                                              return _imageUrl.value == ""
-                                                  ? const SizedBox()
-                                                  : CachedNetworkImage(
-                                                      imageUrl: userData.first.profileImage!,
-                                                      fit: BoxFit.cover,
-                                                      placeholder: (context, url) =>
-                                                          const Center(child: SimpleCircularLoader()),
-                                                      errorWidget: (context, url, error) => const Icon(
-                                                        Icons.image,
-                                                        color: AppColors.cLight,
-                                                        size: 48,
-                                                      ),
-                                                    );
-                                            },
-                                          )
-                                        : Image.file(_imageFile.value!, fit: BoxFit.cover, cacheHeight: 500);
-                                  },
-                                )),
-                            Container(
-                              height: Utilities.screenHeight(context) * 0.4,
-                              width: Utilities.screenWidth(context),
-                              decoration: BoxDecoration(color: AppColors.cBlackShadow),
-                              child: Icon(Icons.add_a_photo_outlined,
-                                  color: AppColors.cDarkBlueLight, size: Utilities.screenHeight(context) * 0.1),
-                            )
-                          ],
+                                decoration: BoxDecoration(color: AppColors.cBlackShadow),
+                                child: Center(
+                                  child: Container(
+                                    decoration:
+                                        const BoxDecoration(color: AppColors.cDarkBlueAccent, shape: BoxShape.circle),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Icon(
+                                        Icons.photo_library,
+                                        color: AppColors.cDarkBlueLight,
+                                        size: Utilities.screenHeight(context) * 0.06,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                      ValueListenableBuilder(
-                        valueListenable: _task,
-                        builder: (context, task, _) {
-                          return task != null ? buildUploadStatus(_task.value!) : const SizedBox();
-                        },
-                      ),
-                      // const SizedBox(height: 20),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Container(
-                            width: Utilities.screenWidth(context),
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(15)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(15),
-                              child: ListView(
-                                shrinkWrap: true,
-                                children: [
-                                  ListTile(
-                                    leading: Icon(
-                                      Icons.person,
-                                      color: Theme.of(context).colorScheme.secondary,
+                        ValueListenableBuilder(
+                          valueListenable: _task,
+                          builder: (context, task, _) {
+                            return task != null ? buildUploadStatus(_task.value!) : const SizedBox();
+                          },
+                        ),
+                        // const SizedBox(height: 20),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Container(
+                              width: Utilities.screenWidth(context),
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(15)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(15),
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  children: [
+                                    ListTile(
+                                      leading: Icon(
+                                        Icons.person,
+                                        color: Theme.of(context).colorScheme.secondary,
+                                      ),
+                                      title: Text(
+                                        " ${userData.first.name}",
+                                        style: Theme.of(context).textTheme.displaySmall,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                    title: Text(
-                                      " ${userData.first.name}",
-                                      style: Theme.of(context).textTheme.displaySmall,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
+                                    const SizedBox(height: 15),
+                                    ListTile(
+                                      leading: Icon(
+                                        Icons.email,
+                                        color: Theme.of(context).colorScheme.secondary,
+                                      ),
+                                      title: Text(
+                                        " ${userData.first.email}",
+                                        style: Theme.of(context).textTheme.displaySmall,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 15),
-                                  ListTile(
-                                    leading: Icon(
-                                      Icons.email,
-                                      color: Theme.of(context).colorScheme.secondary,
+                                    const SizedBox(height: 15),
+                                    ListTile(
+                                      leading: Icon(
+                                        Icons.phone,
+                                        color: Theme.of(context).colorScheme.secondary,
+                                      ),
+                                      title: Text(
+                                        " ${userData.first.phone}",
+                                        style: Theme.of(context).textTheme.displaySmall,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                    title: Text(
-                                      " ${userData.first.email}",
-                                      style: Theme.of(context).textTheme.displaySmall,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 15),
-                                  ListTile(
-                                    leading: Icon(
-                                      Icons.phone,
-                                      color: Theme.of(context).colorScheme.secondary,
-                                    ),
-                                    title: Text(
-                                      " ${userData.first.phone}",
-                                      style: Theme.of(context).textTheme.displaySmall,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 15),
-                                  userData.first.address == ""
-                                      ? const SizedBox()
-                                      : ListTile(
-                                          leading: Icon(
-                                            Icons.phone,
-                                            color: Theme.of(context).colorScheme.secondary,
+                                    const SizedBox(height: 15),
+                                    userData.first.address == ""
+                                        ? const SizedBox()
+                                        : ListTile(
+                                            leading: Icon(
+                                              Icons.phone,
+                                              color: Theme.of(context).colorScheme.secondary,
+                                            ),
+                                            title: Text(
+                                              " ${userData.first.address}",
+                                              style: Theme.of(context).textTheme.displaySmall,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
-                                          title: Text(
-                                            " ${userData.first.address}",
-                                            style: Theme.of(context).textTheme.displaySmall,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -321,18 +337,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final snap = snapshot.data!;
-            final progress = snap.bytesTransferred / snap.totalBytes;
-            log("PROGRESS: $progress");
-            return Container(
-              width: Utilities.screenWidth(context),
-              alignment: Alignment.topCenter,
-              child: LinearProgressIndicator(
-                value: progress,
-                backgroundColor: AppColors.cWhite,
-                color: AppColors.cGreen,
-                minHeight: 10,
-              ),
-            );
+            progress = snap.bytesTransferred / snap.totalBytes;
+            log("PROGRESS: $progress ---> ${snap.totalBytes}");
+            return progress == 1.0
+                ? const SizedBox()
+                : Container(
+                    width: Utilities.screenWidth(context),
+                    alignment: Alignment.topCenter,
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: AppColors.cLight,
+                      color: AppColors.cGreen,
+                      minHeight: 10,
+                    ),
+                  );
           } else {
             return Container(height: 10, width: 200, color: AppColors.cWhite);
           }

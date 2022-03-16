@@ -45,14 +45,16 @@ class ThemeClass {
         primary: AppColors.cDarkBlueAccent,
         secondary: AppColors.cDarkBlue,
         shadow: AppColors.cDarkBlueLight.withAlpha(220),
+        outline: AppColors.cLight,
       ),
       buttonTheme: const ButtonThemeData(
         highlightColor: AppColors.transparent,
         colorScheme: ColorScheme.light(
-            background: AppColors.cLight,
-            error: AppColors.cRedAccent,
-            primary: AppColors.cDarkBlueAccent,
-            secondary: AppColors.cLight),
+          background: AppColors.cLight,
+          error: AppColors.cRedAccent,
+          primary: AppColors.cDarkBlueAccent,
+          secondary: AppColors.cLight,
+        ),
       ),
       textTheme: const TextTheme(
         titleLarge: TextStyle(fontSize: 28, fontWeight: black, color: AppColors.cBlack, letterSpacing: 0.5),
@@ -85,6 +87,7 @@ class ThemeClass {
       secondary: AppColors.cDarkBlueAccent,
       shadow: AppColors.cBlackShadow.withAlpha(200),
       background: AppColors.cLight,
+      outline: AppColors.cLight,
     ),
     textTheme: const TextTheme(
       titleLarge: TextStyle(fontSize: 28, fontWeight: black, color: AppColors.cLight, letterSpacing: 0.5),

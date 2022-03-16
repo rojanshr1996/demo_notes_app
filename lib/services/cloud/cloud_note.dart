@@ -10,6 +10,7 @@ class CloudNote {
   final String title;
   final Color? color;
   final String? imageUrl;
+  final String? createdDate;
   final String? fileUrl;
 
   const CloudNote({
@@ -17,6 +18,7 @@ class CloudNote {
     required this.ownerUserId,
     required this.text,
     required this.title,
+    this.createdDate,
     this.color,
     this.imageUrl,
     this.fileUrl,
@@ -29,6 +31,7 @@ class CloudNote {
         title = snapshot.data()[titleFieldname] as String,
         color = _parseColor(snapshot.data()[colorFieldname]),
         imageUrl = snapshot.data()[imageUrlFieldname] as String,
+        createdDate = snapshot.data()[createdDateFieldName] as String,
         fileUrl = snapshot.data()[fileUrlFieldname] as String;
 }
 

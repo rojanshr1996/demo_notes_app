@@ -1,5 +1,6 @@
 import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
+import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 typedef DialogOptionBuilder<T> = Map<String, T?> Function();
@@ -16,14 +17,14 @@ Future<T?> showGenericDialog<T>({
     context: context,
     builder: (context) {
       return AlertDialog(
-        backgroundColor: AppColors.cDarkBlue,
+        backgroundColor: Theme.of(context).primaryColor,
         title: Text(
           title,
-          style: const TextStyle(color: AppColors.cLight, fontSize: 24),
+          style: Theme.of(context).textTheme.displayLarge,
         ),
         content: Text(
           content,
-          style: const TextStyle(color: AppColors.cLightShade, fontSize: 18, fontWeight: FontWeight.w500),
+          style: Theme.of(context).textTheme.displaySmall,
         ),
         actions: options.keys.map((optionTitle) {
           final T value = options[optionTitle];
@@ -37,7 +38,7 @@ Future<T?> showGenericDialog<T>({
             },
             child: Text(
               optionTitle,
-              style: const TextStyle(color: AppColors.cLightShade),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: medium),
             ),
           );
         }).toList(),

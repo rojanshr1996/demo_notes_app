@@ -24,11 +24,19 @@ class FirebaseCloudStorage {
       colorFieldname: '',
       imageUrlFieldname: '',
       fileUrlFieldname: '',
+      createdDateFieldName: '',
     });
 
     final fetchedNote = await document.get();
     return CloudNote(
-        documentId: fetchedNote.id, ownerUserId: ownerUserId, text: "", title: "", imageUrl: "", fileUrl: "");
+      documentId: fetchedNote.id,
+      ownerUserId: ownerUserId,
+      text: "",
+      title: "",
+      imageUrl: "",
+      fileUrl: "",
+      createdDate: "",
+    );
   }
 
   Future<Iterable<CloudNote>> getNotes({required String ownerUserId}) async {
@@ -53,6 +61,7 @@ class FirebaseCloudStorage {
     String color = "",
     String imageUrl = "",
     String fileUrl = "",
+    String createdDate = "",
   }) async {
     try {
       await notes.doc(documentId).update({
@@ -60,7 +69,8 @@ class FirebaseCloudStorage {
         titleFieldname: title,
         colorFieldname: color,
         imageUrlFieldname: imageUrl,
-        fileUrlFieldname: fileUrl
+        fileUrlFieldname: fileUrl,
+        createdDateFieldName: createdDate,
       });
     } catch (e) {
       throw CouldNotGetUpdateNoteException();

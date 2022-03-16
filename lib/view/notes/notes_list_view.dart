@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
+import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 typedef NoteCallback = void Function(CloudNote note);
 typedef ImageCallback = void Function(String imageUrl);
@@ -25,7 +27,6 @@ class NotesListView extends StatelessWidget {
         delegate: SliverChildBuilderDelegate(
           (BuildContext context, int index) {
             final note = notes.elementAt(index);
-            log("NOTE: ${notes.elementAt(index).title}");
             return Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0),
@@ -111,6 +112,13 @@ class NotesListView extends StatelessWidget {
                                           child: Icon(Icons.file_copy,
                                               size: 20, color: Theme.of(context).colorScheme.background),
                                         ),
+                                  const Spacer(),
+                                  note.createdDate == ""
+                                      ? const SizedBox()
+                                      : Text(
+                                          DateFormat.Md().format(DateTime.parse(note.createdDate!)),
+                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: semibold),
+                                        )
                                 ],
                               )
                       ],

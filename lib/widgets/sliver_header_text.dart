@@ -53,7 +53,7 @@ class SliverHeaderText extends StatelessWidget {
     return Align(
       alignment: AlignmentTween(begin: Alignment.bottomCenter, end: Alignment.bottomLeft).evaluate(animation),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+        margin: const EdgeInsets.only(bottom: 15, left: 20, right: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

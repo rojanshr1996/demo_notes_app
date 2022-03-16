@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class ColorSlider extends StatefulWidget {
@@ -30,22 +33,22 @@ class _ColorSliderState extends State<ColorSlider> {
     Color.fromARGB(255, 0, 0, 0),
   ];
 
-  final Color borderColor = const Color(0xffd3d3d3);
-  final Color foregroundColor = const Color(0xff595959);
-
-  final _check = const Icon(Icons.check);
-
+  late Color borderColor;
+  late Color foregroundColor;
   late int indexOfCurrentColor;
   late Color noteColor;
+
   @override
   void initState() {
     super.initState();
     noteColor = widget.noteColor;
-    indexOfCurrentColor = colors.indexOf(widget.noteColor);
   }
 
   @override
   Widget build(BuildContext context) {
+    indexOfCurrentColor = colors.indexOf(widget.noteColor);
+    foregroundColor = Theme.of(context).primaryColor;
+    borderColor = Theme.of(context).primaryColor;
     return ListView(
       scrollDirection: Axis.horizontal,
       shrinkWrap: true,
@@ -61,18 +64,22 @@ class _ColorSliderState extends State<ColorSlider> {
             child: Padding(
               padding: const EdgeInsets.only(left: 6, right: 6),
               child: Container(
-                child: CircleAvatar(
-                  child: _checkOrNot(index),
-                  foregroundColor: foregroundColor,
-                  backgroundColor: colors[index],
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    CircleAvatar(
+                      foregroundColor: foregroundColor,
+                      backgroundColor: colors[index],
+                    ),
+                    Positioned(
+                      right: -5,
+                      child: _checkOrNot(index) ?? const SizedBox(),
+                    ),
+                  ],
                 ),
                 width: 38.0,
                 height: 38.0,
-                padding: const EdgeInsets.all(1.0), // border width
-                decoration: BoxDecoration(
-                    color: borderColor, // border color
-                    shape: BoxShape.circle,
-                    border: Border.all(width: 0.5, color: borderColor)),
+                decoration: const BoxDecoration(shape: BoxShape.circle),
               ),
             ),
           );
@@ -82,8 +89,14 @@ class _ColorSliderState extends State<ColorSlider> {
   }
 
   Widget? _checkOrNot(int index) {
+    log("Check: $indexOfCurrentColor");
     if (indexOfCurrentColor == index) {
-      return _check;
+      return Container(
+        decoration:
+            BoxDecoration(color: AppColors.cWhite, border: Border.all(color: AppColors.cGrey), shape: BoxShape.circle),
+        padding: const EdgeInsets.all(2),
+        child: const Icon(Icons.check, color: AppColors.cDarkBlue, size: 12),
+      );
     }
     return null;
   }
