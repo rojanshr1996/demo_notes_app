@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
@@ -47,6 +45,16 @@ class NotesListView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        note.createdDate == ""
+                            ? const SizedBox()
+                            : Text(
+                                DateFormat.yMMMd().format(DateTime.parse(note.createdDate!)),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(fontWeight: medium, fontSize: 9, color: Theme.of(context).hintColor),
+                              ),
+                        const SizedBox(height: 6),
                         Text(
                           note.title,
                           maxLines: 2,
@@ -54,7 +62,7 @@ class NotesListView extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.displaySmall,
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 4),
                         Text(
                           note.text,
                           maxLines: 4,
@@ -113,12 +121,6 @@ class NotesListView extends StatelessWidget {
                                               size: 20, color: Theme.of(context).colorScheme.background),
                                         ),
                                   const Spacer(),
-                                  note.createdDate == ""
-                                      ? const SizedBox()
-                                      : Text(
-                                          DateFormat.Md().format(DateTime.parse(note.createdDate!)),
-                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: semibold),
-                                        )
                                 ],
                               )
                       ],

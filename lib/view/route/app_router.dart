@@ -7,6 +7,7 @@ import 'package:demo_app_bloc/view/auth/email_verify_screen.dart';
 import 'package:demo_app_bloc/view/index_screen.dart';
 import 'package:demo_app_bloc/view/notes/create_update_notes_screen.dart';
 import 'package:demo_app_bloc/view/notes/notes_screen.dart';
+import 'package:demo_app_bloc/view/notes/pdf_viewer_screen.dart';
 import 'package:demo_app_bloc/view/posts/post_detail_screen.dart';
 import 'package:demo_app_bloc/view/posts/posts_bloc_screen.dart';
 import 'package:demo_app_bloc/view/profile/profile_screen.dart';
@@ -55,6 +56,18 @@ class AppRouter {
       case Routes.postDetail:
         if (args is Posts) {
           return MaterialPageRoute(builder: (_) => PostDetailScreen(post: args));
+        }
+        return errorRoute(settings);
+
+      case Routes.pdfView:
+        if (args is Args) {
+          return MaterialPageRoute(builder: (_) => PdfViewerScreen(arguments: args));
+        }
+        return errorRoute(settings);
+
+      case Routes.enlargeImage:
+        if (args is ImageArgs) {
+          return MaterialPageRoute(builder: (context) => EnlargeImage(imageArgs: args));
         }
         return errorRoute(settings);
 

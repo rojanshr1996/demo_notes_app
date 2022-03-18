@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   final String message;
@@ -31,9 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // CloseDialog? _closeDialogHandle;
   void toggle() {
-    // Add your super logic here!
     _obscureText.value = !_obscureText.value;
   }
 
@@ -79,8 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
               if (state is AuthStateLoggedIn) {
                 // Navigating to the post screen if the user is authenticated
-                debugPrint("LOGGED IN USER: ${state.user}");
-                debugPrint("LOGGED IN USER 111: ${FirebaseAuth.instance.currentUser}");
                 Utilities.replaceNamedActivity(context, Routes.index);
               } else if (state is AuthStateNeedsVerification) {
                 Utilities.replaceNamedActivity(context, Routes.verifyEmail);
@@ -248,6 +245,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 35),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 30, right: 30),
+                              child: CustomButton(
+                                title: "SIGN IN WITH GOOGLE",
+                                borderRadius: BorderRadius.circular(5),
+                                splashBorderRadius: BorderRadius.circular(5),
+                                buttonColor: AppColors.cRed,
+                                prefixIcon: const FaIcon(FontAwesomeIcons.google, color: AppColors.cWhite),
+                                onPressed: () => _authenticateWithGoogle(context),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -260,6 +269,14 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void _authenticateWithGoogle(context) {
+    FocusScope.of(context).unfocus();
+    // If email is valid adding new Event [SignInRequested].
+    BlocProvider.of<AuthBloc>(context).add(
+      const AuthEventGoogleSignIn(),
     );
   }
 

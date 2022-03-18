@@ -42,3 +42,10 @@ class ImageArgs {
 
   ImageArgs({required this.imageUrl});
 }
+
+class Args {
+  final String fileUrl;
+  final String fileName;
+
+  Args({required this.fileUrl, this.fileName = ""});
+}

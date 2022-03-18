@@ -14,4 +14,6 @@ class Routes {
   static const String verifyEmail = '/verifyEmail';
   static const String forgotPassword = '/forgotPassword';
   static const String profile = '/profile';
+  static const String enlargeImage = '/enlargeImage';
+  static const String pdfView = '/pdfView';
 }

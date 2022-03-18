@@ -146,7 +146,7 @@ class _IndexScreenState extends State<IndexScreen> {
                                   ],
                                 );
                               } else {
-                                return const SizedBox();
+                                return const SizedBox(height: 10);
                               }
 
                             default:
@@ -158,7 +158,6 @@ class _IndexScreenState extends State<IndexScreen> {
                       ),
                       const SizedBox(height: 35),
                       Expanded(
-                        flex: 1,
                         child: Padding(
                           padding: const EdgeInsets.only(left: 25, right: 25),
                           child: IndexButtons(
@@ -173,9 +172,8 @@ class _IndexScreenState extends State<IndexScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 35),
+                      const SizedBox(height: 40),
                       Expanded(
-                        flex: 1,
                         child: Padding(
                           padding: const EdgeInsets.only(left: 25, right: 25),
                           child: IndexButtons(
@@ -191,7 +189,7 @@ class _IndexScreenState extends State<IndexScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 45),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),

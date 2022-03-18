@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_widgets/custom_widgets.dart';
+import 'package:demo_app_bloc/model/model.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/services/cloud/firebase_cloud_storage.dart';
@@ -11,9 +12,11 @@ import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/utils/utils.dart';
 import 'package:demo_app_bloc/view/notes/color_slider.dart';
+import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:demo_app_bloc/widgets/simple_circular_loader.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 
 class CreateUpdateNotesScreen extends StatefulWidget {
@@ -36,6 +39,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
   late ValueNotifier<UploadTask?> _task;
   late ValueNotifier<String> _imageUrl;
   late ValueNotifier<String> _fileUrl;
+  late ValueNotifier<String> _fileName;
   double progress = 0.0;
   // String _imageUrl = "";
 
@@ -47,6 +51,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     _task = ValueNotifier<UploadTask?>(null);
     _imageUrl = ValueNotifier<String>("");
     _fileUrl = ValueNotifier<String>("");
+    _fileName = ValueNotifier<String>("");
     _notesService = FirebaseCloudStorage();
     _titleController = TextEditingController();
     _textController = TextEditingController();
@@ -68,6 +73,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
       title: title,
       imageUrl: _imageUrl.value,
       fileUrl: _fileUrl.value,
+      fileName: _fileName.value,
     );
   }
 
@@ -89,6 +95,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
       color: "${color.value}",
       imageUrl: _imageUrl.value,
       fileUrl: _fileUrl.value,
+      fileName: _fileName.value,
     );
   }
 
@@ -111,13 +118,19 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
       if (_note!.imageUrl != "") {
         if (_imageUrl.value == "" || _imageUrl.value == _note!.imageUrl) {
           _imageUrl.value = _note!.imageUrl!;
-          setState(() {});
+          // setState(() {});
         }
       }
       if (_note!.fileUrl != "") {
         if (_fileUrl.value == "" || _fileUrl.value == _note!.fileUrl) {
           _fileUrl.value = _note!.fileUrl!;
-          setState(() {});
+          // setState(() {});
+        }
+      }
+      if (_note!.fileName != "") {
+        if (_fileName.value == "" || _fileName.value == _note!.fileName) {
+          _fileName.value = _note!.fileName!;
+          // setState(() {});
         }
       }
       return widget.note!;
@@ -149,13 +162,15 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
 
     if (note != null && (_imageUrl.value != "" || _fileUrl.value != "" || text.isNotEmpty)) {
       await _notesService.updateNote(
-          documentId: note.documentId,
-          createdDate: "${DateTime.now()}",
-          text: text,
-          title: title,
-          color: "${color.value}",
-          imageUrl: _imageUrl.value,
-          fileUrl: _fileUrl.value);
+        documentId: note.documentId,
+        createdDate: "${DateTime.now()}",
+        text: text,
+        title: title,
+        color: "${color.value}",
+        imageUrl: _imageUrl.value,
+        fileUrl: _fileUrl.value,
+        fileName: _fileName.value,
+      );
     }
   }
 
@@ -297,9 +312,21 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 0),
+                                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    widget.note == null
+                                        ? const SizedBox()
+                                        : widget.note?.createdDate == ""
+                                            ? const SizedBox()
+                                            : Text(
+                                                DateFormat.yMMMMd().format(DateTime.parse(widget.note!.createdDate!)),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall
+                                                    ?.copyWith(fontWeight: medium, color: Theme.of(context).hintColor),
+                                              ),
                                     Row(
                                       children: [
                                         color == null
@@ -369,17 +396,25 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                                                             borderRadius: BorderRadius.circular(15),
                                                             child: Column(
                                                               children: [
-                                                                Container(
-                                                                  height: 150,
-                                                                  width: 200,
-                                                                  color: AppColors.cWhite,
-                                                                  child: CachedNetworkImage(
-                                                                    imageUrl: _imageUrl.value,
-                                                                    fit: BoxFit.cover,
-                                                                    memCacheHeight: 50,
-                                                                    errorWidget: (context, url, error) => Icon(
-                                                                      Icons.error,
-                                                                      color: Theme.of(context).colorScheme.background,
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    Utilities.openNamedActivity(
+                                                                        context, Routes.enlargeImage,
+                                                                        arguments:
+                                                                            ImageArgs(imageUrl: _imageUrl.value));
+                                                                  },
+                                                                  child: Container(
+                                                                    height: 150,
+                                                                    width: 200,
+                                                                    color: AppColors.cWhite,
+                                                                    child: CachedNetworkImage(
+                                                                      imageUrl: _imageUrl.value,
+                                                                      fit: BoxFit.cover,
+                                                                      memCacheHeight: 450,
+                                                                      errorWidget: (context, url, error) => Icon(
+                                                                        Icons.error,
+                                                                        color: Theme.of(context).colorScheme.background,
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                 ),
@@ -473,17 +508,33 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                                                             borderRadius: BorderRadius.circular(15),
                                                             child: Column(
                                                               children: [
-                                                                Container(
-                                                                  height: 150,
-                                                                  width: 200,
-                                                                  color: AppColors.cWhite,
-                                                                  child: Center(
-                                                                    child: Column(
-                                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                                      children: const [
-                                                                        Icon(Icons.file_copy,
-                                                                            size: 48, color: AppColors.cDarkBlue),
-                                                                      ],
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    Utilities.openNamedActivity(context, Routes.pdfView,
+                                                                        arguments: Args(
+                                                                            fileUrl: _fileUrl.value,
+                                                                            fileName: widget.note!.fileName ?? ""));
+                                                                  },
+                                                                  child: Container(
+                                                                    height: 150,
+                                                                    width: 200,
+                                                                    color: AppColors.cWhite,
+                                                                    child: Center(
+                                                                      child: Column(
+                                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                                        children: [
+                                                                          const Icon(Icons.file_copy,
+                                                                              size: 48, color: AppColors.cDarkBlue),
+                                                                          const SizedBox(height: 10),
+                                                                          Text(
+                                                                            "${widget.note?.fileName}",
+                                                                            textAlign: TextAlign.center,
+                                                                            maxLines: 2,
+                                                                            style: CustomTextStyle.smallText,
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                          ),
+                                                                        ],
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                 ),
@@ -493,6 +544,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                                                                     if (_fileUrl.value != "") {
                                                                       _notesService.deleteFile(_fileUrl.value);
                                                                       _fileUrl.value = "";
+                                                                      _fileName.value = "";
                                                                     }
                                                                   },
                                                                   child: Container(
@@ -554,6 +606,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                                                           if (_fileUrl.value != "") {
                                                             _notesService.deleteFile(_fileUrl.value);
                                                             _fileUrl.value = "";
+                                                            _fileName.value = "";
                                                           }
                                                         },
                                                         child: Container(
@@ -630,6 +683,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     final urlDownload = await snapshot.ref.getDownloadURL();
     log("Donwload-link file: $urlDownload");
     _fileUrl.value = urlDownload;
+    _fileName.value = _file.value!.path.split("/").last;
     _saveNoteIfTextNotEmpty();
   }
 
@@ -640,9 +694,8 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
             final snap = snapshot.data!;
             progress = snap.bytesTransferred / snap.totalBytes;
             log("PROGRESS: $progress");
-            return progress == 1.0
-                ? const SizedBox()
-                : Container(
+            return progress < 1.0
+                ? Container(
                     width: 200,
                     alignment: Alignment.topCenter,
                     child: LinearProgressIndicator(
@@ -651,7 +704,8 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                       color: AppColors.cGreen,
                       minHeight: 10,
                     ),
-                  );
+                  )
+                : const SizedBox();
           } else {
             return Container(height: 10, width: 200, color: AppColors.cWhite);
           }
