@@ -1,15 +1,19 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demo_app_bloc/model/auth_user.dart';
 import 'package:demo_app_bloc/services/auth_exceptions.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_storage_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthServices {
   final _firebaseAuth = FirebaseAuth.instance;
   final users = FirebaseFirestore.instance.collection('users');
+
+  final googleSignIn = GoogleSignIn();
+
+  GoogleSignInAccount? _user;
 
   Future<AuthUser> signUp(
       {required String email, required String password, required String fullName, String? phoneNumber}) async {
@@ -96,7 +100,7 @@ class AuthServices {
   AuthUser? get currentUser {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      return AuthUser.frmFirebase(user);
+      return AuthUser.fromFirebase(user);
     } else {
       return null;
     }
@@ -107,6 +111,7 @@ class AuthServices {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await _firebaseAuth.signOut();
+        await googleSignIn.signOut();
       } else {
         throw UserNotLoggedInAuthException();
       }
@@ -139,6 +144,34 @@ class AuthServices {
         throw UserNotFoundException();
       } else {
         throw GenericAuthException();
+      }
+    } catch (_) {
+      throw GenericAuthException();
+    }
+  }
+
+  Future<AuthUser?> googleLogIn() async {
+    try {
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) return null;
+      _user = googleUser;
+      final googleAuth = await googleUser.authentication;
+      final credential =
+          GoogleAuthProvider.credential(accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+
+      final signInData = await _firebaseAuth.signInWithCredential(credential);
+      log("SIGN IN DATA: $signInData");
+      final user = currentUser;
+      if (signInData.additionalUserInfo != null) {
+        if (signInData.additionalUserInfo!.isNewUser) {
+          updateUserName(fullName: signInData.user!.displayName!, phone: signInData.user!.phoneNumber ?? "");
+        }
+      }
+
+      if (user != null) {
+        return user;
+      } else {
+        throw UserNotLoggedInAuthException();
       }
     } catch (_) {
       throw GenericAuthException();

@@ -39,6 +39,8 @@ class ThemeClass {
       fontFamily: "euclid",
       splashColor: AppColors.cBlueShade.withAlpha(40),
       highlightColor: AppColors.transparent,
+      backgroundColor: AppColors.cDarkBlue,
+      hintColor: AppColors.cGrey,
       colorScheme: ColorScheme.light(
         background: AppColors.cDarkBlue,
         error: AppColors.cRedAccent,
@@ -73,7 +75,7 @@ class ThemeClass {
       appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.transparent,
           iconTheme: IconThemeData(color: AppColors.cDarkBlueAccent),
-          titleTextStyle: TextStyle(fontSize: 20, color: AppColors.cDarkBlue, fontWeight: bold)));
+          titleTextStyle: TextStyle(fontSize: 20, color: AppColors.cDarkBlue, fontWeight: bold, fontFamily: "euclid")));
 
   static ThemeData darkTheme = ThemeData(
     scaffoldBackgroundColor: AppColors.cDarkBlueAccent,
@@ -81,6 +83,8 @@ class ThemeClass {
     fontFamily: "euclid",
     splashColor: AppColors.cBlueShade.withAlpha(40),
     highlightColor: AppColors.transparent,
+    backgroundColor: AppColors.cLight,
+    hintColor: AppColors.cFadedBlue,
     colorScheme: ColorScheme.dark(
       error: AppColors.cRedAccent,
       primary: AppColors.cDarkBlue,
@@ -110,11 +114,7 @@ class ThemeClass {
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.transparent,
       iconTheme: IconThemeData(color: AppColors.cLight),
-      titleTextStyle: TextStyle(
-        fontSize: 20,
-        color: AppColors.cLight,
-        fontWeight: bold,
-      ),
+      titleTextStyle: TextStyle(fontSize: 20, color: AppColors.cLight, fontWeight: bold, fontFamily: "euclid"),
     ),
   );
 }

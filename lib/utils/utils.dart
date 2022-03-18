@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:custom_widgets/custom_widgets.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Utils {
@@ -101,12 +103,11 @@ class Utils {
   }
 
   static Future<File?> addImage(BuildContext context) async {
-    // final ImagePicker _picker = ImagePicker();
-    FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image);
-    // final XFile? result = await _picker.pickImage(source: ImageSource.gallery);
-
+    final ImagePicker _picker = ImagePicker();
+    final XFile? result = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
     if (result != null) {
-      File? file = File(result.files.single.path ?? "");
+      log("FILE size: ${(await result.length()) / (1024 * 1024)} MB");
+      File? file = File(result.path);
       return file;
     } else {
       return null;

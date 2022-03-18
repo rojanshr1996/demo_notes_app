@@ -25,6 +25,7 @@ class FirebaseCloudStorage {
       imageUrlFieldname: '',
       fileUrlFieldname: '',
       createdDateFieldName: '',
+      fileFieldname: '',
     });
 
     final fetchedNote = await document.get();
@@ -36,6 +37,7 @@ class FirebaseCloudStorage {
       imageUrl: "",
       fileUrl: "",
       createdDate: "",
+      fileName: "",
     );
   }
 
@@ -62,6 +64,7 @@ class FirebaseCloudStorage {
     String imageUrl = "",
     String fileUrl = "",
     String createdDate = "",
+    String fileName = "",
   }) async {
     try {
       await notes.doc(documentId).update({
@@ -71,6 +74,7 @@ class FirebaseCloudStorage {
         imageUrlFieldname: imageUrl,
         fileUrlFieldname: fileUrl,
         createdDateFieldName: createdDate,
+        fileFieldname: fileName,
       });
     } catch (e) {
       throw CouldNotGetUpdateNoteException();

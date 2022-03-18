@@ -71,7 +71,7 @@ class EnlargeImage extends StatelessWidget {
                   height: 42,
                   width: 42,
                   decoration:
-                      BoxDecoration(color: AppColors.cWhite.withOpacity(0.8), borderRadius: BorderRadius.circular(10)),
+                      BoxDecoration(color: AppColors.cGrey.withOpacity(0.8), borderRadius: BorderRadius.circular(25)),
                   child: Center(
                     child: BackButton(
                       onPressed: () {

@@ -43,6 +43,10 @@ class AuthEventSendEmailVerification extends AuthEvent {
   const AuthEventSendEmailVerification();
 }
 
+class AuthEventGoogleSignIn extends AuthEvent {
+  const AuthEventGoogleSignIn();
+}
+
 class AuthEventForgotPassword extends AuthEvent {
   final String? email;
   const AuthEventForgotPassword({this.email});
