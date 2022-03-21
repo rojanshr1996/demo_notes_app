@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Utils {
   Utils._();
@@ -115,13 +116,22 @@ class Utils {
   }
 
   static Future<File?> addFile(BuildContext context) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf', 'docx', 'doc', 'pptx']);
 
     if (result != null) {
       File? file = File(result.files.single.path ?? "");
       return file;
     } else {
       return null;
+    }
+  }
+
+  static launchFile(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Unable to open url : $url';
     }
   }
 }

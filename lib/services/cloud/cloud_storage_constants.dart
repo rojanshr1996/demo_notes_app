@@ -6,6 +6,7 @@ const colorFieldname = "color";
 const imageUrlFieldname = "image_url";
 const fileUrlFieldname = "file_url";
 const fileFieldname = "file_name";
+const favouriteFieldName = "favourite";
 
 // User field names
 const fullNameFieldName = "name";

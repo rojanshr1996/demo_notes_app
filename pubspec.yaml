@@ -45,6 +45,8 @@ dependencies:
   pdf_render: ^1.0.23
   google_sign_in: ^5.2.4
   font_awesome_flutter: ^9.2.0
+  like_button: ^2.0.4
+  url_launcher: ^6.0.20
 
 flutter_icons:
   android: "launcher_icon"

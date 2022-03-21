@@ -9,6 +9,7 @@ import 'package:demo_app_bloc/services/cloud/firebase_cloud_storage.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/dialogs/cannot_share_empty_note_dialog.dart';
 import 'package:demo_app_bloc/utils/dialogs/delete_dialog.dart';
+import 'package:demo_app_bloc/utils/utils.dart';
 import 'package:demo_app_bloc/view/notes/notes_list_view.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:demo_app_bloc/widgets/default_loading_screen.dart';
@@ -18,6 +19,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:path/path.dart' as path;
 
 class NotesScreen extends StatefulWidget {
   const NotesScreen({Key? key}) : super(key: key);
@@ -39,11 +41,13 @@ class _NotesScreenState extends State<NotesScreen> {
   double get maxHeight => 200 + MediaQuery.of(context).padding.top;
 
   double get minHeight => 120;
-  // double get minHeight => kToolbarHeight + MediaQuery.of(context).padding.top;
+
+  late ValueNotifier<String> _filterValue;
 
   @override
   void initState() {
     debugPrint(userId);
+    _filterValue = ValueNotifier<String>("");
     _notesService = FirebaseCloudStorage();
     super.initState();
   }
@@ -60,141 +64,201 @@ class _NotesScreenState extends State<NotesScreen> {
   }
 
   @override
+  void dispose() {
+    _filterValue.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<DarkThemeProvider>(
       builder: (context, value, child) {
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          body: StreamBuilder(
-            stream: _notesService.allNotes(ownerUserId: userId!),
-            builder: (context, snapshot) {
-              if (userId == null) {
-                Utilities.removeNamedStackActivity(context, Routes.login);
-              }
-
-              switch (snapshot.connectionState) {
-                case ConnectionState.waiting:
-                case ConnectionState.active:
-                  if (snapshot.hasData) {
-                    final allNotes = snapshot.data as Iterable<CloudNote>;
-                    return NotificationListener<ScrollEndNotification>(
-                      onNotification: (_) {
-                        _snapAppbar();
-                        return false;
-                      },
-                      child: CupertinoScrollbar(
-                        controller: _controller,
-                        child: CustomScrollView(
-                          controller: _controller,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          slivers: [
-                            SliverAppBar(
-                              pinned: true,
-                              stretch: true,
-                              centerTitle: false,
-                              shadowColor: Theme.of(context).colorScheme.shadow,
-                              iconTheme: Theme.of(context)
-                                  .appBarTheme
-                                  .iconTheme
-                                  ?.copyWith(color: Theme.of(context).colorScheme.outline),
-                              flexibleSpace: SliverHeaderText(
-                                  maxHeight: maxHeight,
-                                  minHeight: minHeight,
-                                  notesLength: allNotes.isEmpty ? 0 : allNotes.length,
-                                  imagePath: value.darkTheme ? "assets/notesImage.png" : "assets/notesImageLight.png"),
-                              expandedHeight: maxHeight - MediaQuery.of(context).padding.top,
-                              actions: [
-                                IconButton(
-                                  onPressed: () {
-                                    Utilities.openNamedActivity(context, Routes.createUpdateNote);
-                                  },
-                                  icon: Icon(
-                                    Icons.add,
-                                    color: Theme.of(context).colorScheme.outline,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            if (allNotes.isNotEmpty)
-                              NotesListView(
-                                notes: allNotes,
-                                onTap: (note) {
-                                  Utilities.openNamedActivity(context, Routes.createUpdateNote, arguments: note);
-                                },
-                                onImageTap: (imageUrl) {
-                                  log(imageUrl);
-                                  Utilities.openNamedActivity(context, Routes.notesImage,
-                                      arguments: ImageArgs(imageUrl: imageUrl));
-                                },
-                                onLongPress: (note) {
-                                  showBottomSheet(
-                                    context: context,
-                                    onDeleteTap: () async {
-                                      Utilities.closeActivity(context);
-
-                                      final shouldDelete = await showDeleteDialog(context);
-                                      log(shouldDelete.toString());
-                                      if (shouldDelete) {
-                                        if (note.imageUrl != "") {
-                                          _notesService.deleteFile(note.imageUrl!);
-                                        }
-                                        if (note.fileUrl != "") {
-                                          _notesService.deleteFile(note.fileUrl!);
-                                        }
-                                        await _notesService.deleteNote(documentId: note.documentId);
-                                      }
-                                    },
-                                    onShareTap: () async {
-                                      Utilities.closeActivity(context);
-                                      if (note.text.isEmpty) {
-                                        await showCannotShareEmptyNoteDialog(context);
-                                      } else {
-                                        Share.share(note.text);
-                                      }
-                                    },
-                                  );
-                                },
-                              )
-                            else
-                              const SliverFillRemaining(
-                                hasScrollBody: false,
-                                child: Center(
-                                  child: NoDataWidget(title: "No data"),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    );
-                  } else {
-                    return DefaultLoadingScreen(
-                      maxHeight: maxHeight,
-                      minHeight: minHeight,
-                      actions: [
-                        IconButton(
-                          onPressed: () {
-                            Utilities.openNamedActivity(context, Routes.createUpdateNote);
-                          },
-                          icon: const Icon(Icons.add),
-                        ),
-                      ],
-                    );
+          body: ValueListenableBuilder(
+            valueListenable: _filterValue,
+            builder: (context, task, _) {
+              return StreamBuilder(
+                stream: _filterValue.value == "fav"
+                    ? _notesService.allFavouriteNotes(ownerUserId: userId!, favourite: true)
+                    : _notesService.allNotes(ownerUserId: userId!),
+                builder: (context, snapshot) {
+                  if (userId == null) {
+                    Utilities.removeNamedStackActivity(context, Routes.login);
                   }
 
-                default:
-                  return DefaultLoadingScreen(
-                    maxHeight: maxHeight,
-                    minHeight: minHeight,
-                    actions: [
-                      IconButton(
-                        onPressed: () {
-                          Utilities.openNamedActivity(context, Routes.createUpdateNote);
-                        },
-                        icon: const Icon(Icons.add),
-                      ),
-                    ],
-                  );
-              }
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                    case ConnectionState.active:
+                      if (snapshot.hasData) {
+                        final allNotes = snapshot.data as Iterable<CloudNote>;
+                        return NotificationListener<ScrollEndNotification>(
+                          onNotification: (_) {
+                            _snapAppbar();
+                            return false;
+                          },
+                          child: CupertinoScrollbar(
+                            controller: _controller,
+                            child: CustomScrollView(
+                              controller: _controller,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              slivers: [
+                                SliverAppBar(
+                                  pinned: true,
+                                  stretch: true,
+                                  centerTitle: false,
+                                  shadowColor: Theme.of(context).colorScheme.shadow,
+                                  iconTheme: Theme.of(context)
+                                      .appBarTheme
+                                      .iconTheme
+                                      ?.copyWith(color: Theme.of(context).colorScheme.outline),
+                                  flexibleSpace: SliverHeaderText(
+                                      maxHeight: maxHeight,
+                                      minHeight: minHeight,
+                                      notesLength: allNotes.isEmpty ? 0 : allNotes.length,
+                                      imagePath:
+                                          value.darkTheme ? "assets/notesImage.png" : "assets/notesImageLight.png"),
+                                  expandedHeight: maxHeight - MediaQuery.of(context).padding.top,
+                                  actions: [
+                                    IconButton(
+                                      onPressed: () {
+                                        Utilities.openNamedActivity(context, Routes.createUpdateNote);
+                                      },
+                                      icon: Icon(
+                                        Icons.add,
+                                        color: Theme.of(context).colorScheme.outline,
+                                      ),
+                                    ),
+                                    PopupMenuButton(
+                                        color: Theme.of(context).scaffoldBackgroundColor,
+                                        elevation: 20,
+                                        enabled: true,
+                                        icon: const Icon(Icons.filter_list_rounded),
+                                        tooltip: "Filter list",
+                                        onSelected: (String value) {
+                                          log("Value: $value");
+                                          _filterValue.value = value;
+                                        },
+                                        itemBuilder: (context) => [
+                                              PopupMenuItem(
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.list,
+                                                      color: Theme.of(context).colorScheme.primary,
+                                                    ),
+                                                    const SizedBox(width: 12),
+                                                    Text("Show All", style: Theme.of(context).textTheme.bodyLarge),
+                                                  ],
+                                                ),
+                                                value: "all",
+                                              ),
+                                              PopupMenuItem(
+                                                child: Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.star,
+                                                      color: Theme.of(context).colorScheme.primary,
+                                                    ),
+                                                    const SizedBox(width: 12),
+                                                    Text("Only Favourites",
+                                                        style: Theme.of(context).textTheme.bodyLarge),
+                                                  ],
+                                                ),
+                                                value: "fav",
+                                              ),
+                                            ])
+                                  ],
+                                ),
+                                if (allNotes.isNotEmpty)
+                                  NotesListView(
+                                    notes: allNotes,
+                                    onTap: (note) {
+                                      Utilities.openNamedActivity(context, Routes.createUpdateNote, arguments: note);
+                                    },
+                                    onImageTap: (imageUrl) {
+                                      log(imageUrl);
+                                      Utilities.openNamedActivity(context, Routes.notesImage,
+                                          arguments: ImageArgs(imageUrl: imageUrl));
+                                    },
+                                    onFileTap: (fileArg) {
+                                      if (path.extension(fileArg.fileName) == ".pdf") {
+                                        Utilities.openNamedActivity(context, Routes.pdfView, arguments: fileArg);
+                                      } else {
+                                        Utils.launchFile(fileArg.fileUrl);
+                                      }
+                                    },
+                                    onLongPress: (note) {
+                                      showBottomSheet(
+                                        context: context,
+                                        onDeleteTap: () async {
+                                          Utilities.closeActivity(context);
+
+                                          final shouldDelete = await showDeleteDialog(context);
+                                          log(shouldDelete.toString());
+                                          if (shouldDelete) {
+                                            if (note.imageUrl != "") {
+                                              _notesService.deleteFile(note.imageUrl!);
+                                            }
+                                            if (note.fileUrl != "") {
+                                              _notesService.deleteFile(note.fileUrl!);
+                                            }
+                                            await _notesService.deleteNote(documentId: note.documentId);
+                                          }
+                                        },
+                                        onShareTap: () async {
+                                          Utilities.closeActivity(context);
+                                          if (note.text.isEmpty) {
+                                            await showCannotShareEmptyNoteDialog(context);
+                                          } else {
+                                            Share.share(note.text);
+                                          }
+                                        },
+                                      );
+                                    },
+                                  )
+                                else
+                                  const SliverFillRemaining(
+                                    hasScrollBody: false,
+                                    child: Center(
+                                      child: NoDataWidget(title: "No data"),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      } else {
+                        return DefaultLoadingScreen(
+                          maxHeight: maxHeight,
+                          minHeight: minHeight,
+                          actions: [
+                            IconButton(
+                              onPressed: () {
+                                Utilities.openNamedActivity(context, Routes.createUpdateNote);
+                              },
+                              icon: const Icon(Icons.add),
+                            ),
+                          ],
+                        );
+                      }
+
+                    default:
+                      return DefaultLoadingScreen(
+                        maxHeight: maxHeight,
+                        minHeight: minHeight,
+                        actions: [
+                          IconButton(
+                            onPressed: () {
+                              Utilities.openNamedActivity(context, Routes.createUpdateNote);
+                            },
+                            icon: const Icon(Icons.add),
+                          ),
+                        ],
+                      );
+                  }
+                },
+              );
             },
           ),
         );

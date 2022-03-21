@@ -26,6 +26,7 @@ class FirebaseCloudStorage {
       fileUrlFieldname: '',
       createdDateFieldName: '',
       fileFieldname: '',
+      favouriteFieldName: '',
     });
 
     final fetchedNote = await document.get();
@@ -38,6 +39,7 @@ class FirebaseCloudStorage {
       fileUrl: "",
       createdDate: "",
       fileName: "",
+      favourite: false,
     );
   }
 
@@ -56,6 +58,13 @@ class FirebaseCloudStorage {
             event.docs.map((doc) => CloudNote.fromSnapshot(doc)).where((note) => note.ownerUserId == ownerUserId),
       );
 
+  Stream<Iterable<CloudNote>> allFavouriteNotes({required String ownerUserId, bool favourite = true}) =>
+      notes.snapshots().map(
+            (event) => event.docs
+                .map((doc) => CloudNote.fromSnapshot(doc))
+                .where((note) => note.ownerUserId == ownerUserId && note.favourite == favourite),
+          );
+
   Future<void> updateNote({
     required String documentId,
     required String text,
@@ -65,6 +74,7 @@ class FirebaseCloudStorage {
     String fileUrl = "",
     String createdDate = "",
     String fileName = "",
+    bool favourite = false,
   }) async {
     try {
       await notes.doc(documentId).update({
@@ -75,6 +85,7 @@ class FirebaseCloudStorage {
         fileUrlFieldname: fileUrl,
         createdDateFieldName: createdDate,
         fileFieldname: fileName,
+        favouriteFieldName: favourite,
       });
     } catch (e) {
       throw CouldNotGetUpdateNoteException();

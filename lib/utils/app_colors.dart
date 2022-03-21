@@ -16,6 +16,7 @@ class AppColors {
   static const Color cBlueLight = Color(0xff92A5C6);
   static const Color cGreen = Color(0xff78c478);
   static const Color cGreenAccent = Color(0xff94d354);
+  static const Color cYellow = Color(0xFFF5E612);
   static const Color cWhite = Color(0xffFFFFFF);
   static const Color cLight = Color(0xfffafafa);
   static const Color cBlack = Color(0xff202020);

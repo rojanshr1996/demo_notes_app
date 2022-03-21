@@ -1,19 +1,24 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:demo_app_bloc/model/model.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart' as path;
 
 typedef NoteCallback = void Function(CloudNote note);
 typedef ImageCallback = void Function(String imageUrl);
+typedef FileCallBack = void Function(Args args);
 
 class NotesListView extends StatelessWidget {
   final Iterable<CloudNote> notes;
   final NoteCallback? onTap;
   final NoteCallback? onLongPress;
   final ImageCallback? onImageTap;
-  const NotesListView({Key? key, required this.notes, this.onTap, this.onLongPress, this.onImageTap}) : super(key: key);
+  final FileCallBack? onFileTap;
+  const NotesListView({Key? key, required this.notes, this.onTap, this.onLongPress, this.onImageTap, this.onFileTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -86,8 +91,8 @@ class NotesListView extends StatelessWidget {
                                           child: Hero(
                                             tag: note.imageUrl!,
                                             child: Container(
-                                              height: 36,
-                                              width: 36,
+                                              height: 34,
+                                              width: 34,
                                               decoration: BoxDecoration(
                                                 color: Theme.of(context).scaffoldBackgroundColor,
                                                 borderRadius: BorderRadius.circular(10),
@@ -110,17 +115,35 @@ class NotesListView extends StatelessWidget {
                                   SizedBox(width: note.imageUrl == "" ? 0 : 15),
                                   note.fileUrl == ""
                                       ? const SizedBox()
-                                      : Container(
-                                          height: 36,
-                                          width: 36,
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context).scaffoldBackgroundColor,
-                                            borderRadius: BorderRadius.circular(10),
+                                      : InkWell(
+                                          onTap: () {
+                                            if (note.fileUrl != "") {
+                                              onFileTap!(Args(fileUrl: note.fileUrl!, fileName: note.fileName ?? ""));
+                                            }
+                                          },
+                                          child: Container(
+                                            height: 34,
+                                            width: 34,
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context).scaffoldBackgroundColor,
+                                              borderRadius: BorderRadius.circular(10),
+                                            ),
+                                            child: Icon(
+                                                path.extension(note.fileName!) == ".pdf"
+                                                    ? Icons.picture_as_pdf
+                                                    : path.extension(note.fileName!) == ".pptx"
+                                                        ? Icons.present_to_all
+                                                        : Icons.file_copy,
+                                                size: 20,
+                                                color: Theme.of(context).colorScheme.background),
                                           ),
-                                          child: Icon(Icons.file_copy,
-                                              size: 20, color: Theme.of(context).colorScheme.background),
                                         ),
                                   const Spacer(),
+                                  note.favourite == null
+                                      ? const SizedBox()
+                                      : note.favourite!
+                                          ? const Icon(Icons.star, color: AppColors.cYellow)
+                                          : const SizedBox()
                                 ],
                               )
                       ],
