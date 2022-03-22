@@ -95,11 +95,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final phone = phoneController.text.trim();
     final profileUrl = _imageUrl.value;
 
-    debugPrint("NOTE ID: $userDoc");
-    debugPrint("Full name: $name");
-    debugPrint("Address: $address");
-    debugPrint("Phone: $phone");
-
     await _notesService.updateUser(
       documentId: userDoc.documentId!,
       name: name,
@@ -112,7 +107,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future uploadImage() async {
     if (_imageFile.value == null) return;
     final fileName = basename(_imageFile.value!.path);
-    _task.value = _notesService.uploadFile(fileName, _imageFile.value!);
+    _task.value = _notesService.uploadFile(fileName, _imageFile.value!, fromUser: true);
 
     if (_task.value == null) return;
     final snapshot = await _task.value!.whenComplete(() {});
@@ -132,7 +127,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           case ConnectionState.active:
             if (snapshot.hasData) {
               userData = snapshot.data as Iterable<UserModel>;
-              log("User: " + userData.toString());
               _imageUrl.value = userData.first.profileImage!;
               return IgnorePointer(
                 ignoring: _task.value?.snapshot.bytesTransferred != _task.value?.snapshot.totalBytes ? true : false,

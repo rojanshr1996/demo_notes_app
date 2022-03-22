@@ -39,6 +39,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
   late ValueNotifier<File?> _imageFile;
   late ValueNotifier<File?> _file;
   late ValueNotifier<UploadTask?> _task;
+  late ValueNotifier<UploadTask?> _taskFile;
   late ValueNotifier<String> _imageUrl;
   late ValueNotifier<String> _fileUrl;
   late ValueNotifier<String> _fileName;
@@ -52,6 +53,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     _imageFile = ValueNotifier<File?>(null);
     _file = ValueNotifier<File?>(null);
     _task = ValueNotifier<UploadTask?>(null);
+    _taskFile = ValueNotifier<UploadTask?>(null);
     _imageUrl = ValueNotifier<String>("");
     _fileUrl = ValueNotifier<String>("");
     _fileName = ValueNotifier<String>("");
@@ -195,6 +197,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
     _fileUrl.dispose();
     _color.dispose();
     _task.dispose();
+    _taskFile.dispose();
     super.dispose();
   }
 
@@ -273,7 +276,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                                 child: Row(
                                   children: [
                                     Expanded(
@@ -321,12 +324,12 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                                      padding: const EdgeInsets.symmetric(horizontal: 16),
                                       child: widget.note == null
                                           ? const SizedBox()
                                           : widget.note?.createdDate == ""
@@ -338,7 +341,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                                                 ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 15.0),
+                                      padding: const EdgeInsets.only(left: 16, right: 12),
                                       child: Row(
                                         children: [
                                           color == null
@@ -377,7 +380,8 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                                               favourite = isLiked;
                                               return Icon(
                                                 isLiked ? Icons.star : Icons.star_border,
-                                                color: isLiked ? AppColors.cYellow : AppColors.cFadedBlue,
+                                                color:
+                                                    isLiked ? Theme.of(context).indicatorColor : AppColors.cFadedBlue,
                                                 size: 36,
                                               );
                                             },
@@ -386,18 +390,19 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                                      padding: const EdgeInsets.symmetric(horizontal: 16),
                                       child: TextField(
                                         controller: _textController,
                                         keyboardType: TextInputType.multiline,
-                                        style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: regular),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelLarge
+                                            ?.copyWith(fontWeight: regular, height: 1.4),
                                         maxLines: null,
                                         decoration: InputDecoration(
                                           hintText: "Enter new note... ",
-                                          hintStyle: Theme.of(context)
-                                              .textTheme
-                                              .labelLarge
-                                              ?.copyWith(color: Theme.of(context).colorScheme.primary),
+                                          hintStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                              color: Theme.of(context).colorScheme.primary, fontWeight: regular),
                                           border: const UnderlineInputBorder(borderSide: BorderSide.none),
                                         ),
                                       ),
@@ -406,278 +411,272 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                                 ),
                               ),
                               const Spacer(),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(
-                                      child: ValueListenableBuilder(
-                                        valueListenable: _imageFile,
-                                        builder: (context, imageFile, _) {
-                                          return _imageFile.value == null || _imageFile.value?.path == null
-                                              ? ValueListenableBuilder(
-                                                  valueListenable: _imageUrl,
-                                                  builder: (context, imageUrl, _) {
-                                                    return _imageUrl.value != ""
-                                                        ? Padding(
-                                                            padding: const EdgeInsets.all(15),
-                                                            child: ClipRRect(
-                                                              borderRadius: BorderRadius.circular(15),
-                                                              child: Column(
-                                                                children: [
-                                                                  InkWell(
-                                                                    onTap: () {
-                                                                      Utilities.openNamedActivity(
-                                                                          context, Routes.enlargeImage,
-                                                                          arguments:
-                                                                              ImageArgs(imageUrl: _imageUrl.value));
-                                                                    },
-                                                                    child: Container(
-                                                                      height: 140,
-                                                                      width: 200,
-                                                                      color: AppColors.cWhite,
-                                                                      child: CachedNetworkImage(
-                                                                        imageUrl: _imageUrl.value,
-                                                                        fit: BoxFit.cover,
-                                                                        memCacheHeight: 450,
-                                                                        errorWidget: (context, url, error) => Icon(
-                                                                          Icons.error,
-                                                                          color:
-                                                                              Theme.of(context).colorScheme.background,
-                                                                        ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Expanded(
+                                    child: ValueListenableBuilder(
+                                      valueListenable: _imageFile,
+                                      builder: (context, imageFile, _) {
+                                        return _imageFile.value == null || _imageFile.value?.path == null
+                                            ? ValueListenableBuilder(
+                                                valueListenable: _imageUrl,
+                                                builder: (context, imageUrl, _) {
+                                                  return _imageUrl.value != ""
+                                                      ? Padding(
+                                                          padding: const EdgeInsets.fromLTRB(16, 16, 8, 16),
+                                                          child: ClipRRect(
+                                                            borderRadius: BorderRadius.circular(15),
+                                                            child: Column(
+                                                              children: [
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    Utilities.openNamedActivity(
+                                                                        context, Routes.enlargeImage,
+                                                                        arguments:
+                                                                            ImageArgs(imageUrl: _imageUrl.value));
+                                                                  },
+                                                                  child: Container(
+                                                                    height: 140,
+                                                                    width: double.maxFinite,
+                                                                    color: AppColors.cWhite,
+                                                                    child: CachedNetworkImage(
+                                                                      imageUrl: _imageUrl.value,
+                                                                      fit: BoxFit.cover,
+                                                                      memCacheHeight: 450,
+                                                                      errorWidget: (context, url, error) => Icon(
+                                                                        Icons.error,
+                                                                        color: Theme.of(context).colorScheme.background,
                                                                       ),
                                                                     ),
                                                                   ),
-                                                                  InkWell(
-                                                                    onTap: () {
-                                                                      _imageFile.value = null;
-                                                                      if (_imageUrl.value != "") {
-                                                                        _notesService.deleteFile(_imageUrl.value);
-                                                                        _imageUrl.value = "";
-                                                                      }
-                                                                    },
-                                                                    child: Container(
-                                                                      height: 42,
-                                                                      width: 200,
-                                                                      color: AppColors.cRedAccent,
-                                                                      child: const Center(
-                                                                        child: Icon(
-                                                                          Icons.close,
-                                                                          color: AppColors.cWhite,
-                                                                        ),
+                                                                ),
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    _imageFile.value = null;
+                                                                    if (_imageUrl.value != "") {
+                                                                      _notesService.deleteFile(_imageUrl.value);
+                                                                      _imageUrl.value = "";
+                                                                    }
+                                                                  },
+                                                                  child: Container(
+                                                                    height: 42,
+                                                                    width: double.maxFinite,
+                                                                    color: AppColors.cRedAccent,
+                                                                    child: const Center(
+                                                                      child: Icon(
+                                                                        Icons.close,
+                                                                        color: AppColors.cWhite,
                                                                       ),
                                                                     ),
                                                                   ),
-                                                                ],
-                                                              ),
+                                                                ),
+                                                              ],
                                                             ),
-                                                          )
-                                                        : const SizedBox();
-                                                  },
-                                                )
-                                              : Padding(
-                                                  padding: const EdgeInsets.all(15),
-                                                  child: ClipRRect(
-                                                    borderRadius: BorderRadius.circular(15),
-                                                    child: Column(
-                                                      children: [
-                                                        Container(
-                                                          height: 140,
+                                                          ),
+                                                        )
+                                                      : const SizedBox();
+                                                },
+                                              )
+                                            : Padding(
+                                                padding: const EdgeInsets.fromLTRB(16, 16, 8, 16),
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(15),
+                                                  child: Column(
+                                                    children: [
+                                                      Container(
+                                                        height: 140,
+                                                        width: double.maxFinite,
+                                                        color: AppColors.cWhite,
+                                                        child: Image.file(_imageFile.value!,
+                                                            fit: BoxFit.cover, cacheHeight: 500),
+                                                      ),
+                                                      ValueListenableBuilder(
+                                                        valueListenable: _task,
+                                                        builder: (context, task, _) {
+                                                          return task != null
+                                                              ? buildUploadStatus(_task.value!)
+                                                              : const SizedBox();
+                                                        },
+                                                      ),
+                                                      InkWell(
+                                                        onTap: () {
+                                                          _imageFile.value = null;
+                                                          if (_imageUrl.value != "") {
+                                                            _notesService.deleteFile(_imageUrl.value);
+                                                            _imageUrl.value = "";
+                                                          }
+                                                        },
+                                                        child: Container(
+                                                          height: 42,
                                                           width: 200,
-                                                          color: AppColors.cWhite,
-                                                          child: Image.file(_imageFile.value!,
-                                                              fit: BoxFit.cover, cacheHeight: 500),
-                                                        ),
-                                                        ValueListenableBuilder(
-                                                          valueListenable: _task,
-                                                          builder: (context, task, _) {
-                                                            return _task.value != null
-                                                                ? buildUploadStatus(_task.value!)
-                                                                : const SizedBox();
-                                                          },
-                                                        ),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            _imageFile.value = null;
-                                                            if (_imageUrl.value != "") {
-                                                              _notesService.deleteFile(_imageUrl.value);
-                                                              _imageUrl.value = "";
-                                                            }
-                                                          },
-                                                          child: Container(
-                                                            height: 42,
-                                                            width: 200,
-                                                            color: AppColors.cRedAccent,
-                                                            child: const Center(
-                                                              child: Icon(
-                                                                Icons.close,
-                                                                color: AppColors.cWhite,
-                                                              ),
+                                                          color: AppColors.cRedAccent,
+                                                          child: const Center(
+                                                            child: Icon(
+                                                              Icons.close,
+                                                              color: AppColors.cWhite,
                                                             ),
                                                           ),
                                                         ),
-                                                      ],
-                                                    ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                );
-                                        },
-                                      ),
+                                                ),
+                                              );
+                                      },
                                     ),
-                                    Expanded(
-                                      child: ValueListenableBuilder(
-                                        valueListenable: _file,
-                                        builder: (context, fileUrl, _) {
-                                          return _file.value == null || _file.value?.path == null
-                                              ? ValueListenableBuilder(
-                                                  valueListenable: _fileUrl,
-                                                  builder: (context, fileUrl, _) {
-                                                    return _fileUrl.value != ""
-                                                        ? Padding(
-                                                            padding: const EdgeInsets.all(15),
-                                                            child: ClipRRect(
-                                                              borderRadius: BorderRadius.circular(15),
-                                                              child: Column(
-                                                                children: [
-                                                                  InkWell(
-                                                                    onTap: () {
-                                                                      Utilities.openNamedActivity(
-                                                                          context, Routes.pdfView,
-                                                                          arguments: Args(
-                                                                              fileUrl: _fileUrl.value,
-                                                                              fileName: widget.note!.fileName ?? ""));
-                                                                    },
-                                                                    child: Container(
-                                                                      height: 150,
-                                                                      width: 200,
-                                                                      color: AppColors.cWhite,
-                                                                      child: Center(
-                                                                        child: Column(
-                                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                                          children: [
-                                                                            Icon(
-                                                                                path.extension(
-                                                                                            widget.note!.fileName!) ==
-                                                                                        ".pdf"
-                                                                                    ? Icons.picture_as_pdf
-                                                                                    : path.extension(widget
-                                                                                                .note!.fileName!) ==
-                                                                                            ".pptx"
-                                                                                        ? Icons.present_to_all
-                                                                                        : Icons.file_copy,
-                                                                                size: 48,
-                                                                                color: AppColors.cDarkBlue),
-                                                                            const SizedBox(height: 10),
-                                                                            Text(
-                                                                              "${widget.note?.fileName}",
-                                                                              textAlign: TextAlign.center,
-                                                                              maxLines: 2,
-                                                                              style: CustomTextStyle.smallText,
-                                                                              overflow: TextOverflow.ellipsis,
-                                                                            ),
-                                                                          ],
-                                                                        ),
+                                  ),
+                                  Expanded(
+                                    child: ValueListenableBuilder(
+                                      valueListenable: _file,
+                                      builder: (context, fileUrl, _) {
+                                        return _file.value == null || _file.value?.path == null
+                                            ? ValueListenableBuilder(
+                                                valueListenable: _fileUrl,
+                                                builder: (context, fileUrl, _) {
+                                                  return _fileUrl.value != ""
+                                                      ? Padding(
+                                                          padding: const EdgeInsets.fromLTRB(8, 16, 16, 16),
+                                                          child: ClipRRect(
+                                                            borderRadius: BorderRadius.circular(15),
+                                                            child: Column(
+                                                              children: [
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    Utilities.openNamedActivity(context, Routes.pdfView,
+                                                                        arguments: Args(
+                                                                            fileUrl: _fileUrl.value,
+                                                                            fileName: widget.note!.fileName ?? ""));
+                                                                  },
+                                                                  child: Container(
+                                                                    height: 140,
+                                                                    width: double.maxFinite,
+                                                                    color: AppColors.cWhite,
+                                                                    child: Center(
+                                                                      child: Column(
+                                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                                        children: [
+                                                                          Icon(
+                                                                              path.extension(widget.note!.fileName!) ==
+                                                                                      ".pdf"
+                                                                                  ? Icons.picture_as_pdf
+                                                                                  : path.extension(
+                                                                                              widget.note!.fileName!) ==
+                                                                                          ".pptx"
+                                                                                      ? Icons.present_to_all
+                                                                                      : Icons.file_copy,
+                                                                              size: 48,
+                                                                              color: AppColors.cDarkBlue),
+                                                                          const SizedBox(height: 10),
+                                                                          Text(
+                                                                            "${widget.note?.fileName}",
+                                                                            textAlign: TextAlign.center,
+                                                                            maxLines: 2,
+                                                                            style: CustomTextStyle.smallText,
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                          ),
+                                                                        ],
                                                                       ),
                                                                     ),
                                                                   ),
-                                                                  InkWell(
-                                                                    onTap: () {
-                                                                      _file.value = null;
-                                                                      if (_fileUrl.value != "") {
-                                                                        _notesService.deleteFile(_fileUrl.value);
-                                                                        _fileUrl.value = "";
-                                                                        _fileName.value = "";
-                                                                      }
-                                                                    },
-                                                                    child: Container(
-                                                                      height: 42,
-                                                                      width: 200,
-                                                                      color: AppColors.cRedAccent,
-                                                                      child: const Center(
-                                                                        child: Icon(
-                                                                          Icons.close,
-                                                                          color: AppColors.cWhite,
-                                                                        ),
+                                                                ),
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    _file.value = null;
+                                                                    if (_fileUrl.value != "") {
+                                                                      _notesService.deleteFile(_fileUrl.value);
+                                                                      _fileUrl.value = "";
+                                                                      _fileName.value = "";
+                                                                    }
+                                                                  },
+                                                                  child: Container(
+                                                                    height: 42,
+                                                                    width: 200,
+                                                                    color: AppColors.cRedAccent,
+                                                                    child: const Center(
+                                                                      child: Icon(
+                                                                        Icons.close,
+                                                                        color: AppColors.cWhite,
                                                                       ),
                                                                     ),
                                                                   ),
-                                                                ],
-                                                              ),
+                                                                ),
+                                                              ],
                                                             ),
-                                                          )
-                                                        : const SizedBox();
-                                                  },
-                                                )
-                                              : Padding(
-                                                  padding: const EdgeInsets.all(15),
-                                                  child: ClipRRect(
-                                                    borderRadius: BorderRadius.circular(15),
-                                                    child: Column(
-                                                      children: [
-                                                        Container(
-                                                          height: 150,
+                                                          ),
+                                                        )
+                                                      : const SizedBox();
+                                                },
+                                              )
+                                            : Padding(
+                                                padding: const EdgeInsets.fromLTRB(8, 16, 16, 16),
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(15),
+                                                  child: Column(
+                                                    children: [
+                                                      Container(
+                                                        height: 140,
+                                                        width: double.maxFinite,
+                                                        color: AppColors.cWhite,
+                                                        child: Column(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            Icon(
+                                                                path.extension(_file.value!.path) == ".pdf"
+                                                                    ? Icons.picture_as_pdf
+                                                                    : path.extension(_file.value!.path) == ".pptx"
+                                                                        ? Icons.present_to_all
+                                                                        : Icons.file_copy,
+                                                                size: 48,
+                                                                color: AppColors.cDarkBlue),
+                                                            const SizedBox(height: 10),
+                                                            Text(
+                                                              _file.value!.path.split("/").last,
+                                                              textAlign: TextAlign.center,
+                                                              maxLines: 2,
+                                                              style: CustomTextStyle.smallText,
+                                                              overflow: TextOverflow.ellipsis,
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      ValueListenableBuilder(
+                                                        valueListenable: _taskFile,
+                                                        builder: (context, task, _) {
+                                                          return task != null
+                                                              ? buildFileUploadStatus(_taskFile.value!)
+                                                              : const SizedBox();
+                                                        },
+                                                      ),
+                                                      InkWell(
+                                                        onTap: () {
+                                                          _file.value = null;
+                                                          if (_fileUrl.value != "") {
+                                                            _notesService.deleteFile(_fileUrl.value);
+                                                            _fileUrl.value = "";
+                                                            _fileName.value = "";
+                                                          }
+                                                        },
+                                                        child: Container(
+                                                          height: 42,
                                                           width: 200,
-                                                          color: AppColors.cWhite,
-                                                          child: Column(
-                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                            children: [
-                                                              Icon(
-                                                                  path.extension(_file.value!.path) == ".pdf"
-                                                                      ? Icons.picture_as_pdf
-                                                                      : path.extension(_file.value!.path) == ".pptx"
-                                                                          ? Icons.present_to_all
-                                                                          : Icons.file_copy,
-                                                                  size: 48,
-                                                                  color: AppColors.cDarkBlue),
-                                                              const SizedBox(height: 10),
-                                                              Text(
-                                                                _file.value!.path.split("/").last,
-                                                                textAlign: TextAlign.center,
-                                                                maxLines: 2,
-                                                                style: CustomTextStyle.smallText,
-                                                                overflow: TextOverflow.ellipsis,
-                                                              )
-                                                            ],
+                                                          color: AppColors.cRedAccent,
+                                                          child: const Center(
+                                                            child: Icon(Icons.close, color: AppColors.cWhite),
                                                           ),
                                                         ),
-                                                        ValueListenableBuilder(
-                                                          valueListenable: _task,
-                                                          builder: (context, task, _) {
-                                                            return task != null
-                                                                ? buildUploadStatus(_task.value!)
-                                                                : const SizedBox();
-                                                          },
-                                                        ),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            _file.value = null;
-                                                            if (_fileUrl.value != "") {
-                                                              _notesService.deleteFile(_fileUrl.value);
-                                                              _fileUrl.value = "";
-                                                              _fileName.value = "";
-                                                            }
-                                                          },
-                                                          child: Container(
-                                                            height: 42,
-                                                            width: 200,
-                                                            color: AppColors.cRedAccent,
-                                                            child: const Center(
-                                                              child: Icon(Icons.close, color: AppColors.cWhite),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                );
-                                        },
-                                      ),
+                                                ),
+                                              );
+                                      },
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                               Padding(
-                                padding: const EdgeInsets.fromLTRB(20, 0, 0, 20),
+                                padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                                 child: SizedBox(
                                   height: 50,
                                   child: ColorSlider(
@@ -724,11 +723,11 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
   Future uploadFile() async {
     if (_file.value == null) return;
     final fileName = basename(_file.value!.path);
-    _task.value = _notesService.uploadFile(fileName, _file.value!);
+    _taskFile.value = _notesService.uploadFile("$fileName${DateTime.now()}", _file.value!);
     // setState(() {});
 
-    if (_task.value == null) return;
-    final snapshot = await _task.value!.whenComplete(() {});
+    if (_taskFile.value == null) return;
+    final snapshot = await _taskFile.value!.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
     log("Donwload-link file: $urlDownload");
     _fileUrl.value = urlDownload;
@@ -743,16 +742,43 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
             final snap = snapshot.data!;
             final progress = snap.bytesTransferred / snap.totalBytes;
             log("PROGRESS: $progress");
-            return Container(
-              width: 200,
-              alignment: Alignment.topCenter,
-              child: LinearProgressIndicator(
-                value: progress,
-                backgroundColor: AppColors.cLight,
-                color: AppColors.cGreen,
-                minHeight: 10,
-              ),
-            );
+            return progress == 1.0
+                ? const SizedBox()
+                : Container(
+                    width: 200,
+                    alignment: Alignment.topCenter,
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: AppColors.cLight,
+                      color: AppColors.cGreen,
+                      minHeight: 10,
+                    ),
+                  );
+          } else {
+            return Container(height: 10, width: 200, color: AppColors.cWhite);
+          }
+        },
+      );
+
+  Widget buildFileUploadStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(
+        stream: task.snapshotEvents,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final snap = snapshot.data!;
+            final progress = snap.bytesTransferred / snap.totalBytes;
+            log("PROGRESS: $progress");
+            return progress == 1.0
+                ? const SizedBox()
+                : Container(
+                    width: 200,
+                    alignment: Alignment.topCenter,
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: AppColors.cLight,
+                      color: AppColors.cGreen,
+                      minHeight: 10,
+                    ),
+                  );
           } else {
             return Container(height: 10, width: 200, color: AppColors.cWhite);
           }

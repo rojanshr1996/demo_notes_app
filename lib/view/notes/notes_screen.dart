@@ -129,45 +129,47 @@ class _NotesScreenState extends State<NotesScreen> {
                                         color: Theme.of(context).colorScheme.outline,
                                       ),
                                     ),
-                                    PopupMenuButton(
-                                        color: Theme.of(context).scaffoldBackgroundColor,
-                                        elevation: 20,
-                                        enabled: true,
-                                        icon: const Icon(Icons.filter_list_rounded),
-                                        tooltip: "Filter list",
-                                        onSelected: (String value) {
-                                          log("Value: $value");
-                                          _filterValue.value = value;
-                                        },
-                                        itemBuilder: (context) => [
-                                              PopupMenuItem(
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.list,
-                                                      color: Theme.of(context).colorScheme.primary,
+                                    allNotes.isEmpty
+                                        ? const SizedBox()
+                                        : PopupMenuButton(
+                                            color: Theme.of(context).scaffoldBackgroundColor,
+                                            elevation: 20,
+                                            enabled: true,
+                                            icon: const Icon(Icons.filter_list_rounded),
+                                            tooltip: "Filter list",
+                                            onSelected: (String value) {
+                                              log("Value: $value");
+                                              _filterValue.value = value;
+                                            },
+                                            itemBuilder: (context) => [
+                                                  PopupMenuItem(
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.list,
+                                                          color: Theme.of(context).colorScheme.primary,
+                                                        ),
+                                                        const SizedBox(width: 12),
+                                                        Text("Show All", style: Theme.of(context).textTheme.bodyLarge),
+                                                      ],
                                                     ),
-                                                    const SizedBox(width: 12),
-                                                    Text("Show All", style: Theme.of(context).textTheme.bodyLarge),
-                                                  ],
-                                                ),
-                                                value: "all",
-                                              ),
-                                              PopupMenuItem(
-                                                child: Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.star,
-                                                      color: Theme.of(context).colorScheme.primary,
+                                                    value: "all",
+                                                  ),
+                                                  PopupMenuItem(
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.star,
+                                                          color: Theme.of(context).colorScheme.primary,
+                                                        ),
+                                                        const SizedBox(width: 12),
+                                                        Text("Only Favourites",
+                                                            style: Theme.of(context).textTheme.bodyLarge),
+                                                      ],
                                                     ),
-                                                    const SizedBox(width: 12),
-                                                    Text("Only Favourites",
-                                                        style: Theme.of(context).textTheme.bodyLarge),
-                                                  ],
-                                                ),
-                                                value: "fav",
-                                              ),
-                                            ])
+                                                    value: "fav",
+                                                  ),
+                                                ])
                                   ],
                                 ),
                                 if (allNotes.isNotEmpty)

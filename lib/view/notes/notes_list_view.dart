@@ -59,7 +59,7 @@ class NotesListView extends StatelessWidget {
                                     .bodySmall
                                     ?.copyWith(fontWeight: medium, fontSize: 9, color: Theme.of(context).hintColor),
                               ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 4),
                         Text(
                           note.title,
                           maxLines: 2,
@@ -142,7 +142,7 @@ class NotesListView extends StatelessWidget {
                                   note.favourite == null
                                       ? const SizedBox()
                                       : note.favourite!
-                                          ? const Icon(Icons.star, color: AppColors.cYellow)
+                                          ? Icon(Icons.star, color: Theme.of(context).indicatorColor)
                                           : const SizedBox()
                                 ],
                               )

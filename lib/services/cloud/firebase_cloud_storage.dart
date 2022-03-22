@@ -11,6 +11,7 @@ class FirebaseCloudStorage {
   final notes = FirebaseFirestore.instance.collection('notes');
   final users = FirebaseFirestore.instance.collection('users');
   final storageDestination = "attachments/";
+  final storageUserDestination = "users/";
   static final FirebaseCloudStorage _shared = FirebaseCloudStorage._sharedInstance();
 
   FirebaseCloudStorage._sharedInstance();
@@ -100,8 +101,12 @@ class FirebaseCloudStorage {
     }
   }
 
-  UploadTask? uploadFile(String fileName, File file) {
+  UploadTask? uploadFile(String fileName, File file, {bool fromUser = false}) {
     try {
+      if (fromUser) {
+        final ref = FirebaseStorage.instance.ref("$storageUserDestination$fileName");
+        return ref.putFile(file);
+      }
       final ref = FirebaseStorage.instance.ref("$storageDestination$fileName");
       return ref.putFile(file);
     } catch (e) {

@@ -11,7 +11,6 @@ import 'package:demo_app_bloc/utils/dialogs/error_dialog.dart';
 import 'package:demo_app_bloc/utils/utils.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:demo_app_bloc/widgets/custom_text_enter_field.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -78,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               if (state is AuthStateLoggedIn) {
                 // Navigating to the post screen if the user is authenticated
-                Utilities.replaceNamedActivity(context, Routes.index);
+                Utilities.removeNamedStackActivity(context, Routes.index);
               } else if (state is AuthStateNeedsVerification) {
                 Utilities.replaceNamedActivity(context, Routes.verifyEmail);
               }
