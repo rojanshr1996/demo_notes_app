@@ -17,6 +17,7 @@ class AppColors {
   static const Color cGreen = Color(0xff78c478);
   static const Color cGreenAccent = Color(0xff94d354);
   static const Color cYellow = Color(0xFFF5E612);
+  static const Color cDeepYellow = Color(0xFFFFD000);
   static const Color cWhite = Color(0xffFFFFFF);
   static const Color cLight = Color(0xfffafafa);
   static const Color cBlack = Color(0xff202020);
@@ -26,10 +27,10 @@ class AppColors {
   static const Color transparent = Colors.transparent;
 
   static const Color cDarkBlue = Color(0xff0b2d39);
-  static const Color cDarkBlueAccent = Color.fromARGB(255, 22, 79, 100);
-  static const Color cDarkBlueLight = Color.fromARGB(255, 187, 228, 243);
+  static const Color cDarkBlueAccent = Color(0xFF164F64);
+  static const Color cDarkBlueLight = Color(0xFFBBE4F3);
   static const Color cLightShade = Color(0xffe9f5f9);
-  static const Color cBlueShade = Color.fromARGB(255, 34, 130, 165);
+  static const Color cBlueShade = Color(0xFF2282A5);
   static const Color cDarkTextShade = Color(0xff041014);
 }
 
@@ -42,6 +43,7 @@ class ThemeClass {
       highlightColor: AppColors.transparent,
       backgroundColor: AppColors.cDarkBlue,
       hintColor: AppColors.cGrey,
+      indicatorColor: AppColors.cDeepYellow,
       colorScheme: ColorScheme.light(
         background: AppColors.cDarkBlue,
         error: AppColors.cRedAccent,
@@ -86,6 +88,7 @@ class ThemeClass {
     highlightColor: AppColors.transparent,
     backgroundColor: AppColors.cLight,
     hintColor: AppColors.cFadedBlue,
+    indicatorColor: AppColors.cYellow,
     colorScheme: ColorScheme.dark(
       error: AppColors.cRedAccent,
       primary: AppColors.cDarkBlue,
