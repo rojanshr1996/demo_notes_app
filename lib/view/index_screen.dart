@@ -4,19 +4,25 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
+import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
 import 'package:demo_app_bloc/helpers/loading/loading_screen.dart';
+import 'package:demo_app_bloc/model/model.dart';
 import 'package:demo_app_bloc/provider/dark_theme_provider.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/services/cloud/firebase_cloud_storage.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
+import 'package:demo_app_bloc/utils/dialogs/close_app_dialog.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
+import 'package:demo_app_bloc/widgets/logo_widget.dart';
+import 'package:demo_app_bloc/widgets/settings_user_header.dart';
 import 'package:demo_app_bloc/widgets/simple_circular_loader.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
@@ -41,162 +47,128 @@ class _IndexScreenState extends State<IndexScreen> {
 
   @override
   Widget build(BuildContext context) {
-    devtools.log("${FirebaseAuth.instance.currentUser}");
-    final AuthServices _auth = AuthServices();
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Text((_auth.currentUser?.isEmailVerified ?? false) ? "Welcome" : ""),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Utilities.openNamedActivity(context, Routes.settings);
-            },
-            icon: const Icon(
-              Icons.settings,
-            ),
+    return WillPopScope(
+      onWillPop: () async {
+        final shouldExit = await showCloseAppDialog(context);
+        log(shouldExit.toString());
+        if (shouldExit) {
+          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        }
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: AppBar(
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          title: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 4.0),
+            child: LogoWidget(height: 35),
           ),
-        ],
-      ),
-      body: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state.isLoading) {
-            LoadingScreen().show(context: context, text: state.loadingText ?? "Please wait a moment");
-          } else {
-            LoadingScreen().hide();
-          }
+        ),
+        body: BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state.isLoading) {
+              LoadingScreen().show(context: context, text: state.loadingText ?? "Please wait a moment");
+            } else {
+              LoadingScreen().hide();
+            }
 
-          if (state is AuthStateLoggedOut) {
-            Utilities.removeStackActivity(context, const LoginScreen());
-          }
-        },
-        builder: (context, state) {
-          debugPrint("$state");
+            if (state is AuthStateLoggedOut) {
+              Utilities.removeStackActivity(context, const LoginScreen());
+            }
+          },
+          builder: (context, state) {
+            debugPrint("$state");
 
-          return Consumer<DarkThemeProvider>(
-            builder: (context, value, child) {
-              return SizedBox(
-                width: Utilities.screenWidth(context),
-                height: Utilities.screenHeight(context),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      StreamBuilder(
-                        stream: _notesService.userData(ownerUserId: userId!),
-                        builder: (context, snapshot) {
-                          switch (snapshot.connectionState) {
-                            case ConnectionState.waiting:
-                            case ConnectionState.active:
-                              if (snapshot.hasData) {
-                                final userData = snapshot.data as Iterable<UserModel>;
-                                log("User: " + userData.toString());
-                                log("Profile: ${userData.first.profileImage!}");
-                                return Column(
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        Utilities.openNamedActivity(context, Routes.profile, arguments: userData.first);
-                                      },
-                                      child: userData.first.profileImage == ""
-                                          ? Container(
-                                              height: 70,
-                                              width: 70,
-                                              decoration: const BoxDecoration(
-                                                  color: AppColors.cDarkBlue, shape: BoxShape.circle),
-                                              child: const Icon(Icons.person_outline_outlined,
-                                                  color: AppColors.cLight, size: 38),
-                                            )
-                                          : Container(
-                                              height: 70,
-                                              width: 70,
-                                              decoration: BoxDecoration(
-                                                  border: Border.all(color: Theme.of(context).primaryColor),
-                                                  color: AppColors.cDarkBlueAccent,
-                                                  shape: BoxShape.circle),
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(100),
-                                                child: CachedNetworkImage(
-                                                  memCacheHeight: 200,
-                                                  imageUrl: userData.first.profileImage!,
-                                                  fit: BoxFit.cover,
-                                                  placeholder: (context, url) => Center(
-                                                      child: SimpleCircularLoader(
-                                                          color: Theme.of(context).colorScheme.outline)),
-                                                  errorWidget: (context, url, error) => const Icon(
-                                                    Icons.image,
-                                                    color: AppColors.cLight,
-                                                    size: 36,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                    ),
-                                    const SizedBox(height: 20),
-                                    Text(
-                                      " ${userData.first.name}",
-                                      style: Theme.of(context).textTheme.displayMedium,
-                                      textAlign: TextAlign.center,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
+            return Consumer<DarkThemeProvider>(
+              builder: (context, value, child) {
+                return SizedBox(
+                  width: Utilities.screenWidth(context),
+                  height: Utilities.screenHeight(context),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        StreamBuilder(
+                          stream: _notesService.userData(ownerUserId: userId!),
+                          builder: (context, snapshot) {
+                            switch (snapshot.connectionState) {
+                              case ConnectionState.waiting:
+                              case ConnectionState.active:
+                                if (snapshot.hasData) {
+                                  final userData = snapshot.data as Iterable<UserModel>;
+                                  return SettingsUserHeader(
+                                    userName: "${userData.first.name}",
+                                    profilePic: userData.first.profileImage ?? "",
+                                    onImageTap: () {
+                                      Utilities.openNamedActivity(context, Routes.enlargeImage,
+                                          arguments: ImageArgs(imageUrl: userData.first.profileImage ?? ""));
+                                    },
+                                    onPressed: () {
+                                      Utilities.openNamedActivity(context, Routes.profile, arguments: userData.first);
+                                    },
+                                    onSettingsTap: () {
+                                      Utilities.openNamedActivity(context, Routes.settings);
+                                    },
+                                  );
+                                } else {
+                                  return const SizedBox(
+                                    height: 70,
+                                    width: 70,
+                                  );
+                                }
+
+                              default:
+                                return const Center(
+                                  child: SimpleCircularLoader(),
                                 );
-                              } else {
-                                return const SizedBox(height: 10);
-                              }
-
-                            default:
-                              return const Center(
-                                child: SimpleCircularLoader(),
-                              );
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 35),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 25, right: 25),
-                          child: IndexButtons(
-                            title: "VIEW NOTES",
-                            prefixIcon: const Icon(Icons.note_rounded, size: 55, color: AppColors.cLightShade),
-                            textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
-                            borderRadius: BorderRadius.circular(15),
-                            splashBorderRadius: BorderRadius.circular(15),
-                            imagePath: value.darkTheme ? "assets/notesImage.png" : "assets/notesImageLight.png",
-                            buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
-                            onPressed: () => Utilities.openNamedActivity(context, Routes.notes),
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 35),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 25, right: 25),
+                            child: IndexButtons(
+                              title: "VIEW NOTES",
+                              prefixIcon: const Icon(Icons.note_rounded, size: 55, color: AppColors.cLightShade),
+                              textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
+                              borderRadius: BorderRadius.circular(15),
+                              splashBorderRadius: BorderRadius.circular(15),
+                              imagePath: value.darkTheme ? "assets/notesImage.png" : "assets/notesImageLight.png",
+                              buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                              onPressed: () => Utilities.openNamedActivity(context, Routes.notes),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 40),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 25, right: 25),
-                          child: IndexButtons(
-                            title: "VIEW POSTS",
-                            prefixIcon: const Icon(Icons.file_copy_rounded, size: 55, color: AppColors.cLightShade),
-                            textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
-                            borderRadius: BorderRadius.circular(15),
-                            splashBorderRadius: BorderRadius.circular(15),
-                            imagePath: value.darkTheme ? "assets/postImage.png" : "assets/postImageLight.png",
-                            buttonColor: AppColors.cDarkBlue,
-                            shadowColor: AppColors.cDarkBlue,
-                            onPressed: () => Utilities.openNamedActivity(context, Routes.post),
+                        const SizedBox(height: 30),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 25, right: 25),
+                            child: IndexButtons(
+                              title: "VIEW POSTS",
+                              prefixIcon: const Icon(Icons.file_copy_rounded, size: 55, color: AppColors.cLightShade),
+                              textStyle: CustomTextStyle.headerText.copyWith(color: AppColors.cLightShade),
+                              borderRadius: BorderRadius.circular(15),
+                              splashBorderRadius: BorderRadius.circular(15),
+                              imagePath: value.darkTheme ? "assets/postImage.png" : "assets/postImageLight.png",
+                              buttonColor: AppColors.cDarkBlue,
+                              shadowColor: AppColors.cDarkBlue,
+                              onPressed: () => Utilities.openNamedActivity(context, Routes.post),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 40),
-                    ],
+                        const SizedBox(height: 40),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
