@@ -12,6 +12,7 @@ import 'package:demo_app_bloc/provider/dark_theme_provider.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/services/cloud/firebase_cloud_storage.dart';
+import 'package:demo_app_bloc/services/fcm_services.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/custom_text_style.dart';
 import 'package:demo_app_bloc/utils/dialogs/close_app_dialog.dart';
@@ -21,9 +22,12 @@ import 'package:demo_app_bloc/widgets/logo_widget.dart';
 import 'package:demo_app_bloc/widgets/settings_user_header.dart';
 import 'package:demo_app_bloc/widgets/simple_circular_loader.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 
 class IndexScreen extends StatefulWidget {
@@ -35,14 +39,24 @@ class IndexScreen extends StatefulWidget {
 
 class _IndexScreenState extends State<IndexScreen> {
   late final FirebaseCloudStorage _notesService;
+  late FcmServices fcmServices;
   final AuthServices _auth = AuthServices();
   String? get userId => _auth.currentUser == null ? "" : _auth.currentUser!.id;
 
   @override
   void initState() {
-    debugPrint(userId);
-    _notesService = FirebaseCloudStorage();
     super.initState();
+    _notesService = FirebaseCloudStorage();
+    fcmServices = FcmServices();
+    initFcmService();
+  }
+
+  initFcmService() {
+    fcmServices.requestPermission();
+    fcmServices.loadFCM();
+    fcmServices.listenFCM();
+    fcmServices.getToken();
+    FirebaseMessaging.instance.subscribeToTopic("Reminders");
   }
 
   @override
@@ -50,7 +64,6 @@ class _IndexScreenState extends State<IndexScreen> {
     return WillPopScope(
       onWillPop: () async {
         final shouldExit = await showCloseAppDialog(context);
-        log(shouldExit.toString());
         if (shouldExit) {
           SystemChannels.platform.invokeMethod('SystemNavigator.pop');
         }

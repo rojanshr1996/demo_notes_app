@@ -13,7 +13,8 @@ import 'package:demo_app_bloc/view/posts/posts_bloc_screen.dart';
 import 'package:demo_app_bloc/view/profile/profile_screen.dart';
 
 import 'package:demo_app_bloc/view/route/routes.dart';
-import 'package:demo_app_bloc/view/settings.dart';
+import 'package:demo_app_bloc/view/settings/help_screen.dart';
+import 'package:demo_app_bloc/view/settings/settings.dart';
 import 'package:demo_app_bloc/widgets/enlarge_image.dart';
 import 'package:flutter/material.dart';
 
@@ -83,6 +84,9 @@ class AppRouter {
         } else {
           return MaterialPageRoute(builder: (_) => const ProfileScreen());
         }
+
+      case Routes.help:
+        return MaterialPageRoute(builder: (_) => const HelpScreen());
 
       default:
         return errorRoute(settings);

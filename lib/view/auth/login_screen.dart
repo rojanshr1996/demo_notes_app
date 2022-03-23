@@ -131,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           CustomTextEnterField(
                                             textEditingController: _emailController,
-                                            label: Text("Email Addresss", style: Theme.of(context).textTheme.bodyText2),
+                                            label: Text("Email Address", style: Theme.of(context).textTheme.bodyText2),
                                             textInputType: TextInputType.emailAddress,
                                             style: Theme.of(context).textTheme.bodyMedium,
                                             hintStyle: CustomTextStyle.hintTextLight,

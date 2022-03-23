@@ -16,4 +16,5 @@ class Routes {
   static const String profile = '/profile';
   static const String enlargeImage = '/enlargeImage';
   static const String pdfView = '/pdfView';
+  static const String help = '/help';
 }

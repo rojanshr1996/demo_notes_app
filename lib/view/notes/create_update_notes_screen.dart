@@ -365,6 +365,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                                               style:
                                                   Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: bold),
                                               maxLines: null,
+                                              textCapitalization: TextCapitalization.sentences,
                                               decoration: InputDecoration(
                                                 hintText: "Enter title... ",
                                                 hintStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -394,6 +395,7 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                                       child: TextField(
                                         controller: _textController,
                                         keyboardType: TextInputType.multiline,
+                                        textCapitalization: TextCapitalization.sentences,
                                         style: Theme.of(context)
                                             .textTheme
                                             .labelLarge

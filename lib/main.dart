@@ -6,11 +6,14 @@ import 'package:demo_app_bloc/bloc/postBloc/post_event.dart';
 import 'package:demo_app_bloc/cubit/post_cubit.dart';
 import 'package:demo_app_bloc/provider/dark_theme_provider.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
+import 'package:demo_app_bloc/services/fcm_services.dart';
 import 'package:demo_app_bloc/services/post_service.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/view/route/app_router.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,12 +22,8 @@ import 'package:provider/provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
-  // runApp(
-  //   DevicePreview(
-  //     builder: (context) => const MyApp(),
-  //   ),
-  // );
 }
 
 class MyApp extends StatefulWidget {
