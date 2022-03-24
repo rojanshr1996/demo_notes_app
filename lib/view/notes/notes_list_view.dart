@@ -1,17 +1,21 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:demo_app_bloc/model/model.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
+import 'package:demo_app_bloc/services/fcm_services.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
+import 'package:shared_preferences/shared_preferences.dart';
 
 typedef NoteCallback = void Function(CloudNote note);
 typedef ImageCallback = void Function(String imageUrl);
 typedef FileCallBack = void Function(Args args);
 
-class NotesListView extends StatelessWidget {
+class NotesListView extends StatefulWidget {
   final Iterable<CloudNote> notes;
   final NoteCallback? onTap;
   final NoteCallback? onLongPress;
@@ -21,7 +25,27 @@ class NotesListView extends StatelessWidget {
       : super(key: key);
 
   @override
+  State<NotesListView> createState() => _NotesListViewState();
+}
+
+class _NotesListViewState extends State<NotesListView> {
+  bool _notSent = false;
+  sharedPref() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    _notSent = sharedPreferences.getBool("notificationSent") ?? false;
+    log("$_notSent");
+    return _notSent;
+  }
+
+  @override
+  void initState() {
+    sharedPref();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    late final FcmServices _fcmServices = FcmServices();
     return SliverPadding(
       padding: const EdgeInsets.all(15),
       sliver: SliverGrid(
@@ -29,7 +53,26 @@ class NotesListView extends StatelessWidget {
             maxCrossAxisExtent: 200, childAspectRatio: 1 / 1.3, crossAxisSpacing: 8, mainAxisSpacing: 8),
         delegate: SliverChildBuilderDelegate(
           (BuildContext context, int index) {
-            final note = notes.elementAt(index);
+            final note = widget.notes.elementAt(index);
+            log("This ${note.reminder} ===> $_notSent");
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (note.reminder != null) {
+                if (note.reminder != "") {
+                  if (!_notSent) {
+                    if (DateTime.now().isAfter(DateTime.now().subtract(const Duration(minutes: 5))) &&
+                        DateTime.now().isBefore(DateTime.parse(note.reminder!))) {
+                      _fcmServices.sendPushMessage(
+                          messageBody: note.title == "" && note.text == ""
+                              ? "Reminder for you to check your note"
+                              : note.title == ""
+                                  ? "${note.text} is approaching. Check your notes. Thank You!"
+                                  : "${note.title} is approaching. Check your notes. Thank You!");
+                    }
+                  }
+                }
+              }
+            });
+
             return Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0),
@@ -39,10 +82,10 @@ class NotesListView extends StatelessWidget {
               shadowColor: Theme.of(context).colorScheme.shadow,
               child: InkWell(
                 onTap: () {
-                  onTap!(note);
+                  widget.onTap!(note);
                 },
                 onLongPress: () {
-                  onLongPress!(note);
+                  widget.onLongPress!(note);
                 },
                 child: GridTile(
                   child: Padding(
@@ -85,7 +128,7 @@ class NotesListView extends StatelessWidget {
                                       : InkWell(
                                           onTap: () {
                                             if (note.imageUrl != "") {
-                                              onImageTap!(note.imageUrl!);
+                                              widget.onImageTap!(note.imageUrl!);
                                             }
                                           },
                                           child: Hero(
@@ -118,7 +161,8 @@ class NotesListView extends StatelessWidget {
                                       : InkWell(
                                           onTap: () {
                                             if (note.fileUrl != "") {
-                                              onFileTap!(Args(fileUrl: note.fileUrl!, fileName: note.fileName ?? ""));
+                                              widget.onFileTap!(
+                                                  Args(fileUrl: note.fileUrl!, fileName: note.fileName ?? ""));
                                             }
                                           },
                                           child: Container(
@@ -153,7 +197,7 @@ class NotesListView extends StatelessWidget {
               ),
             );
           },
-          childCount: notes.length,
+          childCount: widget.notes.length,
         ),
       ),
     );

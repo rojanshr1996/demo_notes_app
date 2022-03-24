@@ -6,6 +6,7 @@ import 'package:demo_app_bloc/provider/dark_theme_provider.dart';
 import 'package:demo_app_bloc/services/auth_services.dart';
 import 'package:demo_app_bloc/services/cloud/cloud_note.dart';
 import 'package:demo_app_bloc/services/cloud/firebase_cloud_storage.dart';
+import 'package:demo_app_bloc/services/fcm_services.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/dialogs/cannot_share_empty_note_dialog.dart';
 import 'package:demo_app_bloc/utils/dialogs/delete_dialog.dart';
@@ -30,6 +31,8 @@ class NotesScreen extends StatefulWidget {
 
 class _NotesScreenState extends State<NotesScreen> {
   late final FirebaseCloudStorage _notesService;
+  late final FcmServices fcmServices;
+
   final AuthServices _auth = AuthServices();
 
   String? get userId => _auth.currentUser == null ? "" : _auth.currentUser!.id;
@@ -49,6 +52,7 @@ class _NotesScreenState extends State<NotesScreen> {
     debugPrint(userId);
     _filterValue = ValueNotifier<String>("");
     _notesService = FirebaseCloudStorage();
+    fcmServices = FcmServices();
     super.initState();
   }
 
@@ -193,6 +197,15 @@ class _NotesScreenState extends State<NotesScreen> {
                                     onLongPress: (note) {
                                       showBottomSheet(
                                         context: context,
+                                        onReminderTap: () {
+                                          Utilities.closeActivity(context);
+                                          fcmServices.sendPushMessage(
+                                              messageBody: note.title == "" && note.text == ""
+                                                  ? "Reminder for you to check your note"
+                                                  : note.title == ""
+                                                      ? "${note.text} is approaching. Check your notes. Thank You!"
+                                                      : "${note.title} is approaching. Check your notes. Thank You!");
+                                        },
                                         onDeleteTap: () async {
                                           Utilities.closeActivity(context);
 
@@ -223,7 +236,7 @@ class _NotesScreenState extends State<NotesScreen> {
                                   const SliverFillRemaining(
                                     hasScrollBody: false,
                                     child: Center(
-                                      child: NoDataWidget(title: "No data"),
+                                      child: NoDataWidget(title: "No notes available"),
                                     ),
                                   ),
                               ],
@@ -268,7 +281,11 @@ class _NotesScreenState extends State<NotesScreen> {
     );
   }
 
-  showBottomSheet({required BuildContext context, VoidCallback? onDeleteTap, VoidCallback? onShareTap}) {
+  showBottomSheet(
+      {required BuildContext context,
+      VoidCallback? onDeleteTap,
+      VoidCallback? onShareTap,
+      VoidCallback? onReminderTap}) {
     return showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -281,6 +298,11 @@ class _NotesScreenState extends State<NotesScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              ListTile(
+                onTap: onReminderTap,
+                leading: Icon(Icons.access_alarm, color: Theme.of(context).colorScheme.background),
+                title: Text("Reminder", style: Theme.of(context).textTheme.bodyLarge),
+              ),
               ListTile(
                 onTap: onShareTap,
                 leading: Icon(Icons.share, color: Theme.of(context).colorScheme.background),
