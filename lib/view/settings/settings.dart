@@ -10,9 +10,11 @@ import 'package:demo_app_bloc/utils/dialogs/logout_dialog.dart';
 import 'package:demo_app_bloc/view/auth/login_screen.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:demo_app_bloc/widgets/logo_widget.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -120,6 +122,9 @@ class _SettingsState extends State<Settings> {
                                 final shouldLogOut = await showLogoutDialog(context);
                                 log(shouldLogOut.toString());
                                 if (shouldLogOut) {
+                                  final sharedPreferences = await SharedPreferences.getInstance();
+                                  sharedPreferences.setBool("notificationSent", false);
+                                  FirebaseMessaging.instance.unsubscribeFromTopic("Reminders");
                                   BlocProvider.of<AuthBloc>(context).add(const AuthEventLogout());
                                 }
                               },

@@ -1,10 +1,5 @@
-import 'dart:developer' as devtools show log;
-import 'dart:developer';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_widgets/custom_widgets.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
-import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
 import 'package:demo_app_bloc/helpers/loading/loading_screen.dart';
 import 'package:demo_app_bloc/model/model.dart';
@@ -21,13 +16,10 @@ import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:demo_app_bloc/widgets/logo_widget.dart';
 import 'package:demo_app_bloc/widgets/settings_user_header.dart';
 import 'package:demo_app_bloc/widgets/simple_circular_loader.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 
 class IndexScreen extends StatefulWidget {
@@ -112,20 +104,23 @@ class _IndexScreenState extends State<IndexScreen> {
                               case ConnectionState.active:
                                 if (snapshot.hasData) {
                                   final userData = snapshot.data as Iterable<UserModel>;
-                                  return SettingsUserHeader(
-                                    userName: "${userData.first.name}",
-                                    profilePic: userData.first.profileImage ?? "",
-                                    onImageTap: () {
-                                      Utilities.openNamedActivity(context, Routes.enlargeImage,
-                                          arguments: ImageArgs(imageUrl: userData.first.profileImage ?? ""));
-                                    },
-                                    onPressed: () {
-                                      Utilities.openNamedActivity(context, Routes.profile, arguments: userData.first);
-                                    },
-                                    onSettingsTap: () {
-                                      Utilities.openNamedActivity(context, Routes.settings);
-                                    },
-                                  );
+                                  return userData.isEmpty
+                                      ? const SizedBox()
+                                      : SettingsUserHeader(
+                                          userName: "${userData.first.name}",
+                                          profilePic: userData.first.profileImage ?? "",
+                                          onImageTap: () {
+                                            Utilities.openNamedActivity(context, Routes.enlargeImage,
+                                                arguments: ImageArgs(imageUrl: userData.first.profileImage ?? ""));
+                                          },
+                                          onPressed: () {
+                                            Utilities.openNamedActivity(context, Routes.profile,
+                                                arguments: userData.first);
+                                          },
+                                          onSettingsTap: () {
+                                            Utilities.openNamedActivity(context, Routes.settings);
+                                          },
+                                        );
                                 } else {
                                   return const SizedBox(
                                     height: 70,

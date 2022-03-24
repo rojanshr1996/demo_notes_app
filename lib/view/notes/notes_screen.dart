@@ -197,15 +197,6 @@ class _NotesScreenState extends State<NotesScreen> {
                                     onLongPress: (note) {
                                       showBottomSheet(
                                         context: context,
-                                        onReminderTap: () {
-                                          Utilities.closeActivity(context);
-                                          fcmServices.sendPushMessage(
-                                              messageBody: note.title == "" && note.text == ""
-                                                  ? "Reminder for you to check your note"
-                                                  : note.title == ""
-                                                      ? "${note.text} is approaching. Check your notes. Thank You!"
-                                                      : "${note.title} is approaching. Check your notes. Thank You!");
-                                        },
                                         onDeleteTap: () async {
                                           Utilities.closeActivity(context);
 
@@ -281,11 +272,7 @@ class _NotesScreenState extends State<NotesScreen> {
     );
   }
 
-  showBottomSheet(
-      {required BuildContext context,
-      VoidCallback? onDeleteTap,
-      VoidCallback? onShareTap,
-      VoidCallback? onReminderTap}) {
+  showBottomSheet({required BuildContext context, VoidCallback? onDeleteTap, VoidCallback? onShareTap}) {
     return showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -298,11 +285,6 @@ class _NotesScreenState extends State<NotesScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
-                onTap: onReminderTap,
-                leading: Icon(Icons.access_alarm, color: Theme.of(context).colorScheme.background),
-                title: Text("Reminder", style: Theme.of(context).textTheme.bodyLarge),
-              ),
               ListTile(
                 onTap: onShareTap,
                 leading: Icon(Icons.share, color: Theme.of(context).colorScheme.background),

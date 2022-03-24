@@ -12,11 +12,9 @@ import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/view/route/app_router.dart';
 import 'package:demo_app_bloc/view/route/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -63,25 +61,19 @@ class _MyAppState extends State<MyApp> {
             BlocProvider<PostCubit>(create: (_) => PostCubit()),
             BlocProvider(create: (context) => AuthBloc(authServices: RepositoryProvider.of<AuthServices>(context)))
           ],
-          child: ScreenUtilInit(
-            designSize: const Size(411.428, 820.5),
-            builder: () => Consumer<DarkThemeProvider>(
-              builder: (context, value, child) {
-                return MaterialApp(
-                  useInheritedMediaQuery: true,
-                  debugShowCheckedModeBanner: false,
-                  // builder: DevicePreview.appBuilder,
-                  title: 'Notes App',
-                  onGenerateRoute: AppRouter.onGenerateRoute,
-                  themeMode: ThemeMode.light,
-                  theme: value.darkTheme ? ThemeClass.darkTheme : ThemeClass.lightTheme,
-
-                  // theme: value.darkTheme ? ThemeClass.darkTheme : ThemeClass.lightTheme,
-                  darkTheme: value.darkTheme ? ThemeClass.darkTheme : ThemeClass.darkTheme,
-                  initialRoute: Routes.login,
-                );
-              },
-            ),
+          child: Consumer<DarkThemeProvider>(
+            builder: (context, value, child) {
+              return MaterialApp(
+                useInheritedMediaQuery: true,
+                debugShowCheckedModeBanner: false,
+                title: 'Notes App',
+                onGenerateRoute: AppRouter.onGenerateRoute,
+                themeMode: ThemeMode.light,
+                theme: value.darkTheme ? ThemeClass.darkTheme : ThemeClass.lightTheme,
+                darkTheme: value.darkTheme ? ThemeClass.darkTheme : ThemeClass.darkTheme,
+                initialRoute: Routes.login,
+              );
+            },
           ),
         ),
       ),

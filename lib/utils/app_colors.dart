@@ -12,6 +12,7 @@ class AppColors {
   static const Color cSkyBlue = Color(0xff348CC3);
   static const Color cFadedBlue = Color(0xff92A5C6);
   static const Color cRed = Color(0xfff44336);
+  static const Color cFadedRed = Color.fromARGB(255, 221, 72, 62);
   static const Color cRedAccent = Color(0xffbe4d25);
   static const Color cBlueLight = Color(0xff92A5C6);
   static const Color cGreen = Color(0xff78c478);
@@ -49,11 +50,12 @@ class ThemeClass {
         error: AppColors.cRedAccent,
         primary: AppColors.cDarkBlueAccent,
         secondary: AppColors.cDarkBlue,
-        shadow: AppColors.cDarkBlueLight.withAlpha(220),
+        shadow: AppColors.cBlackShadow.withOpacity(0.2),
         outline: AppColors.cLight,
       ),
       buttonTheme: const ButtonThemeData(
         highlightColor: AppColors.transparent,
+        buttonColor: AppColors.cDarkBlueAccent,
         colorScheme: ColorScheme.light(
           background: AppColors.cLight,
           error: AppColors.cRedAccent,
@@ -93,7 +95,7 @@ class ThemeClass {
       error: AppColors.cRedAccent,
       primary: AppColors.cDarkBlue,
       secondary: AppColors.cDarkBlueAccent,
-      shadow: AppColors.cBlackShadow.withAlpha(200),
+      shadow: AppColors.cBlackShadow.withAlpha(150),
       background: AppColors.cLight,
       outline: AppColors.cLight,
     ),
@@ -112,9 +114,15 @@ class ThemeClass {
       labelLarge: TextStyle(fontSize: 16, color: AppColors.cLight, fontWeight: semibold),
     ),
     buttonTheme: const ButtonThemeData(
-        buttonColor: AppColors.cDarkBlueAccent,
-        highlightColor: AppColors.transparent,
-        splashColor: AppColors.cDarkBlue),
+      buttonColor: AppColors.cDarkBlueAccent,
+      highlightColor: AppColors.transparent,
+      splashColor: AppColors.cDarkBlue,
+      colorScheme: ColorScheme.light(
+        error: AppColors.cRedAccent,
+        primary: AppColors.cDarkBlueAccent,
+        secondary: AppColors.cLight,
+      ),
+    ),
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.transparent,
       iconTheme: IconThemeData(color: AppColors.cLight),
