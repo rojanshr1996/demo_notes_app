@@ -28,6 +28,7 @@ class FirebaseCloudStorage {
       createdDateFieldName: '',
       fileFieldname: '',
       favouriteFieldName: '',
+      reminderFieldName: '',
     });
 
     final fetchedNote = await document.get();
@@ -41,6 +42,7 @@ class FirebaseCloudStorage {
       createdDate: "",
       fileName: "",
       favourite: false,
+      reminder: "",
     );
   }
 
@@ -76,6 +78,7 @@ class FirebaseCloudStorage {
     String createdDate = "",
     String fileName = "",
     bool favourite = false,
+    String reminder = "",
   }) async {
     try {
       await notes.doc(documentId).update({
@@ -87,6 +90,7 @@ class FirebaseCloudStorage {
         createdDateFieldName: createdDate,
         fileFieldname: fileName,
         favouriteFieldName: favourite,
+        reminderFieldName: reminder,
       });
     } catch (e) {
       throw CouldNotGetUpdateNoteException();

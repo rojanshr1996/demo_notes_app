@@ -7,6 +7,7 @@ const imageUrlFieldname = "image_url";
 const fileUrlFieldname = "file_url";
 const fileFieldname = "file_name";
 const favouriteFieldName = "favourite";
+const reminderFieldName = "reminder";
 
 // User field names
 const fullNameFieldName = "name";

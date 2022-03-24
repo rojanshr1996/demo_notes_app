@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -21,10 +24,14 @@ class FcmServices {
   /// Initialize the [FlutterLocalNotificationsPlugin] package.
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-  void getToken() async {
-    await FirebaseMessaging.instance.getToken().then((token) {
-      log("FCM TOKEN: $token");
-    });
+  Future<String?> getToken() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    log("FCM: $fcmToken");
+    if (fcmToken != null) {
+      sharedPreferences.setString("fcmToken", fcmToken);
+    }
+    return fcmToken;
   }
 
   Future<bool> requestPermission() async {
@@ -101,6 +108,40 @@ class FcmServices {
         badge: true,
         sound: true,
       );
+    }
+  }
+
+  void sendPushMessage({String fcmToken = "", required String messageBody}) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final token = sharedPreferences.getString("fcmToken");
+
+    try {
+      final body = <String, dynamic>{
+        'notification': <String, dynamic>{'body': messageBody, 'title': 'Reminder for you!'},
+        'priority': 'high',
+        'data': <String, dynamic>{'click_action': 'FLUTTER_NOTIFICATION_CLICK', 'id': '1', 'status': 'done'},
+        "to": "$token",
+      };
+
+      log("MessageBody: $body");
+      final response = await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization':
+              'key=AAAA76ahsT4:APA91bHS_EnX12zvhT-GZeDFfT0jHEoaElxvVLr_wQ_TTbsEWdo9cRvaYV4UEJ_6EsNIVfpU7T9J9CpBi9_ce2BKunbUnoDEZu5Q3BFWJZC_UgxQxBFyOXVD4ntRHpiCQVysJKgdZ4Q0',
+        },
+        body: jsonEncode(body),
+      );
+
+      log("${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        log("Success");
+        sharedPreferences.setBool("notificationSent", true);
+      }
+    } catch (e) {
+      log("error push notification");
     }
   }
 }

@@ -14,6 +14,7 @@ class CloudNote {
   final String? fileUrl;
   final String? fileName;
   final bool? favourite;
+  final String? reminder;
 
   const CloudNote({
     required this.documentId,
@@ -26,6 +27,7 @@ class CloudNote {
     this.fileUrl,
     this.fileName,
     this.favourite,
+    this.reminder,
   });
 
   CloudNote.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
@@ -38,7 +40,8 @@ class CloudNote {
         createdDate = snapshot.data()[createdDateFieldName] as String,
         fileUrl = snapshot.data()[fileUrlFieldname] as String,
         fileName = snapshot.data()[fileFieldname] as String,
-        favourite = snapshot.data()[favouriteFieldName] == "" ? false : snapshot.data()[favouriteFieldName] as bool?;
+        favourite = snapshot.data()[favouriteFieldName] == "" ? false : snapshot.data()[favouriteFieldName] as bool?,
+        reminder = snapshot.data()[reminderFieldName] as String?;
 }
 
 Color? _parseColor(String? colorInt) =>
