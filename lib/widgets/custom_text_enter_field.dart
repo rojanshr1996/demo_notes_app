@@ -1,4 +1,5 @@
 import 'package:custom_widgets/custom_widgets.dart';
+import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextEnterField extends StatelessWidget {
@@ -91,17 +92,30 @@ class CustomTextEnterField extends StatelessWidget {
         prefixIcon: prefixIcon,
         hintText: hintText,
         errorStyle: errorStyle,
-        focusedBorder:
-            focusedBorder ?? const OutlineInputBorder(borderSide: BorderSide(color: CustomColor.cpurple, width: 1.5)),
+        focusedBorder: focusedBorder ??
+            OutlineInputBorder(
+                borderSide: const BorderSide(color: AppColors.cBlueShade), borderRadius: BorderRadius.circular(10)),
         enabledBorder:
-            enabledBorder ?? const OutlineInputBorder(borderSide: BorderSide(color: CustomColor.cpurple, width: 1)),
-        disabledBorder:
-            disabledBorder ?? const OutlineInputBorder(borderSide: BorderSide(color: CustomColor.cgrey, width: 1)),
-        errorBorder:
-            errorBorder ?? const OutlineInputBorder(borderSide: BorderSide(color: CustomColor.cred, width: 1.5)),
+            enabledBorder ?? OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(10)),
+        disabledBorder: disabledBorder ?? OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
+        focusedErrorBorder: focusedErrorBorder ??
+            OutlineInputBorder(
+                borderSide: const BorderSide(color: AppColors.cRed), borderRadius: BorderRadius.circular(10)),
         errorMaxLines: 2,
-        focusedErrorBorder:
-            focusedErrorBorder ?? const OutlineInputBorder(borderSide: BorderSide(color: CustomColor.cred, width: 1.5)),
+        errorBorder: errorBorder ??
+            OutlineInputBorder(
+                borderSide: const BorderSide(color: AppColors.cRed), borderRadius: BorderRadius.circular(10)),
+        // focusedBorder:
+        //     focusedBorder ?? const OutlineInputBorder(borderSide: BorderSide(color: CustomColor.cpurple, width: 1.5)),
+        // enabledBorder:
+        //     enabledBorder ?? const OutlineInputBorder(borderSide: BorderSide(color: CustomColor.cpurple, width: 1)),
+        // disabledBorder:
+        //     disabledBorder ?? const OutlineInputBorder(borderSide: BorderSide(color: CustomColor.cgrey, width: 1)),
+        // errorBorder:
+        //     errorBorder ?? const OutlineInputBorder(borderSide: BorderSide(color: CustomColor.cred, width: 1.5)),
+        // errorMaxLines: 2,
+        // focusedErrorBorder:
+        //     focusedErrorBorder ?? const OutlineInputBorder(borderSide: BorderSide(color: CustomColor.cred, width: 1.5)),
         hintStyle: hintStyle,
       ),
     );
