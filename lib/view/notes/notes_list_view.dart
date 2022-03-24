@@ -33,7 +33,6 @@ class _NotesListViewState extends State<NotesListView> {
   sharedPref() async {
     final sharedPreferences = await SharedPreferences.getInstance();
     _notSent = sharedPreferences.getBool("notificationSent") ?? false;
-    log("$_notSent");
     return _notSent;
   }
 
@@ -54,7 +53,6 @@ class _NotesListViewState extends State<NotesListView> {
         delegate: SliverChildBuilderDelegate(
           (BuildContext context, int index) {
             final note = widget.notes.elementAt(index);
-            log("This ${note.reminder} ===> $_notSent");
             Future.delayed(const Duration(milliseconds: 500), () {
               if (note.reminder != null) {
                 if (note.reminder != "") {

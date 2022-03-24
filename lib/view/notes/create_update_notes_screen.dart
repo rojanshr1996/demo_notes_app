@@ -379,14 +379,28 @@ class _CreateUpdateNotesScreenState extends State<CreateUpdateNotesScreen> {
                                             ValueListenableBuilder(
                                               valueListenable: _reminder,
                                               builder: (context, reminder, _) {
-                                                return Text(
-                                                  _reminder.value == ""
-                                                      ? ""
-                                                      : "${DateFormat.yMMMMd().format(DateTime.parse(_reminder.value))}, ${DateFormat.jm().format(DateTime.parse(_reminder.value))}",
-                                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                      fontWeight: medium,
-                                                      fontSize: 10,
-                                                      color: Theme.of(context).hintColor),
+                                                return Row(
+                                                  children: [
+                                                    _reminder.value == ""
+                                                        ? const SizedBox()
+                                                        : InkWell(
+                                                            onTap: () {
+                                                              _reminder.value = "";
+                                                            },
+                                                            child: const Icon(Icons.close,
+                                                                size: 14, color: AppColors.cRed),
+                                                          ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      _reminder.value == ""
+                                                          ? ""
+                                                          : "${DateFormat.yMMMMd().format(DateTime.parse(_reminder.value))}, ${DateFormat.jm().format(DateTime.parse(_reminder.value))}",
+                                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                          fontWeight: medium,
+                                                          fontSize: 10,
+                                                          color: Theme.of(context).hintColor),
+                                                    ),
+                                                  ],
                                                 );
                                               },
                                             ),
