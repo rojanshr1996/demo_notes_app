@@ -119,116 +119,58 @@ class _SingupScreenState extends State<SingupScreen> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.only(left: 24, right: 24),
-                                      child: Stack(
-                                        children: [
-                                          Container(
-                                            height: 48,
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context).scaffoldBackgroundColor,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                    color: Theme.of(context).colorScheme.shadow,
-                                                    blurRadius: 8,
-                                                    offset: const Offset(0, 3)),
-                                              ],
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                          ),
-                                          CustomTextEnterField(
-                                            textEditingController: _nameController,
-                                            label: Text("Full Name", style: Theme.of(context).textTheme.bodyText2),
-                                            textInputType: TextInputType.text,
-                                            style: Theme.of(context).textTheme.bodyMedium,
-                                            hintStyle: CustomTextStyle.hintTextLight,
-                                            validator: (value) =>
-                                                validateField(context: context, value: value!, fieldName: "Name"),
-                                          ),
-                                        ],
+                                      child: CustomTextEnterField(
+                                        textEditingController: _nameController,
+                                        label: Text("Full Name", style: Theme.of(context).textTheme.bodyText2),
+                                        textInputType: TextInputType.text,
+                                        fillColor: Theme.of(context).scaffoldBackgroundColor,
+                                        filled: true,
+                                        style: Theme.of(context).textTheme.bodyMedium,
+                                        hintStyle: CustomTextStyle.hintTextLight,
+                                        validator: (value) =>
+                                            validateField(context: context, value: value!, fieldName: "Name"),
                                       ),
                                     ),
                                     const SizedBox(height: 12),
                                     Padding(
                                       padding: const EdgeInsets.only(left: 24, right: 24),
-                                      child: Stack(
-                                        children: [
-                                          Container(
-                                            height: 48,
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context).scaffoldBackgroundColor,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                    color: Theme.of(context).colorScheme.shadow,
-                                                    blurRadius: 8,
-                                                    offset: const Offset(0, 3)),
-                                              ],
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                          ),
-                                          CustomTextEnterField(
-                                            textEditingController: _emailController,
-                                            label: Text("Email Address", style: Theme.of(context).textTheme.bodyText2),
-                                            textInputType: TextInputType.emailAddress,
-                                            style: Theme.of(context).textTheme.bodyMedium,
-                                            hintStyle: CustomTextStyle.hintTextLight,
-                                            validator: (value) => validateEmail(context: context, value: value!),
-                                          ),
-                                        ],
+                                      child: CustomTextEnterField(
+                                        textEditingController: _emailController,
+                                        label: Text("Email Address", style: Theme.of(context).textTheme.bodyText2),
+                                        textInputType: TextInputType.emailAddress,
+                                        fillColor: Theme.of(context).scaffoldBackgroundColor,
+                                        filled: true,
+                                        style: Theme.of(context).textTheme.bodyMedium,
+                                        hintStyle: CustomTextStyle.hintTextLight,
+                                        validator: (value) => validateEmail(context: context, value: value!),
                                       ),
                                     ),
                                     const SizedBox(height: 12),
                                     Padding(
                                       padding: const EdgeInsets.only(left: 24, right: 24),
-                                      child: Stack(
-                                        children: [
-                                          Container(
-                                            height: 48,
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context).scaffoldBackgroundColor,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                    color: Theme.of(context).colorScheme.shadow,
-                                                    blurRadius: 8,
-                                                    offset: const Offset(0, 3)),
-                                              ],
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                          ),
-                                          CustomTextEnterField(
-                                            textEditingController: _phoneController,
-                                            label: Text("Phone Number", style: Theme.of(context).textTheme.bodyText2),
-                                            textInputType: TextInputType.phone,
-                                            style: Theme.of(context).textTheme.bodyMedium,
-                                            hintStyle: CustomTextStyle.hintTextLight,
-                                            validator: (value) => validateField(
-                                                context: context,
-                                                value: value!,
-                                                fieldName: "Phone",
-                                                maxCharacter: 10,
-                                                minCharater: 7),
-                                            suffixIcon: const Icon(Icons.phone, color: AppColors.cDarkBlue),
-                                          ),
-                                        ],
+                                      child: CustomTextEnterField(
+                                        textEditingController: _phoneController,
+                                        label: Text("Phone Number", style: Theme.of(context).textTheme.bodyText2),
+                                        textInputType: TextInputType.phone,
+                                        style: Theme.of(context).textTheme.bodyMedium,
+                                        hintStyle: CustomTextStyle.hintTextLight,
+                                        fillColor: Theme.of(context).scaffoldBackgroundColor,
+                                        filled: true,
+                                        validator: (value) => validateField(
+                                            context: context,
+                                            value: value!,
+                                            fieldName: "Phone",
+                                            maxCharacter: 10,
+                                            minCharater: 7),
+                                        suffixIcon: const Icon(Icons.phone, color: AppColors.cDarkBlue),
                                       ),
                                     ),
                                     const SizedBox(height: 12),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 24, right: 24),
-                                      child: Stack(
-                                        children: [
-                                          Container(
-                                            height: 48,
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context).scaffoldBackgroundColor,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                    color: Theme.of(context).colorScheme.shadow,
-                                                    blurRadius: 8,
-                                                    offset: const Offset(0, 3)),
-                                              ],
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                          ),
-                                          ValueListenableBuilder(
+                                    Stack(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 24, right: 24),
+                                          child: ValueListenableBuilder(
                                             valueListenable: _obscureText,
                                             builder: (context, value, child) => CustomTextEnterField(
                                               textEditingController: _passwordController,
@@ -237,6 +179,8 @@ class _SingupScreenState extends State<SingupScreen> {
                                               textInputType: TextInputType.visiblePassword,
                                               obscureText: _obscureText.value,
                                               hintStyle: CustomTextStyle.hintTextLight,
+                                              fillColor: Theme.of(context).scaffoldBackgroundColor,
+                                              filled: true,
                                               validator: (value) => validatePassword(context: context, value: value!),
                                               suffixIcon: _passwordController.text.isEmpty
                                                   ? const SizedBox()
@@ -247,32 +191,20 @@ class _SingupScreenState extends State<SingupScreen> {
                                                           : const Icon(Icons.visibility_off,
                                                               color: AppColors.cDarkBlue),
                                                     ),
-                                              focusedBorder: OutlineInputBorder(
-                                                  borderSide: const BorderSide(color: AppColors.cBlueShade),
-                                                  borderRadius: BorderRadius.circular(10)),
-                                              enabledBorder: OutlineInputBorder(
-                                                  borderSide: BorderSide.none, borderRadius: BorderRadius.circular(10)),
-                                              disabledBorder:
-                                                  OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
-                                              focusedErrorBorder: OutlineInputBorder(
-                                                  borderSide: const BorderSide(color: AppColors.cRed),
-                                                  borderRadius: BorderRadius.circular(10)),
-                                              errorBorder: OutlineInputBorder(
-                                                  borderSide: const BorderSide(color: AppColors.cRed),
-                                                  borderRadius: BorderRadius.circular(10)),
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                               ),
                               const SizedBox(height: 60),
                               Padding(
-                                padding: const EdgeInsets.only(left: 30, right: 30),
+                                padding: const EdgeInsets.only(left: 24, right: 24),
                                 child: CustomButton(
                                   title: "SIGN UP",
+                                  elevation: 4,
                                   borderRadius: BorderRadius.circular(10),
                                   splashBorderRadius: BorderRadius.circular(10),
                                   buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,

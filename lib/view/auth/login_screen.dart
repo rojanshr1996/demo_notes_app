@@ -3,6 +3,7 @@ import 'package:demo_app_bloc/bloc/authBloc/auth_bloc.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_event.dart';
 import 'package:demo_app_bloc/bloc/authBloc/auth_state.dart';
 import 'package:demo_app_bloc/helpers/loading/loading_screen.dart';
+import 'package:demo_app_bloc/provider/dark_theme_provider.dart';
 import 'package:demo_app_bloc/services/auth_exceptions.dart';
 import 'package:demo_app_bloc/utils/app_colors.dart';
 import 'package:demo_app_bloc/utils/constants.dart';
@@ -101,160 +102,114 @@ class _LoginScreenState extends State<LoginScreen> {
                     return SizedBox(
                       height: Utilities.screenHeight(context),
                       width: Utilities.screenWidth(context),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context).scaffoldBackgroundColor,
-                                  borderRadius: const BorderRadius.only(bottomRight: Radius.circular(15))),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                child: Text("LOGIN", style: Theme.of(context).textTheme.labelLarge),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              LogoWidget(height: Utilities.screenHeight(context) * 0.12),
+                              const SizedBox(height: 65),
+                              Form(
+                                key: _formKey,
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 24, right: 24),
+                                      child: CustomTextEnterField(
+                                        textEditingController: _emailController,
+                                        fillColor: Theme.of(context).scaffoldBackgroundColor,
+                                        filled: true,
+                                        label: Text("Email Address", style: Theme.of(context).textTheme.bodyText2),
+                                        textInputType: TextInputType.emailAddress,
+                                        style: Theme.of(context).textTheme.bodyMedium,
+                                        hintStyle: CustomTextStyle.hintTextLight,
+                                        validator: (value) => validateEmail(context: context, value: value!),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 15),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 24, right: 24),
+                                      child: ValueListenableBuilder(
+                                        valueListenable: _obscureText,
+                                        builder: (context, value, child) => CustomTextEnterField(
+                                          textEditingController: _passwordController,
+                                          fillColor: Theme.of(context).scaffoldBackgroundColor,
+                                          filled: true,
+                                          label: Text("Password", style: Theme.of(context).textTheme.bodyText2),
+                                          style: Theme.of(context).textTheme.bodyMedium,
+                                          textInputType: TextInputType.visiblePassword,
+                                          obscureText: _obscureText.value,
+                                          hintStyle: CustomTextStyle.hintTextLight,
+                                          validator: (value) => validatePassword(context: context, value: value!),
+                                          suffixIcon: _passwordController.text.isEmpty
+                                              ? const SizedBox()
+                                              : IconButton(
+                                                  onPressed: toggle,
+                                                  icon: _obscureText.value
+                                                      ? const Icon(Icons.visibility, color: AppColors.cDarkBlue)
+                                                      : const Icon(Icons.visibility_off, color: AppColors.cDarkBlue),
+                                                ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  LogoWidget(height: Utilities.screenHeight(context) * 0.12),
-                                  const SizedBox(height: 65),
-                                  Form(
-                                    key: _formKey,
-                                    child: Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 24, right: 24),
-                                          child: Stack(
-                                            children: [
-                                              Container(
-                                                height: 48,
-                                                decoration: BoxDecoration(
-                                                  color: Theme.of(context).scaffoldBackgroundColor,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                        color: Theme.of(context).colorScheme.shadow,
-                                                        blurRadius: 8,
-                                                        offset: const Offset(0, 3)),
-                                                  ],
-                                                  borderRadius: BorderRadius.circular(10),
-                                                ),
-                                              ),
-                                              CustomTextEnterField(
-                                                textEditingController: _emailController,
-                                                label:
-                                                    Text("Email Address", style: Theme.of(context).textTheme.bodyText2),
-                                                textInputType: TextInputType.emailAddress,
-                                                style: Theme.of(context).textTheme.bodyMedium,
-                                                hintStyle: CustomTextStyle.hintTextLight,
-                                                validator: (value) => validateEmail(context: context, value: value!),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(height: 15),
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 24, right: 24),
-                                          child: Stack(
-                                            children: [
-                                              Container(
-                                                height: 48,
-                                                decoration: BoxDecoration(
-                                                  color: Theme.of(context).scaffoldBackgroundColor,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                        color: Theme.of(context).colorScheme.shadow,
-                                                        blurRadius: 8,
-                                                        offset: const Offset(0, 3)),
-                                                  ],
-                                                  borderRadius: BorderRadius.circular(10),
-                                                ),
-                                              ),
-                                              ValueListenableBuilder(
-                                                valueListenable: _obscureText,
-                                                builder: (context, value, child) => CustomTextEnterField(
-                                                  textEditingController: _passwordController,
-                                                  label: Text("Password", style: Theme.of(context).textTheme.bodyText2),
-                                                  style: Theme.of(context).textTheme.bodyMedium,
-                                                  textInputType: TextInputType.visiblePassword,
-                                                  obscureText: _obscureText.value,
-                                                  hintStyle: CustomTextStyle.hintTextLight,
-                                                  validator: (value) =>
-                                                      validatePassword(context: context, value: value!),
-                                                  suffixIcon: _passwordController.text.isEmpty
-                                                      ? const SizedBox()
-                                                      : IconButton(
-                                                          onPressed: toggle,
-                                                          icon: _obscureText.value
-                                                              ? const Icon(Icons.visibility, color: AppColors.cDarkBlue)
-                                                              : const Icon(Icons.visibility_off,
-                                                                  color: AppColors.cDarkBlue),
-                                                        ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 50),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 30, right: 30),
-                                    child: CustomButton(
-                                      title: "SIGN IN",
-                                      borderRadius: BorderRadius.circular(10),
-                                      splashBorderRadius: BorderRadius.circular(10),
-                                      buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
-                                      onPressed: () => _authenticateWithEmailAndPassword(context),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 24, right: 24, top: 10),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Utilities.openNamedActivity(context, Routes.forgotPassword);
-                                          },
-                                          child: Text(
-                                            "Forgot Password?",
-                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                color: Theme.of(context).colorScheme.background, fontWeight: semibold),
-                                          ),
-                                        ),
-                                        TextButton(
-                                          onPressed: () => Utilities.openNamedActivity(context, Routes.register),
-                                          child: Text(
-                                            "Sign up",
-                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                color: Theme.of(context).colorScheme.background, fontWeight: semibold),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 25),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 30, right: 30),
-                                    child: CustomButton(
-                                      title: "SIGN IN WITH GOOGLE",
-                                      borderRadius: BorderRadius.circular(10),
-                                      splashBorderRadius: BorderRadius.circular(10),
-                                      buttonColor: AppColors.cFadedRed,
-                                      prefixIcon: const FaIcon(FontAwesomeIcons.google, color: AppColors.cWhite),
-                                      onPressed: () => _authenticateWithGoogle(context),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 25),
-                                ],
+                              const SizedBox(height: 50),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 24, right: 24),
+                                child: CustomButton(
+                                  elevation: 4,
+                                  title: "SIGN IN",
+                                  borderRadius: BorderRadius.circular(10),
+                                  splashBorderRadius: BorderRadius.circular(10),
+                                  buttonColor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                                  onPressed: () => _authenticateWithEmailAndPassword(context),
+                                ),
                               ),
-                            ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 24, right: 24, top: 10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Utilities.openNamedActivity(context, Routes.forgotPassword);
+                                      },
+                                      child: Text(
+                                        "Forgot Password?",
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                            color: Theme.of(context).colorScheme.background, fontWeight: semibold),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Utilities.openNamedActivity(context, Routes.register),
+                                      child: Text(
+                                        "Sign up",
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                            color: Theme.of(context).colorScheme.background, fontWeight: semibold),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 24, right: 24),
+                                child: CustomButton(
+                                  elevation: 4,
+                                  title: "SIGN IN WITH GOOGLE",
+                                  borderRadius: BorderRadius.circular(10),
+                                  splashBorderRadius: BorderRadius.circular(10),
+                                  buttonColor: AppColors.cFadedRed,
+                                  prefixIcon: const FaIcon(FontAwesomeIcons.google, color: AppColors.cWhite),
+                                  onPressed: () => _authenticateWithGoogle(context),
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     );
                   }
